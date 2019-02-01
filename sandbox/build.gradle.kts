@@ -11,12 +11,16 @@ kotlin {
             executable()
         }
     }
+    macosX64("macos") {
+        binaries {
+            executable()
+        }
+    }
     sourceSets {
-        val linuxMain by getting {
+        val commonMain by getting {
             dependencies {
                 api(project(":engine"))
             }
         }
-        val linuxTest by getting {}
     }
 }

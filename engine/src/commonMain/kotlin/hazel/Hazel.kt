@@ -1,12 +1,18 @@
 package hazel
 
+import hazel.logging.Logger
 import hazel.logging.clientLogger
 import hazel.logging.coreLogger
 
+
 object Hazel {
     fun run(app: Application) {
+        coreLogger = Logger("HAZEL")
+        clientLogger = Logger("APP")
+
         coreWarn("Initialized Log!")
         info("Hello!")
+
         app.run()
     }
 

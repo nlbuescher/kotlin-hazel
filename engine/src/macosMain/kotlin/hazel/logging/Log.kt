@@ -9,7 +9,7 @@ import platform.posix.time
 import platform.posix.time_tVar
 
 
-internal val timestamp: String
+internal actual val timestamp: String
     get() = memScoped {
         val t = alloc<time_tVar>()
         val str = allocArray<ByteVar>(10)

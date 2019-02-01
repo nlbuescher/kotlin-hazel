@@ -7,13 +7,21 @@ plugins {
 }
 
 kotlin {
+    macosX64("macos") {
+        binaries {
+            sharedLib()
+        }
+    }
     linuxX64("linux") {
         binaries {
             sharedLib()
         }
     }
     sourceSets {
-        val linuxMain by getting {}
-        val linuxTest by getting {}
+        val commonMain by getting {
+            dependencies {
+                api(kotlin("stdlib"))
+            }
+        }
     }
 }
