@@ -1,5 +1,3 @@
-@file:Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
-
 package hazel.logging
 
 import kotlinx.cinterop.*
@@ -9,6 +7,7 @@ import platform.posix.time
 import platform.posix.time_tVar
 
 
+@ExperimentalUnsignedTypes
 internal val timestamp: String
     get() = memScoped {
         val t = alloc<time_tVar>()
