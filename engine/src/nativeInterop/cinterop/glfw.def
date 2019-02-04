@@ -1,0 +1,4 @@
+headers = GLFW/glfw3.h
+
+compilerOpts.linux = -I/usr/include
+linkerOpts.linux = -L/usr/lib64 -lglfw -lGL

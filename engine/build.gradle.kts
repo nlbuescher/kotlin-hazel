@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 group = "hazel"
 version = "1.0-SNAPSHOT"
 
@@ -16,11 +18,14 @@ kotlin {
         binaries {
             sharedLib()
         }
+        compilations["main"].cinterops(Action {
+            val glfw by creating { packageName = "glfw" }
+        })
     }
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(kotlin("stdlib"))
+                api(kotlin("stdlib-common"))
             }
         }
     }

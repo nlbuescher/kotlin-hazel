@@ -1,8 +1,8 @@
 package hazel.logging
 
 
-internal lateinit var coreLogger: Logger
-internal lateinit var clientLogger: Logger
+internal val coreLogger = Logger("HAZEL")
+internal val clientLogger = Logger("APP")
 
 
 internal expect val timestamp: String

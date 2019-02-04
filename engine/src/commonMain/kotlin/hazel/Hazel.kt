@@ -1,15 +1,12 @@
 package hazel
 
-import hazel.logging.Logger
 import hazel.logging.clientLogger
 import hazel.logging.coreLogger
 
 
+@ExperimentalUnsignedTypes
 object Hazel {
     fun run(app: Application) {
-        coreLogger = Logger("HAZEL")
-        clientLogger = Logger("APP")
-
         coreWarn("Initialized Log!")
         info("Hello!")
 
@@ -23,10 +20,14 @@ object Hazel {
     internal fun coreError(message: String) = coreLogger.error(message)
     internal fun coreCritical(message: String) = coreLogger.critical(message)
 
+    internal fun coreAssert(test: Boolean, message: String) = check(test) { coreError("Assertion failed: $message") }
+
     fun trace(message: String) = clientLogger.trace(message)
     fun debug(message: String) = clientLogger.debug(message)
     fun info(message: String) = clientLogger.info(message)
     fun warn(message: String) = clientLogger.warn(message)
     fun error(message: String) = clientLogger.error(message)
     fun critical(message: String) = clientLogger.critical(message)
+
+    fun assert(test: Boolean, message: String) = check(test) { error("Assertion failed: $message") }
 }
