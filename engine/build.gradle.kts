@@ -13,6 +13,9 @@ kotlin {
         binaries {
             sharedLib()
         }
+        compilations["main"].cinterops(Action {
+            val glfw by creating { packageName = "glfw"}
+        })
     }
     linuxX64("linux") {
         binaries {

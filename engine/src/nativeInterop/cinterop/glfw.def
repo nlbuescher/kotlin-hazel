@@ -2,3 +2,6 @@ headers = GLFW/glfw3.h
 
 compilerOpts.linux = -I/usr/include
 linkerOpts.linux = -L/usr/lib64 -lglfw -lGL
+
+compilerOpts.osx = -I/usr/local/include
+linkerOpts.osx = -L/usr/local/lib -lglfw
