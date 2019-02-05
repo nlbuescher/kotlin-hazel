@@ -9,15 +9,15 @@ plugins {
 }
 
 kotlin {
-    macosX64("macos") {
+    linuxX64("linux") {
         binaries {
             sharedLib()
         }
         compilations["main"].cinterops(Action {
-            val glfw by creating { packageName = "glfw"}
+            val glfw by creating { packageName = "glfw" }
         })
     }
-    linuxX64("linux") {
+    macosX64("macos") {
         binaries {
             sharedLib()
         }

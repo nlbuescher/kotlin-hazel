@@ -23,8 +23,6 @@ class LinuxWindow(
             else glfwSwapInterval(0)
         }
 
-    override val shouldClose: Boolean get() = glfwWindowShouldClose(window) > 0
-
     init {
         Hazel.coreInfo("Creating window $title ($width, $height)")
 

@@ -2,19 +2,17 @@ package hazel
 
 
 @ExperimentalUnsignedTypes
-abstract class Window(
-    val title: String,
-    val width: UInt,
-    val height: UInt
-) {
+abstract class Window {
+    abstract val title: String
+    abstract val width: UInt
+    abstract val height: UInt
     abstract var enableVSync: Boolean
-    var eventCallback: (Event) -> Boolean = { false }
 
-    abstract val shouldClose: Boolean
+    abstract fun setEventCallback(callback: ((Event) -> Unit)?)
 
     open fun onUpdate() {}
 
-    open fun onDestroy() {}
+    open fun dispose() {}
 }
 
 

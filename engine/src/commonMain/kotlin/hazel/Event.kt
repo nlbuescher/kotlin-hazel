@@ -31,11 +31,11 @@ abstract class InputEvent : Event()
 // Key events
 abstract class KeyEvent(protected val keyCode: Int) : InputEvent()
 
-class KeyDownEvent(keyCode: Int, private val repeatCount: Int) : KeyEvent(keyCode) {
+class KeyPressedEvent(keyCode: Int, private val repeatCount: Int) : KeyEvent(keyCode) {
     override fun toString() = "$name: $keyCode ($repeatCount times)"
 }
 
-class KeyUpEvent(keyCode: Int) : KeyEvent(keyCode) {
+class KeyReleasedEvent(keyCode: Int) : KeyEvent(keyCode) {
     override fun toString() = "$name: $keyCode"
 }
 
@@ -54,6 +54,6 @@ abstract class MouseButtonEvent(val button: Int) : MouseEvent() {
     override fun toString() = "$name: $button"
 }
 
-class MouseButtonDownEvent(button: Int) : MouseButtonEvent(button)
+class MouseButtonPressedEvent(button: Int) : MouseButtonEvent(button)
 
-class MouseButtonUpEvent(button: Int) : MouseButtonEvent(button)
+class MouseButtonReleasedEvent(button: Int) : MouseButtonEvent(button)
