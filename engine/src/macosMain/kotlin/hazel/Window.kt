@@ -14,17 +14,6 @@ private fun errorCallback(error: Int, description: CPointer<ByteVar>?) {
 
 
 @ExperimentalUnsignedTypes
-data class WindowData(
-    var title: String,
-    var width: UInt,
-    var height: UInt
-) {
-    var enableVSync: Boolean = false
-    var eventCallback: ((Event) -> Unit)? = null
-}
-
-
-@ExperimentalUnsignedTypes
 class MacosWindow(
     title: String,
     width: UInt,

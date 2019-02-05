@@ -2,6 +2,17 @@ package hazel
 
 
 @ExperimentalUnsignedTypes
+data class WindowData(
+    var title: String,
+    var width: UInt,
+    var height: UInt
+) {
+    var enableVSync: Boolean = false
+    var eventCallback: ((Event) -> Unit)? = null
+}
+
+
+@ExperimentalUnsignedTypes
 abstract class Window {
     abstract val title: String
     abstract val width: UInt
