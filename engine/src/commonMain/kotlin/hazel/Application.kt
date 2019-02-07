@@ -21,12 +21,10 @@ abstract class Application {
     fun onEvent(event: Event) {
         Hazel.coreTrace("$event")
 
-        when (event) {
-            is WindowCloseEvent -> onWindowClose(event)
-        }
+        event.dispatch(::onWindowClose)
     }
 
-    fun onWindowClose(event: WindowCloseEvent) : Boolean {
+    fun onWindowClose(event: WindowCloseEvent): Boolean {
         isRunning = false
         window.dispose()
         return true

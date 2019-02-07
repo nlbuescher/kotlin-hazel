@@ -3,10 +3,77 @@ package hazel
 
 // Events
 sealed class Event {
-    protected var isHandled = false
+    var isHandled = false
+        protected set
 
     val name get() = this::class.simpleName ?: "Event"
     override fun toString() = name
+
+
+    @ExperimentalUnsignedTypes
+    fun dispatch(function: (WindowResizeEvent) -> Boolean): Boolean {
+        if (this is WindowResizeEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
+
+    fun dispatch(function: (WindowCloseEvent) -> Boolean): Boolean {
+        if (this is WindowCloseEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
+
+    fun dispatch(function: (KeyPressedEvent) -> Boolean): Boolean {
+        if (this is KeyPressedEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
+
+    fun dispatch(function: (KeyReleasedEvent) -> Boolean): Boolean {
+        if (this is KeyReleasedEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
+
+    fun dispatch(function: (MouseMovedEvent) -> Boolean): Boolean {
+        if (this is MouseMovedEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
+
+    fun dispatch(function: (MouseScrolledEvent) -> Boolean): Boolean {
+        if (this is MouseScrolledEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
+
+    fun dispatch(function: (MouseButtonPressedEvent) -> Boolean): Boolean {
+        if (this is MouseButtonPressedEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
+
+    fun dispatch(function: (MouseButtonReleasedEvent) -> Boolean): Boolean {
+        if (this is MouseButtonReleasedEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
 }
 
 
