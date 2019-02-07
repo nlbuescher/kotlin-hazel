@@ -1,7 +1,10 @@
 package hazel
 
-import hazel.logging.clientLogger
-import hazel.logging.coreLogger
+import hazel.logging.Logger
+
+
+private val coreLogger = Logger("HAZEL")
+private val clientLogger = Logger("APP")
 
 
 @ExperimentalUnsignedTypes

@@ -26,8 +26,6 @@ abstract class Application {
 
 
     fun onEvent(event: Event) {
-        Hazel.coreTrace("$event")
-
         event.dispatch(::onWindowClose)
 
         for (layer in layerStack.reversed()) {

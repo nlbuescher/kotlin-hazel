@@ -1,10 +1,6 @@
 package hazel.logging
 
 
-internal val coreLogger = Logger("HAZEL")
-internal val clientLogger = Logger("APP")
-
-
 internal expect val timestamp: String
 
 
