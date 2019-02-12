@@ -26,6 +26,7 @@ kotlin {
     }
     if (os.isMacOsX) macosX64("macos") {
         val main by compilations.getting {
+            cinterops.create("cglfw")
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
