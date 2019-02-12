@@ -1,0 +1,41 @@
+package hazel
+
+
+abstract class Application {
+    private var isRunning: Boolean = true
+    private val layerStack = LayerStack()
+    private val window = Window()
+
+    init {
+        window.setEventCallback(::onEvent)
+    }
+
+
+    fun addLayer(layer: Layer) = layerStack.add(layer)
+    fun addOverlay(overlay: Overlay) = layerStack.add(overlay)
+
+
+    open fun run() {
+        while (isRunning) {
+            layerStack.forEach { it.onUpdate() }
+
+            window.onUpdate()
+        }
+    }
+
+
+    fun onEvent(event: Event) {
+        event.dispatch(::onWindowClose)
+
+        for (layer in layerStack.reversed()) {
+            layer.onEvent(event)
+            if (event.isHandled) break
+        }
+    }
+
+    private fun onWindowClose(event: WindowCloseEvent): Boolean {
+        isRunning = false
+        window.close()
+        return true
+    }
+}
