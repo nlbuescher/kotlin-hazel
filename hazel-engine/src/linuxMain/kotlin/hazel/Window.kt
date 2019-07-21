@@ -1,8 +1,37 @@
 package hazel
 
-import cglfw.*
+import cglfw.GLFW_PRESS
+import cglfw.GLFW_RELEASE
+import cglfw.GLFW_REPEAT
+import cglfw.GLFW_TRUE
+import cglfw.glfwCreateWindow
+import cglfw.glfwDefaultWindowHints
+import cglfw.glfwDestroyWindow
+import cglfw.glfwGetWindowSize
+import cglfw.glfwGetWindowUserPointer
+import cglfw.glfwInit
+import cglfw.glfwMakeContextCurrent
+import cglfw.glfwPollEvents
+import cglfw.glfwSetCharCallback
+import cglfw.glfwSetCursorPosCallback
+import cglfw.glfwSetKeyCallback
+import cglfw.glfwSetMouseButtonCallback
+import cglfw.glfwSetScrollCallback
+import cglfw.glfwSetWindowCloseCallback
+import cglfw.glfwSetWindowSize
+import cglfw.glfwSetWindowSizeCallback
+import cglfw.glfwSetWindowUserPointer
+import cglfw.glfwSwapBuffers
 import cnames.structs.GLFWwindow
-import kotlinx.cinterop.*
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.IntVar
+import kotlinx.cinterop.StableRef
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.asStableRef
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.staticCFunction
+import kotlinx.cinterop.value
 import kotlinx.io.core.Closeable
 import kotlin.native.concurrent.ensureNeverFrozen
 
@@ -35,6 +64,11 @@ actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwin
                 GLFW_PRESS -> data.eventCallback?.invoke(KeyPressedEvent(key, 0))
                 GLFW_REPEAT -> data.eventCallback?.invoke(KeyPressedEvent(key, 1))
             }
+        })
+
+        glfwSetCharCallback(ptr, staticCFunction { window, character ->
+            val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
+            data.eventCallback?.invoke(KeyTypedEvent(character.toInt()))
         })
 
         glfwSetMouseButtonCallback(ptr, staticCFunction { window, button, action, _ /*mods*/ ->
@@ -89,6 +123,7 @@ actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwin
 
     actual fun onUpdate() {
         glfwPollEvents()
+        swapBuffers()
     }
 
 

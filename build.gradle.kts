@@ -1,20 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.io.ByteArrayOutputStream
 
-buildscript {
-    val kotlinVersion by extra("1.3.21")
-
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    }
-}
-
 plugins {
-    kotlin("multiplatform") version "1.3.21"
+    kotlin("multiplatform") version "1.3.31" apply false
 }
 
 subprojects {
@@ -32,7 +20,6 @@ subprojects {
         maven(url = "https://dl.bintray.com/dominaezzz/kotlin-native")
         mavenCentral()
         jcenter()
-        mavenLocal()
     }
 
     extra["kotlinxIOVersion"] = "0.1.4"
@@ -41,6 +28,7 @@ subprojects {
         configure<KotlinMultiplatformExtension> {
             sourceSets.all {
                 languageSettings.apply {
+                    enableLanguageFeature("MultiPlatformProjects")
                     enableLanguageFeature("InlineClasses")
                     useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
                 }

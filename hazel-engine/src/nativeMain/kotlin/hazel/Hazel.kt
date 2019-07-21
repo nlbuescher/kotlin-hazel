@@ -1,12 +1,12 @@
 package hazel
 
+import kotlin.native.concurrent.ThreadLocal
 
-private lateinit var _application: Application
-
-
+@ThreadLocal
 object Hazel {
     private val coreLogger = Logger("HAZEL")
     private val clientLogger = Logger("APP")
+    private lateinit var _application: Application
     val application: Application get() = _application
 
 

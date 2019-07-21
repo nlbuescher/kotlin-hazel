@@ -1,0 +1,39 @@
+package = cimgui
+headers = cimgui/cimgui.h
+
+depends.linux = posix
+depends.osx = posix
+depends.mingw = posix windows
+
+compilerOpts = -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS
+compilerOpts.linux = -I/usr/include -I/usr/local/include
+compilerOpts.osx = -I/usr/local/include
+compilerOpts.mingw = -IC:/msys64/mingw/include
+
+linkerOpts.linux = -L/usr/lib64 -L/usr/local/lib -L/usr/lib/x86_46-linux-gnu -lcimgui
+linkerOpts.osx = -L/usr/local/lib -lcimgui
+linkerOpts.mingw = -LC:/msys64/mingw64/lib -Wl,-Bstatic -lstdc++ -static -lcimgui
+
+---
+
+void _igShowDemoWindow(int* p_open)
+{
+    igShowDemoWindow((bool*) p_open);
+}
+
+#define IM_OFFSETOF(_TYPE,_MEMBER)  ((size_t)&(((_TYPE*)0)->_MEMBER))  // Offset of _MEMBER within _TYPE. Standardized as offsetof() in modern C++.
+
+void* ImDrawVert_pos_offset()
+{
+    return (void*)IM_OFFSETOF(ImDrawVert, pos);
+}
+
+void* ImDrawVert_uv_offset()
+{
+    return (void*)IM_OFFSETOF(ImDrawVert, uv);
+}
+
+void* ImDrawVert_col_offset()
+{
+    return (void*)IM_OFFSETOF(ImDrawVert, col);
+}

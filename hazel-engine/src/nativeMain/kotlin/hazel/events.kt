@@ -41,6 +41,14 @@ sealed class Event {
         return false
     }
 
+    fun dispatch(function: (KeyTypedEvent) -> Boolean): Boolean {
+        if (this is KeyTypedEvent) {
+            isHandled = function(this)
+            return true
+        }
+        return false
+    }
+
     fun dispatch(function: (MouseMovedEvent) -> Boolean): Boolean {
         if (this is MouseMovedEvent) {
             isHandled = function(this)
@@ -82,7 +90,7 @@ class AppUpdateEvent : AppEvent()
 class AppRenderEvent : AppEvent()
 
 @ExperimentalUnsignedTypes
-class WindowResizeEvent(private val width: Int, private val height: Int) : AppEvent() {
+class WindowResizeEvent(val width: Int, val height: Int) : AppEvent() {
     override fun toString() = "$name: $width, $height"
 }
 
@@ -93,13 +101,17 @@ class WindowCloseEvent : AppEvent()
 abstract class InputEvent : Event()
 
 // Key events
-abstract class KeyEvent(protected val keyCode: Int) : InputEvent()
+abstract class KeyEvent(val keyCode: Int) : InputEvent()
 
 class KeyPressedEvent(keyCode: Int, private val repeatCount: Int) : KeyEvent(keyCode) {
     override fun toString() = "$name: $keyCode ($repeatCount times)"
 }
 
 class KeyReleasedEvent(keyCode: Int) : KeyEvent(keyCode) {
+    override fun toString() = "$name: $keyCode"
+}
+
+class KeyTypedEvent(keyCode: Int) : KeyEvent(keyCode) {
     override fun toString() = "$name: $keyCode"
 }
 

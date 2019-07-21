@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 plugins {
     id("maven-publish")
     kotlin("multiplatform")
@@ -6,15 +8,32 @@ plugins {
 kotlin {
     val os = org.gradle.internal.os.OperatingSystem.current()
 
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-common"))
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
+    }
+
     if (os.isLinux) linuxX64("linux") {
         val main by compilations.getting {
             cinterops.create("cglfw")
+            cinterops.create("cimgui")
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
-            }
-            dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
+
+                dependencies {
+                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
+                    implementation("com.kgl:kgl-opengl:0.1.5")
+                }
             }
         }
         val test by compilations.getting {
@@ -30,9 +49,10 @@ kotlin {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
-            }
-            dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
+
+                dependencies {
+                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
+                }
             }
         }
         val test by compilations.getting {
@@ -47,9 +67,10 @@ kotlin {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
-            }
-            dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
+
+                dependencies {
+                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
+                }
             }
         }
         val test by compilations.getting {

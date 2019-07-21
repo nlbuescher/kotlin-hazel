@@ -1,6 +1,5 @@
 package = cglfw
 headers = GLFW/glfw3.h
-headerFilters = GLFW/glfw3.h
 
 depends.linux = posix
 depends.osx = posix
