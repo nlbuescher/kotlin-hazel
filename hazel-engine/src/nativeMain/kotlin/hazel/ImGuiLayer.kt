@@ -700,14 +700,16 @@ class ImGuiLayer : Overlay("ImGuiLayer") {
 
 
     override fun onEvent(event: Event) {
-        event.dispatch(::onMouseButtonPressed)
-        event.dispatch(::onMouseButtonReleased)
-        event.dispatch(::onMouseMoved)
-        event.dispatch(::onMouseScrolled)
-        event.dispatch(::onKeyPressed)
-        event.dispatch(::onKeyReleased)
-        event.dispatch(::onKeyTyped)
-        event.dispatch(::onWindowResize)
+        with(Event.Dispatcher(event)) {
+            dispatch(::onMouseButtonPressed)
+            dispatch(::onMouseButtonReleased)
+            dispatch(::onMouseMoved)
+            dispatch(::onMouseScrolled)
+            dispatch(::onKeyPressed)
+            dispatch(::onKeyReleased)
+            dispatch(::onKeyTyped)
+            dispatch(::onWindowResize)
+        }
     }
 
 

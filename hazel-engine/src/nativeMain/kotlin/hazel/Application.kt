@@ -39,7 +39,9 @@ abstract class Application {
 
 
     fun onEvent(event: Event) {
-        event.dispatch(::onWindowClose)
+        with(Event.Dispatcher(event)) {
+            dispatch(::onWindowClose)
+        }
 
         for (layer in layerStack.reversed()) {
             layer.onEvent(event)
