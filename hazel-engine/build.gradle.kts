@@ -5,22 +5,10 @@ plugins {
     kotlin("multiplatform")
 }
 
+val kotlinxIOVersion: String by extra
+
 kotlin {
     val os = org.gradle.internal.os.OperatingSystem.current()
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-common"))
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
-    }
 
     if (os.isLinux) linuxX64("linux") {
         val main by compilations.getting {
@@ -31,8 +19,8 @@ kotlin {
                 resources.srcDir("src/nativeMain/resources")
 
                 dependencies {
-                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
-                    implementation("com.kgl:kgl-opengl:0.1.5")
+                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:$kotlinxIOVersion")
+                    implementation("com.kgl:kgl-opengl:0.1.7")
                 }
             }
         }

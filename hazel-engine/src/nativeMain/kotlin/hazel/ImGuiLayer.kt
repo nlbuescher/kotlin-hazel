@@ -331,7 +331,7 @@ fun igOpenGL3RenderDrawData(draw_data: CPointer<ImDrawData>): Unit = memScoped {
         glBufferData(GL_ARRAY_BUFFER, cmd_list!!.pointed.VtxBuffer.Size * ImDrawVert.size, cmd_list.pointed.VtxBuffer.Data, GL_STREAM_DRAW)
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementsHandle.value)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list.pointed.IdxBuffer.Size * ImDrawIdxVar.size, cmd_list.pointed.IdxBuffer.Data, GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list.pointed.IdxBuffer.Size * ImDrawIdxVar.size, cmd_list.pointed.IdxBuffer.Data, GL_STREAM_DRAW)
 
         for (cmd_i in 0 until cmd_list.pointed.CmdBuffer.Size) {
             val pcmd = cmd_list.pointed.CmdBuffer.Data!![cmd_i].ptr
@@ -342,10 +342,10 @@ fun igOpenGL3RenderDrawData(draw_data: CPointer<ImDrawData>): Unit = memScoped {
             } else {
                 // Project scissor/clipping rectangles into framebuffer space
                 val clip_rect = alloc<ImVec4>()
-                clip_rect.x = (pcmd.pointed.ClipRect.x - clip_off.x) * clip_scale.x;
-                clip_rect.y = (pcmd.pointed.ClipRect.y - clip_off.y) * clip_scale.y;
-                clip_rect.z = (pcmd.pointed.ClipRect.z - clip_off.x) * clip_scale.x;
-                clip_rect.w = (pcmd.pointed.ClipRect.w - clip_off.y) * clip_scale.y;
+                clip_rect.x = (pcmd.pointed.ClipRect.x - clip_off.x) * clip_scale.x
+                clip_rect.y = (pcmd.pointed.ClipRect.y - clip_off.y) * clip_scale.y
+                clip_rect.z = (pcmd.pointed.ClipRect.z - clip_off.x) * clip_scale.x
+                clip_rect.w = (pcmd.pointed.ClipRect.w - clip_off.y) * clip_scale.y
 
                 if (clip_rect.x < fb_width && clip_rect.y < fb_height && clip_rect.z >= 0.0f && clip_rect.w >= 0.0f) {
                     // Apply scissor/clipping rectangle
@@ -770,7 +770,7 @@ class ImGuiLayer : Overlay("ImGuiLayer") {
     private fun onKeyTyped(event: KeyTypedEvent): Boolean {
         val io = igGetIO()
         if (event.keyCode in 1..0xFFFF) {
-            ImGuiIO_AddInputCharacter(io, event.keyCode.toUShort())
+            ImGuiIO_AddInputCharacter(io, event.keyCode.toUInt())
         }
 
         return false

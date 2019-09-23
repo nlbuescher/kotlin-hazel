@@ -1,20 +1,14 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import java.io.ByteArrayOutputStream
 
 plugins {
-    kotlin("multiplatform") version "1.3.31" apply false
+    kotlin("multiplatform") version "1.3.50" apply false
 }
 
 subprojects {
     group = "hazel"
-
-    val stdout = ByteArrayOutputStream()
-    exec {
-        commandLine("git", "describe", "--tags")
-        standardOutput = stdout
-    }
-
-    version = stdout.toString("UTF-8").trim()
+    version = "1.0.0-SNAPSHOT"
 
     repositories {
         maven(url = "https://dl.bintray.com/dominaezzz/kotlin-native")
@@ -22,7 +16,7 @@ subprojects {
         jcenter()
     }
 
-    extra["kotlinxIOVersion"] = "0.1.4"
+    val kotlinxIOVersion by extra("0.1.4")
 
     afterEvaluate {
         configure<KotlinMultiplatformExtension> {
