@@ -59,22 +59,22 @@ actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwin
         glfwSetKeyCallback(ptr, staticCFunction { window, key, _ /*scanCode*/, action, _ /*mods*/ ->
             val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
             when (action) {
-                GLFW_RELEASE -> data.eventCallback?.invoke(KeyReleasedEvent(key))
-                GLFW_PRESS -> data.eventCallback?.invoke(KeyPressedEvent(key, 0))
-                GLFW_REPEAT -> data.eventCallback?.invoke(KeyPressedEvent(key, 1))
+                GLFW_RELEASE -> data.eventCallback?.invoke(KeyReleasedEvent(Key.fromGlfw(key)))
+                GLFW_PRESS -> data.eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 0))
+                GLFW_REPEAT -> data.eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 1))
             }
         })
 
         glfwSetCharCallback(ptr, staticCFunction { window, character ->
             val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            data.eventCallback?.invoke(KeyTypedEvent(character.toInt()))
+            data.eventCallback?.invoke(KeyTypedEvent(Key.fromGlfw(character.toInt())))
         })
 
         glfwSetMouseButtonCallback(ptr, staticCFunction { window, button, action, _ /*mods*/ ->
             val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
             when (action) {
-                GLFW_RELEASE -> data.eventCallback?.invoke(MouseButtonReleasedEvent(button))
-                GLFW_PRESS -> data.eventCallback?.invoke(MouseButtonPressedEvent(button))
+                GLFW_RELEASE -> data.eventCallback?.invoke(MouseButtonReleasedEvent(MouseButton.fromGlfw(button)))
+                GLFW_PRESS -> data.eventCallback?.invoke(MouseButtonPressedEvent(MouseButton.fromGlfw(button)))
             }
         })
 

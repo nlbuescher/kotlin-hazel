@@ -33,9 +33,6 @@ abstract class Application {
 
             layerStack.forEach { it.onUpdate() }
 
-            val (x, y) = Input.mousePosition
-            Hazel.coreTrace("$x, $y")
-
             window.onUpdate()
         }
     }

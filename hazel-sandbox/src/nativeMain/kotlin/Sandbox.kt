@@ -3,14 +3,22 @@ import hazel.Application
 import hazel.Event
 import hazel.Hazel
 import hazel.ImGuiLayer
+import hazel.Input
+import hazel.Key
 import hazel.Layer
 import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.toKString
 
 
 class ExampleLayer : Layer("ExampleLayer") {
+    override fun onUpdate() {
+        if (Input.isKeyPressed(Key.TAB)) {
+            Hazel.info("Tab key is pressed")
+        }
+    }
+
     override fun onEvent(event: Event) {
-        Hazel.trace("$event")
+        // Hazel.trace("$event")
     }
 }
 

@@ -25,6 +25,7 @@ subprojects {
                     enableLanguageFeature("MultiPlatformProjects")
                     enableLanguageFeature("InlineClasses")
                     useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+                    useExperimentalAnnotation("kotlin.time.ExperimentalTime")
                 }
             }
         }

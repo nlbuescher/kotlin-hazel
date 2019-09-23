@@ -1,13 +1,14 @@
 package hazel
 
 import kotlin.native.concurrent.ThreadLocal
+import kotlin.time.MonoClock
 
 @ThreadLocal
 object Hazel {
     private val coreLogger = Logger("HAZEL")
     private val clientLogger = Logger("APP")
-    private lateinit var _application: Application
-    val application: Application get() = _application
+    private var _application: Application? = null
+    val application: Application get() = _application ?: kotlin.error("must call `run` first")
 
 
     fun run(app: Application) {
@@ -36,4 +37,7 @@ object Hazel {
     fun critical(message: Any?) = clientLogger.critical(message)
 
     fun assert(test: Boolean, message: String) = check(test) { critical("Assertion failed: $message") }
+
+    private val start = MonoClock.markNow()
+    val time get() = start.elapsedNow().inSeconds
 }

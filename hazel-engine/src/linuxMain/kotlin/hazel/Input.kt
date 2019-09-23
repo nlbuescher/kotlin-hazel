@@ -12,13 +12,13 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 
 actual object Input {
-    actual fun isKeyPressed(keycode: Int): Boolean {
-        val state = glfwGetKey(Hazel.application.window.ptr, keycode)
+    actual fun isKeyPressed(key: Key): Boolean {
+        val state = glfwGetKey(Hazel.application.window.ptr, key.value)
         return state == GLFW_PRESS || state == GLFW_REPEAT
     }
 
-    actual fun isMouseButtonPressed(button: Int): Boolean {
-        val state = glfwGetMouseButton(Hazel.application.window.ptr, button)
+    actual fun isMouseButtonPressed(button: MouseButton): Boolean {
+        val state = glfwGetMouseButton(Hazel.application.window.ptr, button.value)
         return state == GLFW_PRESS
     }
 
@@ -30,3 +30,9 @@ actual object Input {
             x.value.toFloat() to y.value.toFloat()
         }
 }
+
+fun Key.toGlfw() = value
+fun Key.Companion.fromGlfw(key: Int) = Key(key)
+
+fun MouseButton.toGlfw() = value
+fun MouseButton.Companion.fromGlfw(button: Int) = MouseButton(button)

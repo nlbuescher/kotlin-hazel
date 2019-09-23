@@ -1,35 +1,5 @@
 package hazel
 
-import cglfw.GLFW_KEY_A
-import cglfw.GLFW_KEY_BACKSPACE
-import cglfw.GLFW_KEY_C
-import cglfw.GLFW_KEY_DELETE
-import cglfw.GLFW_KEY_DOWN
-import cglfw.GLFW_KEY_END
-import cglfw.GLFW_KEY_ENTER
-import cglfw.GLFW_KEY_ESCAPE
-import cglfw.GLFW_KEY_HOME
-import cglfw.GLFW_KEY_INSERT
-import cglfw.GLFW_KEY_LEFT
-import cglfw.GLFW_KEY_LEFT_ALT
-import cglfw.GLFW_KEY_LEFT_CONTROL
-import cglfw.GLFW_KEY_LEFT_SHIFT
-import cglfw.GLFW_KEY_LEFT_SUPER
-import cglfw.GLFW_KEY_PAGE_DOWN
-import cglfw.GLFW_KEY_PAGE_UP
-import cglfw.GLFW_KEY_RIGHT
-import cglfw.GLFW_KEY_RIGHT_ALT
-import cglfw.GLFW_KEY_RIGHT_CONTROL
-import cglfw.GLFW_KEY_RIGHT_SHIFT
-import cglfw.GLFW_KEY_RIGHT_SUPER
-import cglfw.GLFW_KEY_SPACE
-import cglfw.GLFW_KEY_TAB
-import cglfw.GLFW_KEY_UP
-import cglfw.GLFW_KEY_V
-import cglfw.GLFW_KEY_X
-import cglfw.GLFW_KEY_Y
-import cglfw.GLFW_KEY_Z
-import cglfw.glfwGetTime
 import cimgui.ImDrawData
 import cimgui.ImDrawIdxVar
 import cimgui.ImDrawVert
@@ -654,28 +624,27 @@ class ImGuiLayer : Overlay("ImGuiLayer") {
             BackendFlags = BackendFlags or ImGuiBackendFlags_HasMouseCursors.toInt()
             BackendFlags = BackendFlags or ImGuiBackendFlags_HasSetMousePos.toInt()
 
-            // TEMPORARY: should eventually use Hazel key codes
-            KeyMap[ImGuiKey_Tab.ordinal] = GLFW_KEY_TAB
-            KeyMap[ImGuiKey_LeftArrow.ordinal] = GLFW_KEY_LEFT
-            KeyMap[ImGuiKey_RightArrow.ordinal] = GLFW_KEY_RIGHT
-            KeyMap[ImGuiKey_UpArrow.ordinal] = GLFW_KEY_UP
-            KeyMap[ImGuiKey_DownArrow.ordinal] = GLFW_KEY_DOWN
-            KeyMap[ImGuiKey_PageUp.ordinal] = GLFW_KEY_PAGE_UP
-            KeyMap[ImGuiKey_PageDown.ordinal] = GLFW_KEY_PAGE_DOWN
-            KeyMap[ImGuiKey_Home.ordinal] = GLFW_KEY_HOME
-            KeyMap[ImGuiKey_End.ordinal] = GLFW_KEY_END
-            KeyMap[ImGuiKey_Insert.ordinal] = GLFW_KEY_INSERT
-            KeyMap[ImGuiKey_Delete.ordinal] = GLFW_KEY_DELETE
-            KeyMap[ImGuiKey_Backspace.ordinal] = GLFW_KEY_BACKSPACE
-            KeyMap[ImGuiKey_Space.ordinal] = GLFW_KEY_SPACE
-            KeyMap[ImGuiKey_Enter.ordinal] = GLFW_KEY_ENTER
-            KeyMap[ImGuiKey_Escape.ordinal] = GLFW_KEY_ESCAPE
-            KeyMap[ImGuiKey_A.ordinal] = GLFW_KEY_A
-            KeyMap[ImGuiKey_C.ordinal] = GLFW_KEY_C
-            KeyMap[ImGuiKey_V.ordinal] = GLFW_KEY_V
-            KeyMap[ImGuiKey_X.ordinal] = GLFW_KEY_X
-            KeyMap[ImGuiKey_Y.ordinal] = GLFW_KEY_Y
-            KeyMap[ImGuiKey_Z.ordinal] = GLFW_KEY_Z
+            KeyMap[ImGuiKey_Tab.ordinal] = Key.TAB.value
+            KeyMap[ImGuiKey_LeftArrow.ordinal] = Key.LEFT.value
+            KeyMap[ImGuiKey_RightArrow.ordinal] = Key.RIGHT.value
+            KeyMap[ImGuiKey_UpArrow.ordinal] = Key.UP.value
+            KeyMap[ImGuiKey_DownArrow.ordinal] = Key.DOWN.value
+            KeyMap[ImGuiKey_PageUp.ordinal] = Key.PAGE_UP.value
+            KeyMap[ImGuiKey_PageDown.ordinal] = Key.PAGE_DOWN.value
+            KeyMap[ImGuiKey_Home.ordinal] = Key.HOME.value
+            KeyMap[ImGuiKey_End.ordinal] = Key.END.value
+            KeyMap[ImGuiKey_Insert.ordinal] = Key.INSERT.value
+            KeyMap[ImGuiKey_Delete.ordinal] = Key.DELETE.value
+            KeyMap[ImGuiKey_Backspace.ordinal] = Key.BACKSPACE.value
+            KeyMap[ImGuiKey_Space.ordinal] = Key.SPACE.value
+            KeyMap[ImGuiKey_Enter.ordinal] = Key.ENTER.value
+            KeyMap[ImGuiKey_Escape.ordinal] = Key.ESCAPE.value
+            KeyMap[ImGuiKey_A.ordinal] = Key.A.value
+            KeyMap[ImGuiKey_C.ordinal] = Key.C.value
+            KeyMap[ImGuiKey_V.ordinal] = Key.V.value
+            KeyMap[ImGuiKey_X.ordinal] = Key.X.value
+            KeyMap[ImGuiKey_Y.ordinal] = Key.Y.value
+            KeyMap[ImGuiKey_Z.ordinal] = Key.Z.value
         }
 
         igOpenGL3Init("#version 410")
@@ -689,7 +658,7 @@ class ImGuiLayer : Overlay("ImGuiLayer") {
         io.DisplaySize.x = window.size.first.toFloat()
         io.DisplaySize.y = window.size.second.toFloat()
 
-        val time = glfwGetTime().toFloat()
+        val time = Hazel.time.toFloat()
         io.DeltaTime = if (lastTime > 0f) time - lastTime else 1f / 60f
         lastTime = time
 
@@ -719,14 +688,14 @@ class ImGuiLayer : Overlay("ImGuiLayer") {
 
     private fun onMouseButtonPressed(event: MouseButtonPressedEvent): Boolean {
         val io = igGetIO()!!.pointed
-        io.MouseDown[event.button].value = true
+        io.MouseDown[event.button.value].value = true
 
         return false
     }
 
     private fun onMouseButtonReleased(event: MouseButtonReleasedEvent): Boolean {
         val io = igGetIO()!!.pointed
-        io.MouseDown[event.button].value = false
+        io.MouseDown[event.button.value].value = false
 
         return false
     }
@@ -749,32 +718,32 @@ class ImGuiLayer : Overlay("ImGuiLayer") {
 
     private fun onKeyPressed(event: KeyPressedEvent): Boolean {
         val io = igGetIO()!!.pointed
-        io.KeysDown[event.keyCode].value = true
+        io.KeysDown[event.key.value].value = true
 
-        io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL].value || io.KeysDown[GLFW_KEY_RIGHT_CONTROL].value
-        io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT].value || io.KeysDown[GLFW_KEY_RIGHT_SHIFT].value
-        io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT].value || io.KeysDown[GLFW_KEY_RIGHT_ALT].value
-        io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER].value || io.KeysDown[GLFW_KEY_RIGHT_SUPER].value
+        io.KeyCtrl = io.KeysDown[Key.LEFT_CONTROL.value].value || io.KeysDown[Key.RIGHT_CONTROL.value].value
+        io.KeyShift = io.KeysDown[Key.LEFT_SHIFT.value].value || io.KeysDown[Key.RIGHT_SHIFT.value].value
+        io.KeyAlt = io.KeysDown[Key.LEFT_ALT.value].value || io.KeysDown[Key.RIGHT_ALT.value].value
+        io.KeySuper = io.KeysDown[Key.LEFT_SUPER.value].value || io.KeysDown[Key.RIGHT_SUPER.value].value
 
         return false
     }
 
     private fun onKeyReleased(event: KeyReleasedEvent): Boolean {
         val io = igGetIO()!!.pointed
-        io.KeysDown[event.keyCode].value = false
+        io.KeysDown[event.key.value].value = false
 
-        io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL].value || io.KeysDown[GLFW_KEY_RIGHT_CONTROL].value
-        io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT].value || io.KeysDown[GLFW_KEY_RIGHT_SHIFT].value
-        io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT].value || io.KeysDown[GLFW_KEY_RIGHT_ALT].value
-        io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER].value || io.KeysDown[GLFW_KEY_RIGHT_SUPER].value
+        io.KeyCtrl = io.KeysDown[Key.LEFT_CONTROL.value].value || io.KeysDown[Key.RIGHT_CONTROL.value].value
+        io.KeyShift = io.KeysDown[Key.LEFT_SHIFT.value].value || io.KeysDown[Key.RIGHT_SHIFT.value].value
+        io.KeyAlt = io.KeysDown[Key.LEFT_ALT.value].value || io.KeysDown[Key.RIGHT_ALT.value].value
+        io.KeySuper = io.KeysDown[Key.LEFT_SUPER.value].value || io.KeysDown[Key.RIGHT_SUPER.value].value
 
         return false
     }
 
     private fun onKeyTyped(event: KeyTypedEvent): Boolean {
         val io = igGetIO()
-        if (event.keyCode in 1..0xFFFF) {
-            ImGuiIO_AddInputCharacter(io, event.keyCode.toUInt())
+        if (event.key.value in 1..0xFFFF) {
+            ImGuiIO_AddInputCharacter(io, event.key.value.convert())
         }
 
         return false

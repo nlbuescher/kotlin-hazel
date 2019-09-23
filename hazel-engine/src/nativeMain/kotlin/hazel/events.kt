@@ -45,18 +45,18 @@ class WindowCloseEvent : AppEvent()
 abstract class InputEvent : Event()
 
 // Key events
-abstract class KeyEvent(val keyCode: Int) : InputEvent()
+abstract class KeyEvent(val key: Key) : InputEvent()
 
-class KeyPressedEvent(keyCode: Int, private val repeatCount: Int) : KeyEvent(keyCode) {
-    override fun toString() = "$name: $keyCode ($repeatCount times)"
+class KeyPressedEvent(key: Key, private val repeatCount: Int) : KeyEvent(key) {
+    override fun toString() = "$name: $key ($repeatCount times)"
 }
 
-class KeyReleasedEvent(keyCode: Int) : KeyEvent(keyCode) {
-    override fun toString() = "$name: $keyCode"
+class KeyReleasedEvent(key: Key) : KeyEvent(key) {
+    override fun toString() = "$name: $key"
 }
 
-class KeyTypedEvent(keyCode: Int) : KeyEvent(keyCode) {
-    override fun toString() = "$name: $keyCode"
+class KeyTypedEvent(key: Key) : KeyEvent(key) {
+    override fun toString() = "$name: $key"
 }
 
 // Mouse events
@@ -70,10 +70,10 @@ class MouseScrolledEvent(val xOffset: Float, val yOffset: Float) : MouseEvent() 
     override fun toString() = "$name: $xOffset, $yOffset"
 }
 
-abstract class MouseButtonEvent(val button: Int) : MouseEvent() {
+abstract class MouseButtonEvent(val button: MouseButton) : MouseEvent() {
     override fun toString() = "$name: $button"
 }
 
-class MouseButtonPressedEvent(button: Int) : MouseButtonEvent(button)
+class MouseButtonPressedEvent(button: MouseButton) : MouseButtonEvent(button)
 
-class MouseButtonReleasedEvent(button: Int) : MouseButtonEvent(button)
+class MouseButtonReleasedEvent(button: MouseButton) : MouseButtonEvent(button)
