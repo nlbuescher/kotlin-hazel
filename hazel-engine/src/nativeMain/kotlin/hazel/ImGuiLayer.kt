@@ -201,7 +201,7 @@ private var elementsHandle = scope.alloc<UIntVar> { value = 0u }
 
 // functions
 
-fun igOpenGL3Init(glslVersion: String? = null): Boolean {
+private fun igOpenGL3Init(glslVersion: String? = null): Boolean {
     val io = igGetIO()
     io!!.pointed.BackendRendererName = "imgui_impl_opengl3".cstr.placeTo(scope)
 
@@ -211,17 +211,17 @@ fun igOpenGL3Init(glslVersion: String? = null): Boolean {
     return true
 }
 
-fun igOpenGL3Shutdown() {
+private fun igOpenGL3Shutdown() {
     igOpenGL3DestroyDeviceObjects()
     scope.clear()
 }
 
-fun igOpenGL3NewFrame() {
+private fun igOpenGL3NewFrame() {
     if (fontTexture.value == 0u)
         igOpenGL3CreateDeviceObjects()
 }
 
-fun igOpenGL3RenderDrawData(draw_data: CPointer<ImDrawData>): Unit = memScoped {
+private fun igOpenGL3RenderDrawData(draw_data: CPointer<ImDrawData>): Unit = memScoped {
     // Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
     val fbWidth = (draw_data.pointed.DisplaySize.x * draw_data.pointed.FramebufferScale.x).toInt()
     val fbHeight = (draw_data.pointed.DisplaySize.y * draw_data.pointed.FramebufferScale.y).toInt()
@@ -389,7 +389,7 @@ fun igOpenGL3RenderDrawData(draw_data: CPointer<ImDrawData>): Unit = memScoped {
     glScissor(lastScissorBox[0], lastScissorBox[1], lastScissorBox[2], lastScissorBox[3])
 }
 
-fun igOpenGL3CreateFontsTexture(): Boolean = memScoped {
+private fun igOpenGL3CreateFontsTexture(): Boolean = memScoped {
     // Build texture atlas
     val io = igGetIO()
     val pixels = alloc<CPointerVar<UByteVar>>()
@@ -418,7 +418,7 @@ fun igOpenGL3CreateFontsTexture(): Boolean = memScoped {
     return@memScoped true
 }
 
-fun igOpenGL3DestroyFontsTexture() {
+private fun igOpenGL3DestroyFontsTexture() {
     if (fontTexture.value != 0u) {
         val io = igGetIO()
         glDeleteTextures(1, fontTexture.ptr)
@@ -427,7 +427,7 @@ fun igOpenGL3DestroyFontsTexture() {
     }
 }
 
-fun checkShader(handle: GLuint, desc: String): Boolean = memScoped {
+private fun checkShader(handle: GLuint, desc: String): Boolean = memScoped {
     val status = alloc<IntVar>()
     val logLength = alloc<IntVar>()
     glGetShaderiv(handle, GL_COMPILE_STATUS, status.ptr)
@@ -441,7 +441,7 @@ fun checkShader(handle: GLuint, desc: String): Boolean = memScoped {
     return@memScoped status.value == GL_TRUE.toInt()
 }
 
-fun checkProgram(handle: GLuint, desc: String): Boolean = memScoped {
+private fun checkProgram(handle: GLuint, desc: String): Boolean = memScoped {
     val status = alloc<IntVar>()
     val logLength = alloc<IntVar>()
     glGetProgramiv(handle, GL_LINK_STATUS, status.ptr)
@@ -455,7 +455,7 @@ fun checkProgram(handle: GLuint, desc: String): Boolean = memScoped {
     return@memScoped status.value == GL_TRUE.toInt()
 }
 
-fun igOpenGL3CreateDeviceObjects(): Boolean = memScoped {
+private fun igOpenGL3CreateDeviceObjects(): Boolean = memScoped {
     // Backup GL state
     val lastTexture = alloc<GLintVar>()
     val lastArrayBuffer = alloc<GLintVar>()
@@ -620,7 +620,7 @@ fun igOpenGL3CreateDeviceObjects(): Boolean = memScoped {
     return@memScoped true
 }
 
-fun igOpenGL3DestroyDeviceObjects() {
+private fun igOpenGL3DestroyDeviceObjects() {
     if (vboHandle.value != 0u) glDeleteBuffers(1, vboHandle.ptr)
     if (elementsHandle.value != 0u) glDeleteBuffers(1, elementsHandle.ptr)
     vboHandle.value = 0u
