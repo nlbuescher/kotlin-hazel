@@ -35,7 +35,6 @@ import kotlinx.cinterop.value
 import kotlinx.io.core.Closeable
 import kotlin.native.concurrent.ensureNeverFrozen
 
-
 actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) : Closeable {
 
     init {
