@@ -16,7 +16,7 @@ subprojects {
         jcenter()
     }
 
-    val kotlinxIOVersion by extra("0.1.4")
+    val kotlinxIoVersion by extra("0.1.14")
 
     afterEvaluate {
         configure<KotlinMultiplatformExtension> {

@@ -42,12 +42,12 @@ import cimgui.ImGuiBackendFlags_HasSetMousePos
 import cimgui.ImGuiIO_AddInputCharacter
 import cimgui.ImGuiKey_.*
 import cimgui.ImVec4
-import cimgui._igShowDemoWindow
 import cimgui.igCreateContext
 import cimgui.igGetDrawData
 import cimgui.igGetIO
 import cimgui.igNewFrame
 import cimgui.igRender
+import cimgui.igShowDemoWindow
 import cimgui.igStyleColorsDark
 import com.kgl.opengl.GL_ACTIVE_TEXTURE
 import com.kgl.opengl.GL_ARRAY_BUFFER
@@ -146,6 +146,7 @@ import copengl.GLintVar
 import copengl.GLuint
 import copengl.GLuintVar
 import kotlinx.cinterop.Arena
+import kotlinx.cinterop.BooleanVar
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
@@ -155,6 +156,7 @@ import kotlinx.cinterop.UByteVar
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
@@ -171,6 +173,7 @@ import kotlinx.cinterop.toLong
 import kotlinx.cinterop.value
 import platform.posix.size_tVar
 import platform.posix.sscanf
+import kotlin.native.OsFamily.MACOSX
 
 
 // opengl data
@@ -220,40 +223,42 @@ fun igOpenGL3NewFrame() {
 
 fun igOpenGL3RenderDrawData(draw_data: CPointer<ImDrawData>): Unit = memScoped {
     // Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
-    val fb_width = (draw_data.pointed.DisplaySize.x * draw_data.pointed.FramebufferScale.x).toInt()
-    val fb_height = (draw_data.pointed.DisplaySize.y * draw_data.pointed.FramebufferScale.y).toInt()
-    if (fb_width <= 0 || fb_height <= 0)
+    val fbWidth = (draw_data.pointed.DisplaySize.x * draw_data.pointed.FramebufferScale.x).toInt()
+    val fbHeight = (draw_data.pointed.DisplaySize.y * draw_data.pointed.FramebufferScale.y).toInt()
+    if (fbWidth <= 0 || fbHeight <= 0)
         return
 
     // Backup GL state
-    val last_active_texture = alloc<GLenumVar>(); glGetIntegerv(GL_ACTIVE_TEXTURE, last_active_texture.ptr.reinterpret())
+    val lastActiveTexture = alloc<GLenumVar>(); glGetIntegerv(GL_ACTIVE_TEXTURE, lastActiveTexture.ptr.reinterpret())
     glActiveTexture(GL_TEXTURE0)
-    val last_program = alloc<GLintVar>(); glGetIntegerv(GL_CURRENT_PROGRAM, last_program.ptr)
-    val last_texture = alloc<GLintVar>(); glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture.ptr)
+    val lastProgram = alloc<GLintVar>(); glGetIntegerv(GL_CURRENT_PROGRAM, lastProgram.ptr)
+    val lastTexture = alloc<GLintVar>(); glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture.ptr)
 //    #ifdef GL_SAMPLER_BINDING
-    val last_sampler = alloc<GLintVar>(); glGetIntegerv(GL_SAMPLER_BINDING, last_sampler.ptr)
+    val lastSampler = alloc<GLintVar>(); glGetIntegerv(GL_SAMPLER_BINDING, lastSampler.ptr)
 //    #endif
-    val last_array_buffer = alloc<GLintVar>(); glGetIntegerv(GL_ARRAY_BUFFER_BINDING, last_array_buffer.ptr)
+    val lastArrayBuffer = alloc<GLintVar>(); glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBuffer.ptr)
 //    #ifdef GL_POLYGON_MODE
-    val last_polygon_mode = allocArray<GLintVar>(2); glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode)
+    val lastPolygonMode = allocArray<GLintVar>(2); glGetIntegerv(GL_POLYGON_MODE, lastPolygonMode)
 //    #endif
-    val last_viewport = allocArray<GLintVar>(4); glGetIntegerv(GL_VIEWPORT, last_viewport)
-    val last_scissor_box = allocArray<GLintVar>(4); glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box)
-    val last_blend_src_rgb = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_SRC_RGB, last_blend_src_rgb.ptr.reinterpret())
-    val last_blend_dst_rgb = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_DST_RGB, last_blend_dst_rgb.ptr.reinterpret())
-    val last_blend_src_alpha = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_SRC_ALPHA, last_blend_src_alpha.ptr.reinterpret())
-    val last_blend_dst_alpha = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_DST_ALPHA, last_blend_dst_alpha.ptr.reinterpret())
-    val last_blend_equation_rgb = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_EQUATION_RGB, last_blend_equation_rgb.ptr.reinterpret())
-    val last_blend_equation_alpha = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_EQUATION_ALPHA, last_blend_equation_alpha.ptr.reinterpret())
-    val last_enable_blend = glIsEnabled(GL_BLEND)
-    val last_enable_cull_face = glIsEnabled(GL_CULL_FACE)
-    val last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST)
-    val last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST)
-    var clip_origin_lower_left = true
+    val lastViewport = allocArray<GLintVar>(4); glGetIntegerv(GL_VIEWPORT, lastViewport)
+    val lastScissorBox = allocArray<GLintVar>(4); glGetIntegerv(GL_SCISSOR_BOX, lastScissorBox)
+    val lastBlendSrcRgb = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_SRC_RGB, lastBlendSrcRgb.ptr.reinterpret())
+    val lastBlendDstRgb = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_DST_RGB, lastBlendDstRgb.ptr.reinterpret())
+    val lastBlendSrcAlpha = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_SRC_ALPHA, lastBlendSrcAlpha.ptr.reinterpret())
+    val lastBlendDstAlpha = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_DST_ALPHA, lastBlendDstAlpha.ptr.reinterpret())
+    val lastBlendEquationRgb = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_EQUATION_RGB, lastBlendEquationRgb.ptr.reinterpret())
+    val lastBlendEquationAlpha = alloc<GLenumVar>(); glGetIntegerv(GL_BLEND_EQUATION_ALPHA, lastBlendEquationAlpha.ptr.reinterpret())
+    val lastEnableBlend = glIsEnabled(GL_BLEND)
+    val lastEnableCullFace = glIsEnabled(GL_CULL_FACE)
+    val lastEnableDepthTest = glIsEnabled(GL_DEPTH_TEST)
+    val lastEnableScissorTest = glIsEnabled(GL_SCISSOR_TEST)
+    var clipOriginLowerLeft = true
 //    #if defined(GL_CLIP_ORIGIN) && !defined(__APPLE__)
-    val last_clip_origin = alloc<GLenumVar> { value = 0u }; glGetIntegerv(GL_CLIP_ORIGIN, last_clip_origin.ptr.reinterpret()) // Support for GL 4.5's glClipControl(GL_UPPER_LEFT)
-    if (last_clip_origin.value == GL_UPPER_LEFT)
-        clip_origin_lower_left = false
+    if (Platform.osFamily != MACOSX) {
+        val lastClipOrigin = alloc<GLenumVar> { value = 0u }; glGetIntegerv(GL_CLIP_ORIGIN, lastClipOrigin.ptr.reinterpret()) // Support for GL 4.5's glClipControl(GL_UPPER_LEFT)
+        if (lastClipOrigin.value == GL_UPPER_LEFT)
+            clipOriginLowerLeft = false
+    }
 //    #endif
 
     // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
@@ -270,35 +275,35 @@ fun igOpenGL3RenderDrawData(draw_data: CPointer<ImDrawData>): Unit = memScoped {
 
     // Setup viewport, orthographic projection matrix
     // Our visible imgui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize (bottom right). DisplayMin is typically (0,0) for single viewport apps.
-    glViewport(0, 0, fb_width, fb_height)
-    val L = draw_data.pointed.DisplayPos.x
-    val R = draw_data.pointed.DisplayPos.x + draw_data.pointed.DisplaySize.x
-    val T = draw_data.pointed.DisplayPos.y
-    val B = draw_data.pointed.DisplayPos.y + draw_data.pointed.DisplaySize.y
-    val ortho_projection = allocArray<FloatVar>(16)
-    ortho_projection[0] = 2f / (R - L)
-    ortho_projection[1] = 0f
-    ortho_projection[2] = 0f
-    ortho_projection[3] = 0f
+    glViewport(0, 0, fbWidth, fbHeight)
+    val l = draw_data.pointed.DisplayPos.x
+    val r = draw_data.pointed.DisplayPos.x + draw_data.pointed.DisplaySize.x
+    val t = draw_data.pointed.DisplayPos.y
+    val b = draw_data.pointed.DisplayPos.y + draw_data.pointed.DisplaySize.y
+    val orthoProjection = allocArray<FloatVar>(16)
+    orthoProjection[0] = 2f / (r - l)
+    orthoProjection[1] = 0f
+    orthoProjection[2] = 0f
+    orthoProjection[3] = 0f
 
-    ortho_projection[4] = 0f
-    ortho_projection[5] = 2f / (T - B)
-    ortho_projection[6] = 0f
-    ortho_projection[7] = 0f
+    orthoProjection[4] = 0f
+    orthoProjection[5] = 2f / (t - b)
+    orthoProjection[6] = 0f
+    orthoProjection[7] = 0f
 
-    ortho_projection[8] = 0f
-    ortho_projection[9] = 0f
-    ortho_projection[10] = -1f
-    ortho_projection[11] = 0f
+    orthoProjection[8] = 0f
+    orthoProjection[9] = 0f
+    orthoProjection[10] = -1f
+    orthoProjection[11] = 0f
 
-    ortho_projection[12] = (R + L) / (L - R)
-    ortho_projection[13] = (T + B) / (B - T)
-    ortho_projection[14] = 0f
-    ortho_projection[15] = 1f
+    orthoProjection[12] = (r + l) / (l - r)
+    orthoProjection[13] = (t + b) / (b - t)
+    orthoProjection[14] = 0f
+    orthoProjection[15] = 1f
 
     glUseProgram(shaderHandle)
     glUniform1i(attribLocationTex, 0)
-    glUniformMatrix4fv(attribLocationProjMtx, 1, GL_FALSE.toUByte(), ortho_projection)
+    glUniformMatrix4fv(attribLocationProjMtx, 1, GL_FALSE.convert(), orthoProjection)
 //    #ifdef GL_SAMPLER_BINDING
     glBindSampler(0u, 0u) // We use combined texture/sampler state. Applications using GL 3.3 may set that otherwise.
 //    #endif
@@ -306,82 +311,82 @@ fun igOpenGL3RenderDrawData(draw_data: CPointer<ImDrawData>): Unit = memScoped {
 //    #ifndef IMGUI_IMPL_OPENGL_ES2
     // Recreate the VAO every time
     // (This is to easily allow multiple GL contexts. VAO are not shared among GL contexts, and we don't track creation/deletion of windows so we don't have an obvious key to use to cache them.)
-    val vao_handle = alloc<GLuintVar>()
-    glGenVertexArrays(1, vao_handle.ptr)
-    glBindVertexArray(vao_handle.value)
+    val vaoHandle = alloc<GLuintVar>()
+    glGenVertexArrays(1, vaoHandle.ptr)
+    glBindVertexArray(vaoHandle.value)
 //    #endif
     glBindBuffer(GL_ARRAY_BUFFER, vboHandle.value)
-    glEnableVertexAttribArray(attribLocationPosition.toUInt())
-    glEnableVertexAttribArray(attribLocationUV.toUInt())
-    glEnableVertexAttribArray(attribLocationColor.toUInt())
-    glVertexAttribPointer(attribLocationPosition.toUInt(), 2, GL_FLOAT, GL_FALSE.toUByte(), ImDrawVert.size.toInt(), ImDrawVert_pos_offset())
-    glVertexAttribPointer(attribLocationUV.toUInt(), 2, GL_FLOAT, GL_FALSE.toUByte(), ImDrawVert.size.toInt(), ImDrawVert_uv_offset())
-    glVertexAttribPointer(attribLocationColor.toUInt(), 4, GL_UNSIGNED_BYTE, GL_TRUE.toUByte(), ImDrawVert.size.toInt(), ImDrawVert_col_offset())
+    glEnableVertexAttribArray(attribLocationPosition.convert())
+    glEnableVertexAttribArray(attribLocationUV.convert())
+    glEnableVertexAttribArray(attribLocationColor.convert())
+    glVertexAttribPointer(attribLocationPosition.convert(), 2, GL_FLOAT, GL_FALSE.convert(), ImDrawVert.size.convert(), ImDrawVert_pos_offset())
+    glVertexAttribPointer(attribLocationUV.convert(), 2, GL_FLOAT, GL_FALSE.convert(), ImDrawVert.size.convert(), ImDrawVert_uv_offset())
+    glVertexAttribPointer(attribLocationColor.convert(), 4, GL_UNSIGNED_BYTE, GL_TRUE.convert(), ImDrawVert.size.convert(), ImDrawVert_col_offset())
 
     // Will project scissor/clipping rectangles into framebuffer space
-    val clip_off = draw_data.pointed.DisplayPos         // (0,0) unless using multi-viewports
-    val clip_scale = draw_data.pointed.FramebufferScale // (1,1) unless using retina display which are often (2,2)
+    val clipOffset = draw_data.pointed.DisplayPos       // (0,0) unless using multi-viewports
+    val clipScale = draw_data.pointed.FramebufferScale  // (1,1) unless using retina display which are often (2,2)
 
     // Render command lists
     for (n in 0 until draw_data.pointed.CmdListsCount) {
-        val cmd_list = draw_data.pointed.CmdLists!![n]
-        val idx_buffer_offset = alloc<size_tVar> { value = 0u }
+        val cmdList = draw_data.pointed.CmdLists!![n]
+        val idxBufferOffset = alloc<size_tVar> { value = 0u }
 
         glBindBuffer(GL_ARRAY_BUFFER, vboHandle.value)
-        glBufferData(GL_ARRAY_BUFFER, cmd_list!!.pointed.VtxBuffer.Size * ImDrawVert.size, cmd_list.pointed.VtxBuffer.Data, GL_STREAM_DRAW)
+        glBufferData(GL_ARRAY_BUFFER, cmdList!!.pointed.VtxBuffer.Size * ImDrawVert.size, cmdList.pointed.VtxBuffer.Data, GL_STREAM_DRAW)
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementsHandle.value)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list.pointed.IdxBuffer.Size * ImDrawIdxVar.size, cmd_list.pointed.IdxBuffer.Data, GL_STREAM_DRAW)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmdList.pointed.IdxBuffer.Size * ImDrawIdxVar.size, cmdList.pointed.IdxBuffer.Data, GL_STREAM_DRAW)
 
-        for (cmd_i in 0 until cmd_list.pointed.CmdBuffer.Size) {
-            val pcmd = cmd_list.pointed.CmdBuffer.Data!![cmd_i].ptr
+        for (cmd_i in 0 until cmdList.pointed.CmdBuffer.Size) {
+            val pcmd = cmdList.pointed.CmdBuffer.Data!![cmd_i].ptr
             if (pcmd.pointed.UserCallback != null) {
                 // User callback (registered via ImDrawList::AddCallback)
-                pcmd.pointed.UserCallback!!(cmd_list, pcmd)
+                pcmd.pointed.UserCallback!!(cmdList, pcmd)
 
             } else {
                 // Project scissor/clipping rectangles into framebuffer space
-                val clip_rect = alloc<ImVec4>()
-                clip_rect.x = (pcmd.pointed.ClipRect.x - clip_off.x) * clip_scale.x
-                clip_rect.y = (pcmd.pointed.ClipRect.y - clip_off.y) * clip_scale.y
-                clip_rect.z = (pcmd.pointed.ClipRect.z - clip_off.x) * clip_scale.x
-                clip_rect.w = (pcmd.pointed.ClipRect.w - clip_off.y) * clip_scale.y
+                val clipRect = alloc<ImVec4>()
+                clipRect.x = (pcmd.pointed.ClipRect.x - clipOffset.x) * clipScale.x
+                clipRect.y = (pcmd.pointed.ClipRect.y - clipOffset.y) * clipScale.y
+                clipRect.z = (pcmd.pointed.ClipRect.z - clipOffset.x) * clipScale.x
+                clipRect.w = (pcmd.pointed.ClipRect.w - clipOffset.y) * clipScale.y
 
-                if (clip_rect.x < fb_width && clip_rect.y < fb_height && clip_rect.z >= 0.0f && clip_rect.w >= 0.0f) {
+                if (clipRect.x < fbWidth && clipRect.y < fbHeight && clipRect.z >= 0.0f && clipRect.w >= 0.0f) {
                     // Apply scissor/clipping rectangle
-                    if (clip_origin_lower_left)
-                        glScissor(clip_rect.x.toInt(), (fb_height - clip_rect.w).toInt(), (clip_rect.z - clip_rect.x).toInt(), (clip_rect.w - clip_rect.y).toInt())
+                    if (clipOriginLowerLeft)
+                        glScissor(clipRect.x.toInt(), (fbHeight - clipRect.w).toInt(), (clipRect.z - clipRect.x).toInt(), (clipRect.w - clipRect.y).toInt())
                     else
-                        glScissor(clip_rect.x.toInt(), clip_rect.y.toInt(), clip_rect.z.toInt(), clip_rect.w.toInt()) // Support for GL 4.5's glClipControl(GL_UPPER_LEFT)
+                        glScissor(clipRect.x.toInt(), clipRect.y.toInt(), clipRect.z.toInt(), clipRect.w.toInt()) // Support for GL 4.5's glClipControl(GL_UPPER_LEFT)
 
                     // Bind texture, Draw
                     glBindTexture(GL_TEXTURE_2D, pcmd.pointed.TextureId.toLong().toUInt())
-                    glDrawElements(GL_TRIANGLES, pcmd.pointed.ElemCount.toInt(), GL_UNSIGNED_SHORT, idx_buffer_offset.value.toLong().toCPointer<CPointed>())
+                    glDrawElements(GL_TRIANGLES, pcmd.pointed.ElemCount.toInt(), GL_UNSIGNED_SHORT, idxBufferOffset.value.toLong().toCPointer<CPointed>())
                 }
             }
-            idx_buffer_offset.value += pcmd.pointed.ElemCount * ImDrawIdxVar.size.toUInt()
+            idxBufferOffset.value += pcmd.pointed.ElemCount * ImDrawIdxVar.size.toUInt()
         }
     }
 
     // Restore modified GL state
-    glUseProgram(last_program.value.toUInt())
-    glBindTexture(GL_TEXTURE_2D, last_texture.value.toUInt())
+    glUseProgram(lastProgram.value.toUInt())
+    glBindTexture(GL_TEXTURE_2D, lastTexture.value.toUInt())
 //    #ifdef GL_SAMPLER_BINDING
-    glBindSampler(0u, last_sampler.value.toUInt())
+    glBindSampler(0u, lastSampler.value.toUInt())
 //    #endif
-    glActiveTexture(last_active_texture.value.toUInt())
-    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer.value.toUInt())
-    glBlendEquationSeparate(last_blend_equation_rgb.value.toUInt(), last_blend_equation_alpha.value.toUInt())
-    glBlendFuncSeparate(last_blend_src_rgb.value.toUInt(), last_blend_dst_rgb.value.toUInt(), last_blend_src_alpha.value.toUInt(), last_blend_dst_alpha.value.toUInt())
-    if (last_enable_blend != GL_TRUE.toUByte()) glEnable(GL_BLEND) else glDisable(GL_BLEND)
-    if (last_enable_cull_face != GL_TRUE.toUByte()) glEnable(GL_CULL_FACE) else glDisable(GL_CULL_FACE)
-    if (last_enable_depth_test != GL_TRUE.toUByte()) glEnable(GL_DEPTH_TEST) else glDisable(GL_DEPTH_TEST)
-    if (last_enable_scissor_test != GL_TRUE.toUByte()) glEnable(GL_SCISSOR_TEST) else glDisable(GL_SCISSOR_TEST)
+    glActiveTexture(lastActiveTexture.value.toUInt())
+    glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer.value.toUInt())
+    glBlendEquationSeparate(lastBlendEquationRgb.value.toUInt(), lastBlendEquationAlpha.value.toUInt())
+    glBlendFuncSeparate(lastBlendSrcRgb.value.toUInt(), lastBlendDstRgb.value.toUInt(), lastBlendSrcAlpha.value.toUInt(), lastBlendDstAlpha.value.toUInt())
+    if (lastEnableBlend != GL_TRUE.toUByte()) glEnable(GL_BLEND) else glDisable(GL_BLEND)
+    if (lastEnableCullFace != GL_TRUE.toUByte()) glEnable(GL_CULL_FACE) else glDisable(GL_CULL_FACE)
+    if (lastEnableDepthTest != GL_TRUE.toUByte()) glEnable(GL_DEPTH_TEST) else glDisable(GL_DEPTH_TEST)
+    if (lastEnableScissorTest != GL_TRUE.toUByte()) glEnable(GL_SCISSOR_TEST) else glDisable(GL_SCISSOR_TEST)
 //    #ifdef GL_POLYGON_MODE
-    glPolygonMode(GL_FRONT_AND_BACK, last_polygon_mode[0].toUInt())
+    glPolygonMode(GL_FRONT_AND_BACK, lastPolygonMode[0].toUInt())
 //    #endif
-    glViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3])
-    glScissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3])
+    glViewport(lastViewport[0], lastViewport[1], lastViewport[2], lastViewport[3])
+    glScissor(lastScissorBox[0], lastScissorBox[1], lastScissorBox[2], lastScissorBox[3])
 }
 
 fun igOpenGL3CreateFontsTexture(): Boolean = memScoped {
@@ -458,136 +463,135 @@ fun igOpenGL3CreateDeviceObjects(): Boolean = memScoped {
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBuffer.ptr)
 
     // Parse GLSL version string
-    val glsl_version = alloc<IntVar> { value = 130 }
-    sscanf(glslVersionString, "#version %d", glsl_version.ptr)
+    val glslVersion = alloc<IntVar> { value = 130 }
+    sscanf(glslVersionString, "#version %d", glslVersion.ptr)
 
-    val vertex_shader_glsl_120 =
-        "uniform mat4 ProjMtx;\n" +
-            "attribute vec2 Position;\n" +
-            "attribute vec2 UV;\n" +
-            "attribute vec4 Color;\n" +
-            "varying vec2 Frag_UV;\n" +
-            "varying vec4 Frag_Color;\n" +
-            "void main()\n" +
-            "{\n" +
-            "    Frag_UV = UV;\n" +
-            "    Frag_Color = Color;\n" +
-            "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n" +
-            "}\n"
+    val vertexShaderGlsl120 = """
+        uniform mat4 ProjMtx;
+        attribute vec2 Position;
+        attribute vec2 UV;
+        attribute vec4 Color;
+        varying vec2 Frag_UV;
+        varying vec4 Frag_Color;
+        void main()
+        {
+            Frag_UV = UV;
+            Frag_Color = Color;
+            gl_Position = ProjMtx * vec4(Position.xy,0,1);
+        }
+        """.trimIndent()
 
-    val vertex_shader_glsl_130 =
-        "uniform mat4 ProjMtx;\n" +
-            "in vec2 Position;\n" +
-            "in vec2 UV;\n" +
-            "in vec4 Color;\n" +
-            "out vec2 Frag_UV;\n" +
-            "out vec4 Frag_Color;\n" +
-            "void main()\n" +
-            "{\n" +
-            "    Frag_UV = UV;\n" +
-            "    Frag_Color = Color;\n" +
-            "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n" +
-            "}\n"
+    val vertexShaderGlsl130 = """
+        uniform mat4 ProjMtx;
+        in vec2 Position;
+        in vec2 UV;
+        in vec4 Color;
+        out vec2 Frag_UV;
+        out vec4 Frag_Color;
+        void main()
+        {
+            Frag_UV = UV;
+            Frag_Color = Color;
+            gl_Position = ProjMtx * vec4(Position.xy,0,1);
+        }
+        """.trimIndent()
 
-    val vertex_shader_glsl_300_es =
-        "precision mediump float;\n" +
-            "layout (location = 0) in vec2 Position;\n" +
-            "layout (location = 1) in vec2 UV;\n" +
-            "layout (location = 2) in vec4 Color;\n" +
-            "uniform mat4 ProjMtx;\n" +
-            "out vec2 Frag_UV;\n" +
-            "out vec4 Frag_Color;\n" +
-            "void main()\n" +
-            "{\n" +
-            "    Frag_UV = UV;\n" +
-            "    Frag_Color = Color;\n" +
-            "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n" +
-            "}\n"
+    val vertexShaderGlsl300Es = """
+        precision mediump float;
+        layout (location = 0) in vec2 Position;
+        layout (location = 1) in vec2 UV;
+        layout (location = 2) in vec4 Color;
+        uniform mat4 ProjMtx;
+        out vec2 Frag_UV;
+        out vec4 Frag_Color;
+        void main()
+        {
+            Frag_UV = UV;
+            Frag_Color = Color;
+            gl_Position = ProjMtx * vec4(Position.xy,0,1);
+        }
+        """.trimIndent()
 
-    val vertex_shader_glsl_410_core =
-        "layout (location = 0) in vec2 Position;\n" +
-            "layout (location = 1) in vec2 UV;\n" +
-            "layout (location = 2) in vec4 Color;\n" +
-            "uniform mat4 ProjMtx;\n" +
-            "out vec2 Frag_UV;\n" +
-            "out vec4 Frag_Color;\n" +
-            "void main()\n" +
-            "{\n" +
-            "    Frag_UV = UV;\n" +
-            "    Frag_Color = Color;\n" +
-            "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n" +
-            "}\n"
+    val vertexShaderGlsl410Core = """
+        layout (location = 0) in vec2 Position;
+        layout (location = 1) in vec2 UV;
+        layout (location = 2) in vec4 Color;
+        uniform mat4 ProjMtx;
+        out vec2 Frag_UV;
+        out vec4 Frag_Color;
+        void main()
+        {
+        Frag_UV = UV;
+        Frag_Color = Color;
+        gl_Position = ProjMtx * vec4(Position.xy,0,1);
+        }
+        """.trimIndent()
 
-    val fragment_shader_glsl_120 =
-        "#ifdef GL_ES\n" +
-            "    precision mediump float;\n" +
-            "#endif\n" +
-            "uniform sampler2D Texture;\n" +
-            "varying vec2 Frag_UV;\n" +
-            "varying vec4 Frag_Color;\n" +
-            "void main()\n" +
-            "{\n" +
-            "    gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV.st);\n" +
-            "}\n"
+    val fragmentShaderGlsl120 = """
+        ifdef GL_ES
+            precision mediump float;
+        #endif
+        uniform sampler2D Texture;
+        varying vec2 Frag_UV;
+        varying vec4 Frag_Color;
+        void main()
+        {
+            gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV.st);
+        }
+        """.trimIndent()
 
-    val fragment_shader_glsl_130 =
-        "uniform sampler2D Texture;\n" +
-            "in vec2 Frag_UV;\n" +
-            "in vec4 Frag_Color;\n" +
-            "out vec4 Out_Color;\n" +
-            "void main()\n" +
-            "{\n" +
-            "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n" +
-            "}\n"
+    val fragmentShaderGlsl130 = """
+        uniform sampler2D Texture;
+        in vec2 Frag_UV;
+        in vec4 Frag_Color;
+        out vec4 Out_Color;
+        void main()
+        {
+            Out_Color = Frag_Color * texture(Texture, Frag_UV.st);
+        }
+        """.trimIndent()
 
-    val fragment_shader_glsl_300_es =
-        "precision mediump float;\n" +
-            "uniform sampler2D Texture;\n" +
-            "in vec2 Frag_UV;\n" +
-            "in vec4 Frag_Color;\n" +
-            "layout (location = 0) out vec4 Out_Color;\n" +
-            "void main()\n" +
-            "{\n" +
-            "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n" +
-            "}\n"
+    val fragmentShaderGlsl300Es = """
+        precision mediump float;
+        uniform sampler2D Texture;
+        in vec2 Frag_UV;
+        in vec4 Frag_Color;
+        layout (location = 0) out vec4 Out_Color;
+        void main()
+        {
+            Out_Color = Frag_Color * texture(Texture, Frag_UV.st);
+        }
+        """.trimIndent()
 
-    val fragment_shader_glsl_410_core =
-        "in vec2 Frag_UV;\n" +
-            "in vec4 Frag_Color;\n" +
-            "uniform sampler2D Texture;\n" +
-            "layout (location = 0) out vec4 Out_Color;\n" +
-            "void main()\n" +
-            "{\n" +
-            "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n" +
-            "}\n"
+    val fragmentShaderGlsl410Core = """
+        in vec2 Frag_UV;
+        in vec4 Frag_Color;
+        uniform sampler2D Texture;
+        layout (location = 0) out vec4 Out_Color;
+        void main()
+        {
+            Out_Color = Frag_Color * texture(Texture, Frag_UV.st);
+        }
+        """.trimIndent()
 
     // Select shaders matching our GLSL versions
-    val vertex_shader: String
-    val fragment_shader: String
-    if (glsl_version.value < 130) {
-        vertex_shader = vertex_shader_glsl_120
-        fragment_shader = fragment_shader_glsl_120
-    } else if (glsl_version.value >= 410) {
-        vertex_shader = vertex_shader_glsl_410_core
-        fragment_shader = fragment_shader_glsl_410_core
-    } else if (glsl_version.value == 300) {
-        vertex_shader = vertex_shader_glsl_300_es
-        fragment_shader = fragment_shader_glsl_300_es
-    } else {
-        vertex_shader = vertex_shader_glsl_130
-        fragment_shader = fragment_shader_glsl_130
+    val (vertexShader, fragmentShader) = when {
+        glslVersion.value < 130 -> vertexShaderGlsl120 to fragmentShaderGlsl120
+        glslVersion.value >= 410 -> vertexShaderGlsl410Core to fragmentShaderGlsl410Core
+        glslVersion.value == 300 -> vertexShaderGlsl300Es to fragmentShaderGlsl300Es
+        else -> vertexShaderGlsl130 to fragmentShaderGlsl130
     }
 
     // Create shaders
-    val vertex_shader_with_version = "$glslVersionString\n$vertex_shader"
+    val vertexShaderWithVersion = "$glslVersionString\n$vertexShader"
     vertHandle = glCreateShader(GL_VERTEX_SHADER)
-    glShaderSource(vertHandle, vertex_shader_with_version)
+    glShaderSource(vertHandle, vertexShaderWithVersion)
     glCompileShader(vertHandle)
     checkShader(vertHandle, "vertex shader")
 
-    val fragment_shader_with_version = arrayOf("$glslVersionString\n", fragment_shader).toCStringArray(scope)
+    val fragmentShaderWithVersion = arrayOf("$glslVersionString\n", fragmentShader).toCStringArray(scope)
     fragHandle = glCreateShader(GL_FRAGMENT_SHADER)
-    glShaderSource(fragHandle, 2, fragment_shader_with_version, null)
+    glShaderSource(fragHandle, 2, fragmentShaderWithVersion, null)
     glCompileShader(fragHandle)
     checkShader(fragHandle, "fragment shader")
 
@@ -610,8 +614,8 @@ fun igOpenGL3CreateDeviceObjects(): Boolean = memScoped {
     igOpenGL3CreateFontsTexture()
 
     // Restore modified GL state
-    glBindTexture(GL_TEXTURE_2D, lastTexture.value.toUInt())
-    glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer.value.toUInt())
+    glBindTexture(GL_TEXTURE_2D, lastTexture.value.convert())
+    glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer.value.convert())
 
     return@memScoped true
 }
@@ -677,7 +681,7 @@ class ImGuiLayer : Overlay("ImGuiLayer") {
         igOpenGL3Init("#version 410")
     }
 
-    private val show: IntVar = nativeHeap.alloc()
+    private val show: BooleanVar = nativeHeap.alloc()
 
     override fun onUpdate() {
         val io = igGetIO()!!.pointed
@@ -692,7 +696,7 @@ class ImGuiLayer : Overlay("ImGuiLayer") {
         igOpenGL3NewFrame()
         igNewFrame()
 
-        _igShowDemoWindow(show.ptr)
+        igShowDemoWindow(show.ptr)
 
         igRender()
         igOpenGL3RenderDrawData(igGetDrawData()!!)

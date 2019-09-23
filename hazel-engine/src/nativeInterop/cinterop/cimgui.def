@@ -16,24 +16,19 @@ linkerOpts.mingw = -LC:/msys64/mingw64/lib -Wl,-Bstatic -lstdc++ -static -lcimgu
 
 ---
 
-void _igShowDemoWindow(int* p_open)
-{
-    igShowDemoWindow((bool*) p_open);
-}
-
 #define IM_OFFSETOF(_TYPE,_MEMBER)  ((size_t)&(((_TYPE*)0)->_MEMBER))  // Offset of _MEMBER within _TYPE. Standardized as offsetof() in modern C++.
 
-void* ImDrawVert_pos_offset()
+static inline void* ImDrawVert_pos_offset()
 {
     return (void*)IM_OFFSETOF(ImDrawVert, pos);
 }
 
-void* ImDrawVert_uv_offset()
+static inline void* ImDrawVert_uv_offset()
 {
     return (void*)IM_OFFSETOF(ImDrawVert, uv);
 }
 
-void* ImDrawVert_col_offset()
+static inline void* ImDrawVert_col_offset()
 {
     return (void*)IM_OFFSETOF(ImDrawVert, col);
 }

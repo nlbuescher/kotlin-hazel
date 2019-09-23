@@ -5,7 +5,7 @@ plugins {
     kotlin("multiplatform")
 }
 
-val kotlinxIOVersion: String by extra
+val kotlinxIoVersion: String by extra
 
 kotlin {
     val os = org.gradle.internal.os.OperatingSystem.current()
@@ -19,7 +19,7 @@ kotlin {
                 resources.srcDir("src/nativeMain/resources")
 
                 dependencies {
-                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:$kotlinxIOVersion")
+                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:$kotlinxIoVersion")
                     implementation("com.kgl:kgl-opengl:0.1.7")
                 }
             }
