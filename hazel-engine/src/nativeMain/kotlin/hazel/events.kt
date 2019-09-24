@@ -2,7 +2,6 @@ package hazel
 
 import kotlin.reflect.KClass
 
-
 sealed class Event {
     var isHandled = false
         protected set
@@ -39,7 +38,6 @@ class WindowResizeEvent(val width: Int, val height: Int) : AppEvent() {
 }
 
 class WindowCloseEvent : AppEvent()
-
 
 // Input Events
 abstract class InputEvent : Event()

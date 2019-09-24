@@ -11,7 +11,7 @@ kotlin {
     val os = org.gradle.internal.os.OperatingSystem.current()
 
     if (os.isLinux) linuxX64("linux") {
-        val main by compilations.getting {
+        val main by compilations.existing {
             cinterops.create("cglfw")
             cinterops.create("cimgui")
             defaultSourceSet {
@@ -24,7 +24,7 @@ kotlin {
                 }
             }
         }
-        val test by compilations.getting {
+        val test by compilations.existing {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeTest/kotlin")
                 resources.srcDir("src/nativeTest/resources")
@@ -32,7 +32,7 @@ kotlin {
         }
     }
     if (os.isMacOsX) macosX64("macos") {
-        val main by compilations.getting {
+        val main by compilations.existing {
             cinterops.create("cglfw")
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
@@ -43,7 +43,7 @@ kotlin {
                 }
             }
         }
-        val test by compilations.getting {
+        val test by compilations.existing {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeTest/kotlin")
                 resources.srcDir("src/nativeTest/resources")
@@ -51,7 +51,7 @@ kotlin {
         }
     }
     if (os.isWindows) mingwX64("mingw") {
-        val main by compilations.getting {
+        val main by compilations.existing {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
@@ -61,7 +61,7 @@ kotlin {
                 }
             }
         }
-        val test by compilations.getting {
+        val test by compilations.existing {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeTest/kotlin")
                 resources.srcDir("src/nativeTest/resources")

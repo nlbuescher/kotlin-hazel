@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 plugins {
     kotlin("multiplatform")
 }
@@ -5,25 +7,11 @@ plugins {
 kotlin {
     val os = org.gradle.internal.os.OperatingSystem.current()
 
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-common"))
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
-    }
-
     if (os.isLinux) linuxX64("linux") {
         binaries {
             executable()
         }
-        val main by compilations.getting {
+        val main by compilations.existing {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
@@ -38,7 +26,7 @@ kotlin {
         binaries {
             executable()
         }
-        val main by compilations.getting {
+        val main by compilations.existing {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
@@ -53,7 +41,7 @@ kotlin {
         binaries {
             executable()
         }
-        val main by compilations.getting {
+        val main by compilations.existing {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
