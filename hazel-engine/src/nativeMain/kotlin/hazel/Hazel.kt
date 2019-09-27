@@ -27,7 +27,7 @@ object Hazel {
     internal fun coreError(message: Any?) = coreLogger.error(message)
     internal fun coreCritical(message: Any?) = coreLogger.critical(message)
 
-    internal fun coreAssert(test: Boolean, message: Any?) = check(test) { coreCritical("Assertion failed: $message") }
+    internal fun coreAssert(test: Boolean, message: Any? = null) = check(test) { coreCritical("Assertion failed: $message") }
 
     fun trace(message: Any?) = clientLogger.trace(message)
     fun debug(message: Any?) = clientLogger.debug(message)
@@ -36,7 +36,7 @@ object Hazel {
     fun error(message: Any?) = clientLogger.error(message)
     fun critical(message: Any?) = clientLogger.critical(message)
 
-    fun assert(test: Boolean, message: String) = check(test) { critical("Assertion failed: $message") }
+    fun assert(test: Boolean, message: Any? = null) = check(test) { critical("Assertion failed: $message") }
 
     private val start = MonoClock.markNow()
     val time get() = start.elapsedNow().inSeconds

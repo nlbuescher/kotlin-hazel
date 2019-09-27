@@ -1,16 +1,16 @@
 package = cimgui
-headers = cimgui/cimgui.h
+headers = cimgui.h cimgui_impl_glfw.h cimgui_impl_opengl3.h
 
 depends.linux = posix
 depends.osx = posix
 depends.mingw = posix windows
 
 compilerOpts = -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS
-compilerOpts.linux = -I/usr/include -I/usr/local/include
+compilerOpts.linux = -I/usr/include -I../cimgui
 compilerOpts.osx = -I/usr/local/include
 compilerOpts.mingw = -IC:/msys64/mingw/include
 
-linkerOpts.linux = -L/usr/lib -L/usr/local/lib -lcimgui
+linkerOpts.linux = -L/usr/lib -lglfw -lGL -L../cimgui -lcimgui
 linkerOpts.osx = -L/usr/local/lib -lcimgui
 linkerOpts.mingw = -LC:/msys64/mingw64/lib -Wl,-Bstatic -lstdc++ -static -lcimgui
 

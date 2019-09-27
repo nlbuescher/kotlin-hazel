@@ -1,5 +1,7 @@
 @file:Suppress("UNUSED_VARIABLE")
 
+import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
+
 plugins {
     id("maven-publish")
     kotlin("multiplatform")
@@ -66,6 +68,15 @@ kotlin {
                 kotlin.srcDir("src/nativeTest/kotlin")
                 resources.srcDir("src/nativeTest/resources")
             }
+        }
+    }
+}
+
+tasks.getByName("cinteropCimguiLinux") {
+    doFirst {
+        exec {
+            workingDir = file("${rootProject.projectDir}/cimgui")
+            commandLine("make", "all")
         }
     }
 }
