@@ -1,0 +1,6 @@
+package = copengl
+headers = GL/glew.h GL/gl.h
+
+compilerOpts.linux = -I/usr/include
+
+linkerOpts.linux = -L/usr/lib -lGL -lGLEW

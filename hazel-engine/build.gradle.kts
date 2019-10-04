@@ -3,11 +3,14 @@
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 
 plugins {
-    id("maven-publish")
     kotlin("multiplatform")
 }
 
-val kotlinxIoVersion: String by extra
+repositories {
+    jcenter()
+}
+
+val kotlinxIoVersion by extra("0.1.15")
 
 kotlin {
     val os = org.gradle.internal.os.OperatingSystem.current()
@@ -16,13 +19,13 @@ kotlin {
         val main by compilations.existing {
             cinterops.create("cglfw")
             cinterops.create("cimgui")
+            cinterops.create("copengl")
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
 
                 dependencies {
                     implementation("org.jetbrains.kotlinx:kotlinx-io-native:$kotlinxIoVersion")
-                    implementation("com.kgl:kgl-opengl:0.1.7")
                 }
             }
         }
@@ -33,50 +36,17 @@ kotlin {
             }
         }
     }
-    if (os.isMacOsX) macosX64("macos") {
-        val main by compilations.existing {
-            cinterops.create("cglfw")
-            defaultSourceSet {
-                kotlin.srcDir("src/nativeMain/kotlin")
-                resources.srcDir("src/nativeMain/resources")
 
-                dependencies {
-                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
-                }
-            }
-        }
-        val test by compilations.existing {
-            defaultSourceSet {
-                kotlin.srcDir("src/nativeTest/kotlin")
-                resources.srcDir("src/nativeTest/resources")
-            }
-        }
-    }
-    if (os.isWindows) mingwX64("mingw") {
-        val main by compilations.existing {
-            defaultSourceSet {
-                kotlin.srcDir("src/nativeMain/kotlin")
-                resources.srcDir("src/nativeMain/resources")
-
-                dependencies {
-                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:${extra["kotlinxIOVersion"]}")
-                }
-            }
-        }
-        val test by compilations.existing {
-            defaultSourceSet {
-                kotlin.srcDir("src/nativeTest/kotlin")
-                resources.srcDir("src/nativeTest/resources")
-            }
+    sourceSets.all {
+        languageSettings.apply {
+            enableLanguageFeature("MultiPlatformProjects")
+            enableLanguageFeature("InlineClasses")
+            useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+            useExperimentalAnnotation("kotlin.time.ExperimentalTime")
         }
     }
 }
 
-tasks.getByName("cinteropCimguiLinux") {
-    doFirst {
-        exec {
-            workingDir = file("${rootProject.projectDir}/cimgui")
-            commandLine("make", "all")
-        }
-    }
+tasks.findByName("cinteropCimguiLinux")?.apply {
+    dependsOn(":cimgui:build")
 }

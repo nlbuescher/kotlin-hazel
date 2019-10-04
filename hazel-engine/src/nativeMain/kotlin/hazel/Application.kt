@@ -1,8 +1,8 @@
 package hazel
 
-import com.kgl.opengl.GL_COLOR_BUFFER_BIT
-import com.kgl.opengl.glClear
-import com.kgl.opengl.glClearColor
+import copengl.GL_COLOR_BUFFER_BIT
+import copengl.glClear
+import copengl.glClearColor
 
 abstract class Application {
     private var isRunning: Boolean = true

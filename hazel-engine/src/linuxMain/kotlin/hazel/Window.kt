@@ -23,6 +23,7 @@ import cglfw.glfwSetWindowSizeCallback
 import cglfw.glfwSetWindowUserPointer
 import cglfw.glfwSwapBuffers
 import cnames.structs.GLFWwindow
+import copengl.glewInit
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.StableRef
@@ -41,6 +42,7 @@ actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwin
         ensureNeverFrozen()
 
         glfwMakeContextCurrent(ptr)
+        glewInit()
         glfwSetWindowUserPointer(ptr, StableRef.create(this).asCPointer())
 
         // set GLFW callbacks

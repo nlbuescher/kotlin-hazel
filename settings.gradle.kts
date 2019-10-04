@@ -14,3 +14,4 @@ rootProject.name = "hazel"
 
 include("hazel-engine")
 include("hazel-sandbox")
+include("cimgui")
