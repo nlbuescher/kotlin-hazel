@@ -7,16 +7,14 @@ import kotlin.time.MonoClock
 object Hazel {
     private val coreLogger = Logger("HAZEL")
     private val clientLogger = Logger("APP")
-    private var _application: Application? = null
-    val application: Application get() = _application ?: kotlin.error("must call `run` first")
+    val application: Application get() = Application.INSTANCE ?: kotlin.error("must instantiate an Application first!")
 
 
-    fun run(app: Application) {
-        _application = app
+    fun run() {
         coreWarn("Initialized Log!")
         info("Hello!")
 
-        app.run()
+        application.run()
     }
 
 

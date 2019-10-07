@@ -1,8 +1,10 @@
 import cglfw.glfwSetErrorCallback
+import cimgui.igBegin
+import cimgui.igEnd
+import cimgui.igText
 import hazel.Application
 import hazel.Event
 import hazel.Hazel
-import hazel.ImGuiLayer
 import hazel.Input
 import hazel.Key
 import hazel.Layer
@@ -17,6 +19,12 @@ class ExampleLayer : Layer("ExampleLayer") {
         }
     }
 
+    override fun onImGuiRender() {
+        igBegin("Test", null, 0)
+        igText("Hello, World!")
+        igEnd()
+    }
+
     override fun onEvent(event: Event) {
         // Hazel.trace("$event")
     }
@@ -26,7 +34,6 @@ class ExampleLayer : Layer("ExampleLayer") {
 class Sandbox : Application() {
     init {
         addLayer(ExampleLayer())
-        addOverlay(ImGuiLayer())
     }
 }
 
@@ -35,5 +42,6 @@ fun main() {
     glfwSetErrorCallback(staticCFunction { error, message ->
         Hazel.error("GLFW error ($error): ${message?.toKString()}")
     })
-    Hazel.run(Sandbox())
+    Sandbox()
+    Hazel.run()
 }
