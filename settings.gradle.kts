@@ -10,8 +10,8 @@ pluginManagement {
 
 enableFeaturePreview("GRADLE_METADATA")
 
-rootProject.name = "hazel"
+rootProject.name = "kotlin-hazel"
 
-include("hazel-engine")
-include("hazel-sandbox")
+include("hazel")
+include("sandbox")
 include("cimgui")

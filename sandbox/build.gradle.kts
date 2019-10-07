@@ -23,7 +23,7 @@ kotlin {
                 resources.srcDir("src/nativeMain/resources")
 
                 dependencies {
-                    api(project(":hazel-engine"))
+                    api(project(":hazel"))
                 }
             }
         }
