@@ -3,6 +3,7 @@ package hazel
 import cglfw.glfwGetCurrentContext
 import cglfw.glfwMakeContextCurrent
 import cimgui.ImGuiCol_.ImGuiCol_WindowBg
+import cimgui.ImGuiConfigFlags_DockingEnable
 import cimgui.ImGuiConfigFlags_NavEnableKeyboard
 import cimgui.ImGuiConfigFlags_ViewportsEnable
 import cimgui.igCreateContext
@@ -37,7 +38,7 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
         val io = igGetIO()!!.pointed
         io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_NavEnableKeyboard.convert() // enable keyboard controls
         //io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_NavEnableGamepad.convert() // enable gamepad controls
-        //io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_DockingEnabled.convert() // enable docking
+        io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_DockingEnable.convert() // enable docking
         io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_ViewportsEnable.convert() // enable multi-viewport / platform windows
         //io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_ViewportsNoTaskBarIcon.convert()
         //io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_ViewportsNoMerge.convert()
