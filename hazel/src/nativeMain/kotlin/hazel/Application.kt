@@ -12,6 +12,7 @@ abstract class Application {
 
     init {
         Hazel.coreAssert(INSTANCE == null, "Application already exists!")
+        @Suppress("LeakingThis")
         INSTANCE = this
     }
 
