@@ -137,13 +137,12 @@ actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwin
 
     actual companion object {
         actual operator fun invoke(width: Int, height: Int, title: String): Window {
-            Hazel.coreAssert(glfwInit() == GLFW_TRUE, "Could not initialize GLFW!")
+            Hazel.coreAssert(glfwInit() == GLFW_TRUE) { "Could not initialize GLFW!" }
 
             glfwDefaultWindowHints()
 
-            return Window(
-                glfwCreateWindow(width, height, title, null, null) ?: throw Exception("Could not create window.")
-            )
+            val ptr = glfwCreateWindow(width, height, title, null, null) ?: throw Exception("Could not create window.")
+            return Window(ptr)
         }
     }
 }

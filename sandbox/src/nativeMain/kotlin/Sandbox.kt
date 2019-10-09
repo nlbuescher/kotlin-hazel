@@ -15,7 +15,7 @@ import kotlinx.cinterop.toKString
 class ExampleLayer : Layer("ExampleLayer") {
     override fun onUpdate() {
         if (Input.isKeyPressed(Key.TAB)) {
-            Hazel.info("Tab key is pressed")
+            Hazel.info { "Tab key is pressed" }
         }
     }
 
@@ -26,7 +26,7 @@ class ExampleLayer : Layer("ExampleLayer") {
     }
 
     override fun onEvent(event: Event) {
-        // Hazel.trace("$event")
+        // Hazel.trace { "$event" }
     }
 }
 
@@ -40,8 +40,7 @@ class Sandbox : Application() {
 
 fun main() {
     glfwSetErrorCallback(staticCFunction { error, message ->
-        Hazel.error("GLFW error ($error): ${message?.toKString()}")
+        Hazel.error { "GLFW error ($error): ${message?.toKString()}" }
     })
-    Sandbox()
-    Hazel.run()
+    Hazel.run(Sandbox())
 }

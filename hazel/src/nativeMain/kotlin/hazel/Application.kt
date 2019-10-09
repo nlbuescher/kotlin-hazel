@@ -5,22 +5,11 @@ import copengl.glClear
 import copengl.glClearColor
 
 abstract class Application {
-    @ThreadLocal
-    companion object {
-        internal var INSTANCE: Application? = null
-    }
-
-    init {
-        Hazel.coreAssert(INSTANCE == null, "Application already exists!")
-        @Suppress("LeakingThis")
-        INSTANCE = this
-    }
-
     val window = Window().apply { setEventCallback(::onEvent) }
 
     private var isRunning: Boolean = true
     private val layerStack = LayerStack()
-    private val imGuiLayer = ImGuiLayer().also { addOverlay(it) }
+    private val imGuiLayer = ImGuiLayer()
 
 
     fun addLayer(layer: Layer) {
@@ -35,6 +24,9 @@ abstract class Application {
 
 
     open fun run() {
+        // don't add imGuiLayer to layer stack until run because ImGuiLayer requires Hazel.application to be set
+        addOverlay(imGuiLayer)
+
         while (isRunning) {
             glClearColor(1f, 0f, 1f, 1f)
             glClear(GL_COLOR_BUFFER_BIT)

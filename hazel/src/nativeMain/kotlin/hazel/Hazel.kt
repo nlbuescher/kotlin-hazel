@@ -7,35 +7,47 @@ import kotlin.time.MonoClock
 object Hazel {
     private val coreLogger = Logger("HAZEL")
     private val clientLogger = Logger("APP")
-    val application: Application get() = Application.INSTANCE ?: kotlin.error("must instantiate an Application first!")
+
+    private var _application: Application? = null
+        set(value) {
+            if (field != null) error("application already set!")
+            field = value
+        }
+    private val start = MonoClock.markNow()
+
+    val application: Application get() = _application ?: error("must instantiate an Application first!")
+    val time get() = start.elapsedNow().inSeconds
 
 
-    fun run() {
-        coreWarn("Initialized Log!")
-        info("Hello!")
+    fun run(application: Application) {
+        _application = application
+
+        coreWarn { "Initialized Log!" }
+        info { "Hello!" }
 
         application.run()
     }
 
 
-    internal fun coreTrace(message: Any?) = coreLogger.trace(message)
-    internal fun coreDebug(message: Any?) = coreLogger.debug(message)
-    internal fun coreInfo(message: Any?) = coreLogger.info(message)
-    internal fun coreWarn(message: Any?) = coreLogger.warn(message)
-    internal fun coreError(message: Any?) = coreLogger.error(message)
-    internal fun coreCritical(message: Any?) = coreLogger.critical(message)
+    internal fun coreTrace(message: () -> Any?) = coreLogger.trace(message().toString())
+    internal fun coreDebug(message: () -> Any?) = coreLogger.debug(message().toString())
+    internal fun coreInfo(message: () -> Any?) = coreLogger.info(message().toString())
+    internal fun coreWarn(message: () -> Any?) = coreLogger.warn(message().toString())
+    internal fun coreError(message: () -> Any?) = coreLogger.error(message().toString())
+    internal fun coreCritical(message: () -> Any?) = coreLogger.critical(message().toString())
 
-    internal fun coreAssert(test: Boolean, message: Any? = null) = check(test) { coreCritical("Assertion failed: $message") }
+    internal fun coreAssert(test: Boolean, message: () -> Any? = { null }) = check(test) {
+        coreCritical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
+    }
 
-    fun trace(message: Any?) = clientLogger.trace(message)
-    fun debug(message: Any?) = clientLogger.debug(message)
-    fun info(message: Any?) = clientLogger.info(message)
-    fun warn(message: Any?) = clientLogger.warn(message)
-    fun error(message: Any?) = clientLogger.error(message)
-    fun critical(message: Any?) = clientLogger.critical(message)
+    fun trace(message: () -> Any?) = clientLogger.trace(message().toString())
+    fun debug(message: () -> Any?) = clientLogger.debug(message().toString())
+    fun info(message: () -> Any?) = clientLogger.info(message().toString())
+    fun warn(message: () -> Any?) = clientLogger.warn(message().toString())
+    fun error(message: () -> Any?) = clientLogger.error(message().toString())
+    fun critical(message: () -> Any?) = clientLogger.critical(message().toString())
 
-    fun assert(test: Boolean, message: Any? = null) = check(test) { critical("Assertion failed: $message") }
-
-    private val start = MonoClock.markNow()
-    val time get() = start.elapsedNow().inSeconds
+    fun assert(test: Boolean, message: () -> Any? = { null }) = check(test) {
+        critical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
+    }
 }
