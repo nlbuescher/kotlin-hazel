@@ -12,8 +12,6 @@ expect class Window : Closeable {
     var position: Pair<Int, Int>
     var size: Pair<Int, Int>
 
-    fun swapBuffers()
-
     fun setEventCallback(callback: (Event) -> Unit)
 
     fun onUpdate()

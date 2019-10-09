@@ -10,7 +10,6 @@ import cglfw.glfwDestroyWindow
 import cglfw.glfwGetWindowSize
 import cglfw.glfwGetWindowUserPointer
 import cglfw.glfwInit
-import cglfw.glfwMakeContextCurrent
 import cglfw.glfwPollEvents
 import cglfw.glfwSetCharCallback
 import cglfw.glfwSetCursorPosCallback
@@ -21,9 +20,9 @@ import cglfw.glfwSetWindowCloseCallback
 import cglfw.glfwSetWindowSize
 import cglfw.glfwSetWindowSizeCallback
 import cglfw.glfwSetWindowUserPointer
-import cglfw.glfwSwapBuffers
 import cnames.structs.GLFWwindow
-import copengl.glewInit
+import hazel.renderer.GraphicsContext
+import hazel.renderer.OpenGLContext
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.StableRef
@@ -38,11 +37,13 @@ import kotlin.native.concurrent.ensureNeverFrozen
 
 actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) : Closeable {
 
+    private val context: GraphicsContext
+
     init {
         ensureNeverFrozen()
 
-        glfwMakeContextCurrent(ptr)
-        glewInit()
+        context = OpenGLContext(ptr).also { it.init() }
+
         glfwSetWindowUserPointer(ptr, StableRef.create(this).asCPointer())
 
         // set GLFW callbacks
@@ -113,9 +114,6 @@ actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwin
         set(value) = glfwSetWindowSize(ptr, value.first, value.second)
 
 
-    actual fun swapBuffers() = glfwSwapBuffers(ptr)
-
-
     private var eventCallback: ((Event) -> Unit)? = null
     actual fun setEventCallback(callback: (Event) -> Unit) {
         eventCallback = callback
@@ -124,7 +122,7 @@ actual class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwin
 
     actual fun onUpdate() {
         glfwPollEvents()
-        swapBuffers()
+        context.swapBuffers()
     }
 
 
