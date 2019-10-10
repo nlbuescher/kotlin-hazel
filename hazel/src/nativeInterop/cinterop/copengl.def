@@ -4,3 +4,19 @@ headers = GL/glew.h GL/gl.h
 compilerOpts.linux = -I/usr/include
 
 linkerOpts.linux = -L/usr/lib -lGL -lGLEW
+
+---
+
+static inline uint32_t glGenVertexArray()
+{
+    uint32_t vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    return vertex_array;
+}
+
+static inline uint32_t glGenBuffer()
+{
+    uint32_t buffer;
+    glGenBuffers(1, &buffer);
+    return buffer;
+}
