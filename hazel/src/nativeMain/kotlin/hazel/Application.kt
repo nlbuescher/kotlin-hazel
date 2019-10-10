@@ -18,17 +18,15 @@ import copengl.glEnableVertexAttribArray
 import copengl.glGenBuffer
 import copengl.glGenVertexArray
 import copengl.glVertexAttribPointer
-import kotlinx.cinterop.Arena
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.cValuesOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.placeTo
 import kotlinx.cinterop.sizeOf
 
 abstract class Application {
-    private val scope = Arena()
-
     val window = Window().apply { setEventCallback(::onEvent) }
 
     private var isRunning: Boolean = true
@@ -51,13 +49,14 @@ abstract class Application {
             0.5f, -0.5f, 0f,
             0.0f, 0.5f, 0f
         )
-
-        glBufferData!!(
-            GL_ARRAY_BUFFER.convert(),
-            vertices.size.convert(),
-            vertices.placeTo(scope),
-            GL_STATIC_DRAW.convert()
-        )
+        memScoped {
+            glBufferData!!(
+                GL_ARRAY_BUFFER.convert(),
+                vertices.size.convert(),
+                vertices.placeTo(memScope),
+                GL_STATIC_DRAW.convert()
+            )
+        }
 
         glEnableVertexAttribArray!!(0u)
         glVertexAttribPointer!!(0u, 3, GL_FLOAT.convert(), GL_FALSE.convert(), (3 * sizeOf<FloatVar>()).convert(), null)
@@ -66,12 +65,14 @@ abstract class Application {
         glBindBuffer!!(GL_ELEMENT_ARRAY_BUFFER.convert(), indexBuffer)
 
         val indices = cValuesOf(0u, 1u, 2u)
-        glBufferData!!(
-            GL_ELEMENT_ARRAY_BUFFER.convert(),
-            indices.size.convert(),
-            indices.placeTo(scope),
-            GL_STATIC_DRAW.convert()
-        )
+        memScoped {
+            glBufferData!!(
+                GL_ELEMENT_ARRAY_BUFFER.convert(),
+                indices.size.convert(),
+                indices.placeTo(memScope),
+                GL_STATIC_DRAW.convert()
+            )
+        }
     }
 
 
@@ -105,8 +106,6 @@ abstract class Application {
 
             window.onUpdate()
         }
-
-        scope.clear()
     }
 
 
