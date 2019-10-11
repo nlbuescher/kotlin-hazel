@@ -3,28 +3,25 @@ package hazel
 import copengl.GL_ARRAY_BUFFER
 import copengl.GL_COLOR_BUFFER_BIT
 import copengl.GL_ELEMENT_ARRAY_BUFFER
-import copengl.GL_FALSE
 import copengl.GL_FLOAT
 import copengl.GL_STATIC_DRAW
 import copengl.GL_TRIANGLES
 import copengl.GL_UNSIGNED_INT
-import copengl.glBindBuffer
-import copengl.glBindVertexArray
-import copengl.glBufferData
 import copengl.glClear
 import copengl.glClearColor
 import copengl.glDrawElements
-import copengl.glEnableVertexAttribArray
-import copengl.glGenBuffer
-import copengl.glGenVertexArray
-import copengl.glVertexAttribPointer
+import hazel.renderer.Shader
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.cValuesOf
-import kotlinx.cinterop.convert
-import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.placeTo
 import kotlinx.cinterop.sizeOf
+import opengl.glBindBuffer
+import opengl.glBindVertexArray
+import opengl.glBufferData
+import opengl.glEnableVertexAttribArray
+import opengl.glGenBuffer
+import opengl.glGenVertexArray
+import opengl.glVertexAttribPointer
 
 abstract class Application {
     val window = Window().apply { setEventCallback(::onEvent) }
@@ -33,16 +30,15 @@ abstract class Application {
     private val layerStack = LayerStack()
     private val imGuiLayer = ImGuiLayer()
 
-    private var vertexArray: UInt
-    private var vertexBuffer: UInt
-    private var indexBuffer: UInt
+    private val vertexArray: UInt = glGenVertexArray()
+    private val vertexBuffer: UInt = glGenBuffer()
+    private val indexBuffer: UInt = glGenBuffer()
+    private var shader: Shader
 
     init {
-        vertexArray = glGenVertexArray()
-        glBindVertexArray!!(vertexArray)
+        glBindVertexArray(vertexArray)
 
-        vertexBuffer = glGenBuffer()
-        glBindBuffer!!(GL_ARRAY_BUFFER.convert(), vertexBuffer)
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer)
 
         val vertices = cValuesOf(
             -0.5f, -0.5f, 0f,
@@ -50,29 +46,50 @@ abstract class Application {
             0.0f, 0.5f, 0f
         )
         memScoped {
-            glBufferData!!(
-                GL_ARRAY_BUFFER.convert(),
-                vertices.size.convert(),
-                vertices.placeTo(memScope),
-                GL_STATIC_DRAW.convert()
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                vertices.size.toLong(),
+                vertices.ptr,
+                GL_STATIC_DRAW
             )
         }
 
-        glEnableVertexAttribArray!!(0u)
-        glVertexAttribPointer!!(0u, 3, GL_FLOAT.convert(), GL_FALSE.convert(), (3 * sizeOf<FloatVar>()).convert(), null)
+        glEnableVertexAttribArray(0u)
+        glVertexAttribPointer(0u, 3, GL_FLOAT, false, (3 * sizeOf<FloatVar>()).toInt(), 0)
 
-        indexBuffer = glGenBuffer()
-        glBindBuffer!!(GL_ELEMENT_ARRAY_BUFFER.convert(), indexBuffer)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer)
 
         val indices = cValuesOf(0u, 1u, 2u)
         memScoped {
-            glBufferData!!(
-                GL_ELEMENT_ARRAY_BUFFER.convert(),
-                indices.size.convert(),
-                indices.placeTo(memScope),
-                GL_STATIC_DRAW.convert()
+            glBufferData(
+                GL_ELEMENT_ARRAY_BUFFER,
+                indices.size.toLong(),
+                indices.ptr,
+                GL_STATIC_DRAW
             )
         }
+
+        val vertexSource = """
+            #version 330 core
+            
+            layout(location = 0) in vec3 a_Position;
+            
+            void main() {
+                gl_Position = vec4(a_Position + 0.5, 1.0);
+            }
+        """.trimIndent()
+
+        val fragmentSource = """
+            #version 330 core
+            
+            layout(location = 0) out vec4 color;
+            
+            void main() {
+                color = vec4(0.8, 0.2, 0.3, 1.0);
+            }
+        """.trimIndent()
+
+        shader = Shader(vertexSource, fragmentSource)
     }
 
 
@@ -95,8 +112,9 @@ abstract class Application {
             glClearColor(0.1f, 0.1f, 0.1f, 1f)
             glClear(GL_COLOR_BUFFER_BIT)
 
-            glBindVertexArray!!(vertexArray)
-            glDrawElements(GL_TRIANGLES.convert(), 3, GL_UNSIGNED_INT.convert(), null)
+            shader.bind()
+            glBindVertexArray(vertexArray)
+            glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, null)
 
             layerStack.forEach { it.onUpdate() }
 
