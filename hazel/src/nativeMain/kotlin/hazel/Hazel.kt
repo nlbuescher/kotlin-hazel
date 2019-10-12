@@ -1,18 +1,17 @@
 package hazel
 
-import kotlin.native.concurrent.ThreadLocal
 import kotlin.time.MonoClock
 
-@ThreadLocal
+private var _application: Application? = null
+    set(value) {
+        if (field != null) error("application already set!")
+        field = value
+    }
+
 object Hazel {
     private val coreLogger = Logger("HAZEL")
     private val clientLogger = Logger("APP")
 
-    private var _application: Application? = null
-        set(value) {
-            if (field != null) error("application already set!")
-            field = value
-        }
     private val start = MonoClock.markNow()
 
     val application: Application get() = _application ?: error("must instantiate an Application first!")

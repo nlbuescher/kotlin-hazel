@@ -1,25 +1,21 @@
 package hazel
 
-import copengl.GL_ARRAY_BUFFER
 import copengl.GL_COLOR_BUFFER_BIT
-import copengl.GL_ELEMENT_ARRAY_BUFFER
 import copengl.GL_FLOAT
-import copengl.GL_STATIC_DRAW
 import copengl.GL_TRIANGLES
 import copengl.GL_UNSIGNED_INT
 import copengl.glClear
 import copengl.glClearColor
 import copengl.glDrawElements
+import hazel.renderer.IndexBuffer
 import hazel.renderer.Shader
+import hazel.renderer.VertexBuffer
+import hazel.renderer.indexBufferOf
+import hazel.renderer.vertexBufferOf
 import kotlinx.cinterop.FloatVar
-import kotlinx.cinterop.cValuesOf
-import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.sizeOf
-import opengl.glBindBuffer
 import opengl.glBindVertexArray
-import opengl.glBufferData
 import opengl.glEnableVertexAttribArray
-import opengl.glGenBuffer
 import opengl.glGenVertexArray
 import opengl.glVertexAttribPointer
 
@@ -31,51 +27,34 @@ abstract class Application {
     private val imGuiLayer = ImGuiLayer()
 
     private val vertexArray: UInt = glGenVertexArray()
-    private val vertexBuffer: UInt = glGenBuffer()
-    private val indexBuffer: UInt = glGenBuffer()
     private var shader: Shader
+    private var vertexBuffer: VertexBuffer
+    private var indexBuffer: IndexBuffer
 
     init {
         glBindVertexArray(vertexArray)
 
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer)
-
-        val vertices = cValuesOf(
+        vertexBuffer = vertexBufferOf(
             -0.5f, -0.5f, 0f,
             0.5f, -0.5f, 0f,
             0.0f, 0.5f, 0f
         )
-        memScoped {
-            glBufferData(
-                GL_ARRAY_BUFFER,
-                vertices.size.toLong(),
-                vertices.ptr,
-                GL_STATIC_DRAW
-            )
-        }
 
         glEnableVertexAttribArray(0u)
         glVertexAttribPointer(0u, 3, GL_FLOAT, false, (3 * sizeOf<FloatVar>()).toInt(), 0)
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer)
-
-        val indices = cValuesOf(0u, 1u, 2u)
-        memScoped {
-            glBufferData(
-                GL_ELEMENT_ARRAY_BUFFER,
-                indices.size.toLong(),
-                indices.ptr,
-                GL_STATIC_DRAW
-            )
-        }
+        indexBuffer = indexBufferOf(0u, 1u, 2u)
 
         val vertexSource = """
             #version 330 core
             
             layout(location = 0) in vec3 a_Position;
             
+            out vec3 v_Position;
+            
             void main() {
-                gl_Position = vec4(a_Position + 0.5, 1.0);
+                v_Position = a_Position;
+                gl_Position = vec4(a_Position, 1.0);
             }
         """.trimIndent()
 
@@ -84,8 +63,10 @@ abstract class Application {
             
             layout(location = 0) out vec4 color;
             
+            in vec3 v_Position;
+            
             void main() {
-                color = vec4(0.8, 0.2, 0.3, 1.0);
+                color = vec4(v_Position * 0.5 + 0.5, 1.0);
             }
         """.trimIndent()
 
@@ -114,7 +95,7 @@ abstract class Application {
 
             shader.bind()
             glBindVertexArray(vertexArray)
-            glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, null)
+            glDrawElements(GL_TRIANGLES, indexBuffer.count, GL_UNSIGNED_INT, null)
 
             layerStack.forEach { it.onUpdate() }
 

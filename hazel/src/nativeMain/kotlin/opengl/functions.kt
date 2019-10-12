@@ -1,108 +1,120 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package opengl
 
 import copengl.GL_FALSE
 import copengl.GL_INFO_LOG_LENGTH
 import copengl.GL_TRUE
 import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.COpaquePointer
-import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
+import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.UIntVar
+import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
-import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.sizeOf
 import kotlinx.cinterop.toCPointer
 import kotlinx.cinterop.toKString
+import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
+
+// convenience functions for kotlin use of OpenGL functions
 
 // A
 
-fun glAttachShader(program: UInt, shader: UInt) = copengl.glAttachShader!!(program, shader)
+inline fun glAttachShader(program: UInt, shader: UInt) = copengl.glAttachShader!!(program, shader)
 
 
 // B
 
-fun glBindBuffer(target: Int, buffer: UInt) = copengl.glBindBuffer!!(target.convert(), buffer)
+inline fun glBindBuffer(target: Int, buffer: UInt) = copengl.glBindBuffer!!(target.convert(), buffer)
 
-fun glBindVertexArray(array: UInt) = copengl.glBindVertexArray!!(array)
+inline fun glBindVertexArray(array: UInt) = copengl.glBindVertexArray!!(array)
 
-fun glBufferData(
-    target: Int,
-    size: Long,
-    data: COpaquePointer,
-    usage: Int
-) = copengl.glBufferData!!(target.convert(), size, data, usage.convert())
+inline fun glBufferData(target: Int, data: FloatArray, usage: Int) = data.usePinned {
+    copengl.glBufferData!!(target.convert(), data.size * sizeOf<FloatVar>(), it.addressOf(0), usage.convert())
+}
+
+inline fun glBufferData(target: Int, data: UIntArray, usage: Int) = data.usePinned {
+    copengl.glBufferData!!(target.convert(), data.size * sizeOf<UIntVar>(), it.addressOf(0), usage.convert())
+}
 
 
 // C
 
-fun glCompileShader(shader: UInt) = copengl.glCompileShader!!(shader)
+inline fun glCompileShader(shader: UInt) = copengl.glCompileShader!!(shader)
 
-fun glCreateProgram() = copengl.glCreateProgram!!()
+inline fun glCreateBuffer() = glCreateBuffers(1).first()
 
-fun glCreateShader(shaderType: Int): UInt = copengl.glCreateShader!!(shaderType.convert())
+inline fun glCreateBuffers(n: Int) = UIntArray(n).apply {
+    usePinned { copengl.glCreateBuffers!!(n, it.addressOf(0)) }
+}
+
+inline fun glCreateProgram() = copengl.glCreateProgram!!()
+
+inline fun glCreateShader(shaderType: Int): UInt = copengl.glCreateShader!!(shaderType.convert())
 
 
 // D
 
-fun glDeleteProgram(program: UInt) = copengl.glDeleteProgram!!(program)
+inline fun glDeleteBuffer(buffer: UInt) = glDeleteBuffers(1, uintArrayOf(buffer))
 
-fun glDeleteShader(shader: UInt) = copengl.glDeleteShader!!(shader)
+inline fun glDeleteBuffers(n: Int, buffers: UIntArray) {
+    buffers.usePinned { copengl.glDeleteBuffers!!(n, it.addressOf(0)) }
+}
 
-fun glDetachShader(program: UInt, shader: UInt) = copengl.glDetachShader!!(program, shader)
+inline fun glDeleteProgram(program: UInt) = copengl.glDeleteProgram!!(program)
+
+inline fun glDeleteShader(shader: UInt) = copengl.glDeleteShader!!(shader)
+
+inline fun glDetachShader(program: UInt, shader: UInt) = copengl.glDetachShader!!(program, shader)
 
 
 // E
 
-fun glEnableVertexAttribArray(index: UInt) = copengl.glEnableVertexAttribArray!!(index)
+inline fun glEnableVertexAttribArray(index: UInt) = copengl.glEnableVertexAttribArray!!(index)
 
 
 // G
 
-fun glGenBuffer() = memScoped {
-    val b = alloc<UIntVar>()
-    glGenBuffers(1, b.ptr)
-    b.value
+inline fun glGenBuffer() = glGenBuffers(1).first()
+
+inline fun glGenBuffers(n: Int) = UIntArray(n).apply {
+    usePinned { copengl.glGenBuffers!!(n, it.addressOf(0)) }
 }
 
-fun glGenBuffers(n: Int, buffers: CPointer<UIntVar>) = copengl.glGenBuffers!!(n, buffers)
+inline fun glGenVertexArray() = glGenVertexArrays(1).first()
 
-fun glGenVertexArray() = memScoped {
-    val va = alloc<UIntVar>()
-    glGenVertexArrays(1, va.ptr)
-    va.value
+inline fun glGenVertexArrays(n: Int) = UIntArray(n).apply {
+    usePinned { copengl.glGenVertexArrays!!(n, it.addressOf(0)) }
 }
 
-fun glGenVertexArrays(n: Int, arrays: CPointer<UIntVar>) = copengl.glGenVertexArrays!!(n, arrays)
-
-fun glGetProgramInfoLog(program: UInt) = memScoped {
+inline fun glGetProgramInfoLog(program: UInt): String {
     val maxLength = glGetProgramiv(program, GL_INFO_LOG_LENGTH)
-    val length = alloc<IntVar>()
-    val infoLog = allocArray<ByteVar>(maxLength)
-    copengl.glGetProgramInfoLog!!(program, maxLength, length.ptr, infoLog)
-    infoLog.toKString()
+    return ByteArray(maxLength).apply {
+        usePinned { copengl.glGetProgramInfoLog!!(program, maxLength, null, it.addressOf(0)) }
+    }.toKString()
 }
 
-fun glGetProgramiv(program: UInt, pname: Int) = memScoped {
+inline fun glGetProgramiv(program: UInt, pname: Int) = memScoped {
     val iv = alloc<IntVar>()
     copengl.glGetProgramiv!!(program, pname.convert(), iv.ptr)
     iv.value
 }
 
-fun glGetShaderInfoLog(shader: UInt) = memScoped {
+inline fun glGetShaderInfoLog(shader: UInt): String {
     val maxLength = glGetShaderiv(shader, GL_INFO_LOG_LENGTH)
-    val length = alloc<IntVar>()
-    val infoLog = allocArray<ByteVar>(maxLength)
-    copengl.glGetShaderInfoLog!!(shader, maxLength, length.ptr, infoLog)
-    infoLog.toKString()
+    return ByteArray(maxLength).apply {
+        usePinned { copengl.glGetShaderInfoLog!!(shader, maxLength, null, it.addressOf(0)) }
+    }.toKString()
 }
 
-fun glGetShaderiv(shader: UInt, pname: Int): Int = memScoped {
+inline fun glGetShaderiv(shader: UInt, pname: Int): Int = memScoped {
     val iv = alloc<IntVar>()
     copengl.glGetShaderiv!!(shader, pname.convert(), iv.ptr)
     iv.value
@@ -111,12 +123,12 @@ fun glGetShaderiv(shader: UInt, pname: Int): Int = memScoped {
 
 // L
 
-fun glLinkProgram(program: UInt) = copengl.glLinkProgram!!(program)
+inline fun glLinkProgram(program: UInt) = copengl.glLinkProgram!!(program)
 
 
 // S
 
-fun glShaderSource(shader: UInt, string: String) = memScoped {
+inline fun glShaderSource(shader: UInt, string: String) = memScoped {
     val source = alloc<CPointerVar<ByteVar>>()
     source.value = string.cstr.ptr
     copengl.glShaderSource!!(shader, 1, source.ptr, 0L.toCPointer())
@@ -125,23 +137,18 @@ fun glShaderSource(shader: UInt, string: String) = memScoped {
 
 // U
 
-fun glUseProgram(program: UInt) = copengl.glUseProgram!!(program)
+inline fun glUseProgram(program: UInt) = copengl.glUseProgram!!(program)
 
 
 // V
 
-fun glVertexAttribPointer(
-    index: UInt,
-    size: Int,
-    type: Int,
-    normalized: Boolean,
-    stride: Int,
-    pointer: Long
-) = copengl.glVertexAttribPointer!!(
-    index,
-    size,
-    type.convert(),
-    if (normalized) GL_TRUE.convert() else GL_FALSE.convert(),
-    stride,
-    pointer.toCPointer()
-)
+inline fun glVertexAttribPointer(index: UInt, size: Int, type: Int, normalized: Boolean, stride: Int, pointer: Long) {
+    copengl.glVertexAttribPointer!!(
+        index,
+        size,
+        type.convert(),
+        if (normalized) GL_TRUE.convert() else GL_FALSE.convert(),
+        stride,
+        pointer.toCPointer()
+    )
+}

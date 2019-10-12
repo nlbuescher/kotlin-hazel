@@ -5,6 +5,7 @@ import copengl.GL_FALSE
 import copengl.GL_FRAGMENT_SHADER
 import copengl.GL_LINK_STATUS
 import copengl.GL_VERTEX_SHADER
+import hazel.Disposable
 import hazel.Hazel
 import opengl.glAttachShader
 import opengl.glCompileShader
@@ -20,10 +21,6 @@ import opengl.glGetShaderiv
 import opengl.glLinkProgram
 import opengl.glShaderSource
 import opengl.glUseProgram
-
-interface Disposable {
-    fun dispose()
-}
 
 class Shader(vertexSource: String, fragmentSource: String) : Disposable {
 
