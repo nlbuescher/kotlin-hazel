@@ -142,13 +142,13 @@ inline fun glUseProgram(program: UInt) = copengl.glUseProgram!!(program)
 
 // V
 
-inline fun glVertexAttribPointer(index: UInt, size: Int, type: Int, normalized: Boolean, stride: Int, pointer: Long) {
+inline fun glVertexAttribPointer(index: UInt, size: Int, type: Int, normalized: Boolean, stride: Int, pointer: Int) {
     copengl.glVertexAttribPointer!!(
         index,
         size,
         type.convert(),
         if (normalized) GL_TRUE.convert() else GL_FALSE.convert(),
         stride,
-        pointer.toCPointer()
+        pointer.toLong().toCPointer()
     )
 }

@@ -16,6 +16,8 @@ class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
     }
 
+    override var layout = BufferLayout()
+
     override fun bind() {
         glBindBuffer(GL_ARRAY_BUFFER, rendererId)
     }

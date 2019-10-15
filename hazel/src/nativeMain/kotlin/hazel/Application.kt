@@ -1,23 +1,40 @@
 package hazel
 
+import copengl.GL_BOOL
 import copengl.GL_COLOR_BUFFER_BIT
 import copengl.GL_FLOAT
+import copengl.GL_INT
 import copengl.GL_TRIANGLES
 import copengl.GL_UNSIGNED_INT
 import copengl.glClear
 import copengl.glClearColor
 import copengl.glDrawElements
+import hazel.renderer.BufferElement
+import hazel.renderer.BufferLayout
 import hazel.renderer.IndexBuffer
 import hazel.renderer.Shader
+import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexBuffer
 import hazel.renderer.indexBufferOf
 import hazel.renderer.vertexBufferOf
-import kotlinx.cinterop.FloatVar
-import kotlinx.cinterop.sizeOf
 import opengl.glBindVertexArray
 import opengl.glEnableVertexAttribArray
 import opengl.glGenVertexArray
 import opengl.glVertexAttribPointer
+
+private fun ShaderDataType.toOpenGLBaseType() = when (this) {
+    ShaderDataType.Boolean -> GL_BOOL
+    ShaderDataType.Int -> GL_INT
+    ShaderDataType.Int2 -> GL_INT
+    ShaderDataType.Int3 -> GL_INT
+    ShaderDataType.Int4 -> GL_INT
+    ShaderDataType.Float -> GL_FLOAT
+    ShaderDataType.Float2 -> GL_FLOAT
+    ShaderDataType.Float3 -> GL_FLOAT
+    ShaderDataType.Float4 -> GL_FLOAT
+    ShaderDataType.Mat3 -> GL_FLOAT
+    ShaderDataType.Mat4 -> GL_FLOAT
+}
 
 abstract class Application {
     val window = Window().apply { setEventCallback(::onEvent) }
@@ -27,21 +44,35 @@ abstract class Application {
     private val imGuiLayer = ImGuiLayer()
 
     private val vertexArray: UInt = glGenVertexArray()
-    private var shader: Shader
-    private var vertexBuffer: VertexBuffer
-    private var indexBuffer: IndexBuffer
+    private val shader: Shader
+    private val vertexBuffer: VertexBuffer
+    private val indexBuffer: IndexBuffer
 
     init {
         glBindVertexArray(vertexArray)
 
         vertexBuffer = vertexBufferOf(
-            -0.5f, -0.5f, 0f,
-            0.5f, -0.5f, 0f,
-            0.0f, 0.5f, 0f
+            -0.5f, -0.5f, 0f, 1f, 0f, 1f, 1f,
+            0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
+            0.0f, 0.5f, 0f, 1f, 1f, 0f, 1f
         )
 
-        glEnableVertexAttribArray(0u)
-        glVertexAttribPointer(0u, 3, GL_FLOAT, false, (3 * sizeOf<FloatVar>()).toInt(), 0)
+        vertexBuffer.layout = BufferLayout(
+            BufferElement(ShaderDataType.Float3, "a_Position"),
+            BufferElement(ShaderDataType.Float4, "a_Color")
+        )
+
+        vertexBuffer.layout.elements.forEachIndexed { index, element ->
+            glEnableVertexAttribArray(index.toUInt())
+            glVertexAttribPointer(
+                index.toUInt(),
+                element.componentCount,
+                GL_FLOAT,
+                element.isNormalized,
+                vertexBuffer.layout.stride,
+                element.offset
+            )
+        }
 
         indexBuffer = indexBufferOf(0u, 1u, 2u)
 
@@ -49,11 +80,14 @@ abstract class Application {
             #version 330 core
             
             layout(location = 0) in vec3 a_Position;
+            layout(location = 1) in vec4 a_Color;
             
             out vec3 v_Position;
+            out vec4 v_Color;
             
             void main() {
                 v_Position = a_Position;
+                v_Color = a_Color;
                 gl_Position = vec4(a_Position, 1.0);
             }
         """.trimIndent()
@@ -64,9 +98,11 @@ abstract class Application {
             layout(location = 0) out vec4 color;
             
             in vec3 v_Position;
+            in vec4 v_Color;
             
             void main() {
                 color = vec4(v_Position * 0.5 + 0.5, 1.0);
+                color = v_Color;
             }
         """.trimIndent()
 
