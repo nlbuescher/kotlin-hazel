@@ -1,9 +1,6 @@
 package hazel
 
-import copengl.GL_BOOL
 import copengl.GL_COLOR_BUFFER_BIT
-import copengl.GL_FLOAT
-import copengl.GL_INT
 import copengl.GL_TRIANGLES
 import copengl.GL_UNSIGNED_INT
 import copengl.glClear
@@ -11,30 +8,11 @@ import copengl.glClearColor
 import copengl.glDrawElements
 import hazel.renderer.BufferElement
 import hazel.renderer.BufferLayout
-import hazel.renderer.IndexBuffer
 import hazel.renderer.Shader
 import hazel.renderer.ShaderDataType
-import hazel.renderer.VertexBuffer
+import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
 import hazel.renderer.vertexBufferOf
-import opengl.glBindVertexArray
-import opengl.glEnableVertexAttribArray
-import opengl.glGenVertexArray
-import opengl.glVertexAttribPointer
-
-private fun ShaderDataType.toOpenGLBaseType() = when (this) {
-    ShaderDataType.Boolean -> GL_BOOL
-    ShaderDataType.Int -> GL_INT
-    ShaderDataType.Int2 -> GL_INT
-    ShaderDataType.Int3 -> GL_INT
-    ShaderDataType.Int4 -> GL_INT
-    ShaderDataType.Float -> GL_FLOAT
-    ShaderDataType.Float2 -> GL_FLOAT
-    ShaderDataType.Float3 -> GL_FLOAT
-    ShaderDataType.Float4 -> GL_FLOAT
-    ShaderDataType.Mat3 -> GL_FLOAT
-    ShaderDataType.Mat4 -> GL_FLOAT
-}
 
 abstract class Application {
     val window = Window().apply { setEventCallback(::onEvent) }
@@ -43,38 +21,21 @@ abstract class Application {
     private val layerStack = LayerStack()
     private val imGuiLayer = ImGuiLayer()
 
-    private val vertexArray: UInt = glGenVertexArray()
     private val shader: Shader
-    private val vertexBuffer: VertexBuffer
-    private val indexBuffer: IndexBuffer
+    private val vertexArray = VertexArray()
 
     init {
-        glBindVertexArray(vertexArray)
-
-        vertexBuffer = vertexBufferOf(
+        val vertexBuffer = vertexBufferOf(
             -0.5f, -0.5f, 0f, 1f, 0f, 1f, 1f,
             0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
             0.0f, 0.5f, 0f, 1f, 1f, 0f, 1f
         )
-
         vertexBuffer.layout = BufferLayout(
             BufferElement(ShaderDataType.Float3, "a_Position"),
             BufferElement(ShaderDataType.Float4, "a_Color")
         )
-
-        vertexBuffer.layout.elements.forEachIndexed { index, element ->
-            glEnableVertexAttribArray(index.toUInt())
-            glVertexAttribPointer(
-                index.toUInt(),
-                element.componentCount,
-                GL_FLOAT,
-                element.isNormalized,
-                vertexBuffer.layout.stride,
-                element.offset
-            )
-        }
-
-        indexBuffer = indexBufferOf(0u, 1u, 2u)
+        vertexArray.addVertexBuffer(vertexBuffer)
+        vertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u)
 
         val vertexSource = """
             #version 330 core
@@ -109,6 +70,50 @@ abstract class Application {
         shader = Shader(vertexSource, fragmentSource)
     }
 
+    private val blueShader: Shader
+    private val squareVertexArray = VertexArray()
+
+    init {
+        val squareVertexBuffer = vertexBufferOf(
+            -0.75f, -0.75f, 0f,
+            0.75f, -0.75f, 0f,
+            0.75f, 0.75f, 0f,
+            -0.75f, 0.75f, 0f
+        )
+        squareVertexBuffer.layout = BufferLayout(
+            BufferElement(ShaderDataType.Float3, "a_Position")
+        )
+        squareVertexArray.addVertexBuffer(squareVertexBuffer)
+        squareVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u, 2u, 3u, 0u)
+
+        val blueVertexSource = """
+            #version 330 core
+            
+            layout(location = 0) in vec3 a_Position;
+            
+            out vec3 v_Position;
+            
+            void main() {
+                v_Position = a_Position;
+                gl_Position = vec4(a_Position, 1.0);
+            }
+        """.trimIndent()
+
+        val blueFragmentSource = """
+            #version 330 core
+            
+            layout(location = 0) out vec4 color;
+            
+            in vec3 v_Position;
+            
+            void main() {
+                color = vec4(0.0, 0.0, 1.0, 1.0);
+            }
+        """.trimIndent()
+
+        blueShader = Shader(blueVertexSource, blueFragmentSource)
+    }
+
 
     fun addLayer(layer: Layer) {
         layerStack.add(layer)
@@ -129,9 +134,13 @@ abstract class Application {
             glClearColor(0.1f, 0.1f, 0.1f, 1f)
             glClear(GL_COLOR_BUFFER_BIT)
 
+            blueShader.bind()
+            squareVertexArray.bind()
+            glDrawElements(GL_TRIANGLES, squareVertexArray.indexBuffer.count, GL_UNSIGNED_INT, null)
+
             shader.bind()
-            glBindVertexArray(vertexArray)
-            glDrawElements(GL_TRIANGLES, indexBuffer.count, GL_UNSIGNED_INT, null)
+            vertexArray.bind()
+            glDrawElements(GL_TRIANGLES, vertexArray.indexBuffer.count, GL_UNSIGNED_INT, null)
 
             layerStack.forEach { it.onUpdate() }
 

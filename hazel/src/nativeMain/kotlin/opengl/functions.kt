@@ -59,6 +59,12 @@ inline fun glCreateProgram() = copengl.glCreateProgram!!()
 
 inline fun glCreateShader(shaderType: Int): UInt = copengl.glCreateShader!!(shaderType.convert())
 
+inline fun glCreateVertexArray() = glCreateVertexArrays(1).first()
+
+inline fun glCreateVertexArrays(n: Int) = UIntArray(n).apply {
+    usePinned { copengl.glCreateVertexArrays!!(n, it.addressOf(0)) }
+}
+
 
 // D
 
@@ -72,6 +78,10 @@ inline fun glDeleteProgram(program: UInt) = copengl.glDeleteProgram!!(program)
 
 inline fun glDeleteShader(shader: UInt) = copengl.glDeleteShader!!(shader)
 
+inline fun glDeleteVertexArrays(vararg arrays: UInt) = arrays.usePinned {
+    copengl.glDeleteVertexArrays!!(arrays.size, it.addressOf(0))
+}
+
 inline fun glDetachShader(program: UInt, shader: UInt) = copengl.glDetachShader!!(program, shader)
 
 
@@ -81,18 +91,6 @@ inline fun glEnableVertexAttribArray(index: UInt) = copengl.glEnableVertexAttrib
 
 
 // G
-
-inline fun glGenBuffer() = glGenBuffers(1).first()
-
-inline fun glGenBuffers(n: Int) = UIntArray(n).apply {
-    usePinned { copengl.glGenBuffers!!(n, it.addressOf(0)) }
-}
-
-inline fun glGenVertexArray() = glGenVertexArrays(1).first()
-
-inline fun glGenVertexArrays(n: Int) = UIntArray(n).apply {
-    usePinned { copengl.glGenVertexArrays!!(n, it.addressOf(0)) }
-}
 
 inline fun glGetProgramInfoLog(program: UInt): String {
     val maxLength = glGetProgramiv(program, GL_INFO_LOG_LENGTH)

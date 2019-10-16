@@ -1,4 +1,4 @@
-package hazel.renderer
+package hazel.renderer.opengl
 
 import cglfw.glfwMakeContextCurrent
 import cglfw.glfwSwapBuffers
@@ -9,6 +9,7 @@ import copengl.GL_VERSION
 import copengl.glGetString
 import copengl.glewInit
 import hazel.Hazel
+import hazel.renderer.GraphicsContext
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.UByteVar

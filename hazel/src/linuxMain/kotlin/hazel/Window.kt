@@ -22,7 +22,7 @@ import cglfw.glfwSetWindowSizeCallback
 import cglfw.glfwSetWindowUserPointer
 import cnames.structs.GLFWwindow
 import hazel.renderer.GraphicsContext
-import hazel.renderer.OpenGLContext
+import hazel.renderer.opengl.OpenGLContext
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.StableRef

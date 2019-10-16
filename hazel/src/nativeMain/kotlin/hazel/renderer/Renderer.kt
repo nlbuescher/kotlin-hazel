@@ -1,9 +1,5 @@
 package hazel.renderer
 
-enum class RenderAPI {
-    None, OpenGL
-}
-
 private var _renderAPI: RenderAPI = RenderAPI.OpenGL
 
 class Renderer {

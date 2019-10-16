@@ -1,8 +1,11 @@
-package hazel.renderer
+package hazel.renderer.opengl
 
 import copengl.GL_ARRAY_BUFFER
 import copengl.GL_ELEMENT_ARRAY_BUFFER
 import copengl.GL_STATIC_DRAW
+import hazel.renderer.BufferLayout
+import hazel.renderer.IndexBuffer
+import hazel.renderer.VertexBuffer
 import opengl.glBindBuffer
 import opengl.glBufferData
 import opengl.glCreateBuffer
