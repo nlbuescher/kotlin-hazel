@@ -16,7 +16,7 @@ import kotlinx.cinterop.UByteVar
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.toKString
 
-class OpenGLContext(
+internal class OpenGLContext(
     private val windowHandle: CPointer<GLFWwindow>
 ) : GraphicsContext {
 

@@ -28,7 +28,7 @@ private fun ShaderDataType.toOpenGLBaseType() = when (this) {
     ShaderDataType.Mat4 -> GL_FLOAT
 }
 
-class OpenGLVertexArray : VertexArray {
+internal class OpenGLVertexArray : VertexArray {
 
     private val rendererId: UInt = glCreateVertexArray()
 

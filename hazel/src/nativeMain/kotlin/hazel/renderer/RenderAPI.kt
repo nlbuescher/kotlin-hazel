@@ -1,5 +1,5 @@
 package hazel.renderer
 
-expect enum class RenderAPI {
+enum class RenderAPI {
     None, OpenGL
 }

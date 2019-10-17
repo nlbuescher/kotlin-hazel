@@ -167,7 +167,7 @@ abstract class Application {
     @Suppress("UNUSED_PARAMETER")
     private fun onWindowClose(event: WindowCloseEvent): Boolean {
         isRunning = false
-        window.close()
+        window.dispose()
         return true
     }
 }

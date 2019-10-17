@@ -1,6 +1,7 @@
 package hazel.renderer
 
 import hazel.Disposable
+import hazel.renderer.opengl.OpenGLVertexArray
 
 interface VertexArray : Disposable {
     fun bind()
@@ -11,4 +12,9 @@ interface VertexArray : Disposable {
     fun addVertexBuffer(vertexBuffer: VertexBuffer)
 }
 
-expect fun VertexArray(): VertexArray
+fun VertexArray(): VertexArray {
+    return when (Renderer.renderAPI) {
+        RenderAPI.None -> TODO("RenderAPI.None is currently not supported")
+        RenderAPI.OpenGL -> OpenGLVertexArray()
+    }
+}

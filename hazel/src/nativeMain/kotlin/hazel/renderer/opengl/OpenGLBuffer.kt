@@ -11,7 +11,7 @@ import opengl.glBufferData
 import opengl.glCreateBuffer
 import opengl.glDeleteBuffer
 
-class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
+internal class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
     private val rendererId: UInt = glCreateBuffer()
 
     init {

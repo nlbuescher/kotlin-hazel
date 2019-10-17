@@ -1,6 +1,8 @@
 package hazel.renderer
 
 import hazel.Disposable
+import hazel.renderer.opengl.OpenGLIndexBuffer
+import hazel.renderer.opengl.OpenGLVertexBuffer
 
 // TODO build DSL for building BufferLayouts
 
@@ -55,7 +57,12 @@ interface VertexBuffer : Disposable {
     var layout: BufferLayout
 }
 
-expect fun vertexBufferOf(vararg vertices: Float): VertexBuffer
+fun vertexBufferOf(vararg vertices: Float): VertexBuffer {
+    return when (Renderer.renderAPI) {
+        RenderAPI.None -> TODO("RenderAPI.None is currently not supported")
+        RenderAPI.OpenGL -> OpenGLVertexBuffer(vertices)
+    }
+}
 
 interface IndexBuffer : Disposable {
     val count: Int
@@ -63,4 +70,9 @@ interface IndexBuffer : Disposable {
     fun unbind()
 }
 
-expect fun indexBufferOf(vararg indices: UInt): IndexBuffer
+fun indexBufferOf(vararg indices: UInt): IndexBuffer {
+    return when (Renderer.renderAPI) {
+        RenderAPI.None -> TODO("RenderAPI.None is currently not supported")
+        RenderAPI.OpenGL -> OpenGLIndexBuffer(indices)
+    }
+}
