@@ -47,6 +47,8 @@ inline fun glBufferData(target: Int, data: UIntArray, usage: Int) = data.usePinn
 
 // C
 
+inline fun glClear(mask: Int) = copengl.glClear(mask.convert())
+
 inline fun glCompileShader(shader: UInt) = copengl.glCompileShader!!(shader)
 
 inline fun glCreateBuffer() = glCreateBuffers(1).first()

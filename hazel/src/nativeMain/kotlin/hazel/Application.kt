@@ -1,13 +1,10 @@
 package hazel
 
-import copengl.GL_COLOR_BUFFER_BIT
-import copengl.GL_TRIANGLES
-import copengl.GL_UNSIGNED_INT
-import copengl.glClear
-import copengl.glClearColor
-import copengl.glDrawElements
+import hazel.math.Float4
 import hazel.renderer.BufferElement
 import hazel.renderer.BufferLayout
+import hazel.renderer.RenderCommand
+import hazel.renderer.Renderer
 import hazel.renderer.Shader
 import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
@@ -131,16 +128,18 @@ abstract class Application {
         addOverlay(imGuiLayer)
 
         while (isRunning) {
-            glClearColor(0.1f, 0.1f, 0.1f, 1f)
-            glClear(GL_COLOR_BUFFER_BIT)
+            RenderCommand.setClearColor(Float4(0.1f, 0.1f, 0.1f, 1f))
+            RenderCommand.clear()
+
+            Renderer.beginScene()
 
             blueShader.bind()
-            squareVertexArray.bind()
-            glDrawElements(GL_TRIANGLES, squareVertexArray.indexBuffer.count, GL_UNSIGNED_INT, null)
+            Renderer.submit(squareVertexArray)
 
             shader.bind()
-            vertexArray.bind()
-            glDrawElements(GL_TRIANGLES, vertexArray.indexBuffer.count, GL_UNSIGNED_INT, null)
+            Renderer.submit(vertexArray)
+
+            Renderer.endScene()
 
             layerStack.forEach { it.onUpdate() }
 
