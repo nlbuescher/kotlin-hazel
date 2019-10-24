@@ -7,6 +7,7 @@ import copengl.GL_LINK_STATUS
 import copengl.GL_VERTEX_SHADER
 import hazel.Disposable
 import hazel.Hazel
+import hazel.math.FloatMatrix4x4
 import opengl.glAttachShader
 import opengl.glCompileShader
 import opengl.glCreateProgram
@@ -18,8 +19,10 @@ import opengl.glGetProgramInfoLog
 import opengl.glGetProgramiv
 import opengl.glGetShaderInfoLog
 import opengl.glGetShaderiv
+import opengl.glGetUniformLocation
 import opengl.glLinkProgram
 import opengl.glShaderSource
+import opengl.glUniformMatrix4fv
 import opengl.glUseProgram
 
 class Shader(vertexSource: String, fragmentSource: String) : Disposable {
@@ -112,6 +115,11 @@ class Shader(vertexSource: String, fragmentSource: String) : Disposable {
 
     fun unbind() {
         glUseProgram(0u)
+    }
+
+    fun uploadUniform(name: String, matrix: FloatMatrix4x4) {
+        val location = glGetUniformLocation(rendererId, name)
+        glUniformMatrix4fv(location, false, matrix)
     }
 
     override fun dispose() {

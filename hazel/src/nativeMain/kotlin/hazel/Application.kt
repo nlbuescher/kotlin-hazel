@@ -1,8 +1,9 @@
 package hazel
 
-import hazel.math.Float4
+import hazel.math.FloatVector4
 import hazel.renderer.BufferElement
 import hazel.renderer.BufferLayout
+import hazel.renderer.OrthographicCamera
 import hazel.renderer.RenderCommand
 import hazel.renderer.Renderer
 import hazel.renderer.Shader
@@ -10,6 +11,8 @@ import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
 import hazel.renderer.vertexBufferOf
+import kotlin.math.PI
+import kotlin.system.measureTimeMicros
 
 abstract class Application {
     val window = Window().apply { setEventCallback(::onEvent) }
@@ -17,6 +20,7 @@ abstract class Application {
     private var isRunning: Boolean = true
     private val layerStack = LayerStack()
     private val imGuiLayer = ImGuiLayer()
+    val camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f)
 
     private val shader: Shader
     private val vertexArray = VertexArray()
@@ -40,13 +44,15 @@ abstract class Application {
             layout(location = 0) in vec3 a_Position;
             layout(location = 1) in vec4 a_Color;
             
+            uniform mat4 u_ViewProjection;
+            
             out vec3 v_Position;
             out vec4 v_Color;
             
             void main() {
                 v_Position = a_Position;
                 v_Color = a_Color;
-                gl_Position = vec4(a_Position, 1.0);
+                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
             }
         """.trimIndent()
 
@@ -88,11 +94,13 @@ abstract class Application {
             
             layout(location = 0) in vec3 a_Position;
             
+            uniform mat4 u_ViewProjection;
+
             out vec3 v_Position;
             
             void main() {
                 v_Position = a_Position;
-                gl_Position = vec4(a_Position, 1.0);
+                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
             }
         """.trimIndent()
 
@@ -128,26 +136,26 @@ abstract class Application {
         addOverlay(imGuiLayer)
 
         while (isRunning) {
-            RenderCommand.setClearColor(Float4(0.1f, 0.1f, 0.1f, 1f))
-            RenderCommand.clear()
+            val frameTime = measureTimeMicros {
+                RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
+                RenderCommand.clear()
 
-            Renderer.beginScene()
+                camera.rotation = (45 * PI / 180).toFloat()
 
-            blueShader.bind()
-            Renderer.submit(squareVertexArray)
+                Renderer.scene(camera) {
+                    submit(blueShader, squareVertexArray)
+                    submit(shader, vertexArray)
+                }
 
-            shader.bind()
-            Renderer.submit(vertexArray)
+                layerStack.forEach { it.onUpdate() }
 
-            Renderer.endScene()
+                imGuiLayer.begin()
+                layerStack.forEach { it.onImGuiRender() }
+                imGuiLayer.end()
 
-            layerStack.forEach { it.onUpdate() }
-
-            imGuiLayer.begin()
-            layerStack.forEach { it.onImGuiRender() }
-            imGuiLayer.end()
-
-            window.onUpdate()
+                window.onUpdate()
+            }
+            Hazel.debug { "FPS: ${100_000_000 / frameTime / 100f}" }
         }
     }
 

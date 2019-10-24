@@ -6,13 +6,13 @@ import copengl.GL_TRIANGLES
 import copengl.GL_UNSIGNED_INT
 import copengl.glClearColor
 import copengl.glDrawElements
-import hazel.math.Float4
+import hazel.math.FloatVector4
 import hazel.renderer.RenderAPI
 import hazel.renderer.VertexArray
 import opengl.glClear
 
 class OpenGLRenderAPI : RenderAPI {
-    override fun setClearColor(color: Float4) {
+    override fun setClearColor(color: FloatVector4) {
         glClearColor(color.r, color.g, color.b, color.a)
     }
 

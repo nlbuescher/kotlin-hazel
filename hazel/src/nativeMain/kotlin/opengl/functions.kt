@@ -5,6 +5,7 @@ package opengl
 import copengl.GL_FALSE
 import copengl.GL_INFO_LOG_LENGTH
 import copengl.GL_TRUE
+import hazel.math.FloatMatrix4x4
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointerVar
 import kotlinx.cinterop.FloatVar
@@ -16,6 +17,7 @@ import kotlinx.cinterop.convert
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.placeTo
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.sizeOf
 import kotlinx.cinterop.toCPointer
@@ -120,6 +122,10 @@ internal inline fun glGetShaderiv(shader: UInt, pname: Int): Int = memScoped {
     iv.value
 }
 
+internal inline fun glGetUniformLocation(program: UInt, name: String): Int = memScoped {
+    copengl.glGetUniformLocation!!(program, name.cstr.placeTo(memScope))
+}
+
 
 // L
 
@@ -136,6 +142,12 @@ internal inline fun glShaderSource(shader: UInt, string: String) = memScoped {
 
 
 // U
+
+internal inline fun glUniformMatrix4fv(location: Int, transpose: Boolean, matrix: FloatMatrix4x4) {
+    matrix.toFloatArray().usePinned {
+        copengl.glUniformMatrix4fv!!(location, 1, if (transpose) GL_TRUE.convert() else GL_FALSE.convert(), it.addressOf(0))
+    }
+}
 
 internal inline fun glUseProgram(program: UInt) = copengl.glUseProgram!!(program)
 
