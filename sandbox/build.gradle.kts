@@ -28,4 +28,12 @@ kotlin {
             }
         }
     }
+
+    sourceSets.all {
+        languageSettings.apply {
+            enableLanguageFeature("MultiPlatformProjects")
+            enableLanguageFeature("InlineClasses")
+            useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+        }
+    }
 }

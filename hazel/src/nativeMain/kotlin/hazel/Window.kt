@@ -13,6 +13,7 @@ import cglfw.glfwInit
 import cglfw.glfwPollEvents
 import cglfw.glfwSetCharCallback
 import cglfw.glfwSetCursorPosCallback
+import cglfw.glfwSetErrorCallback
 import cglfw.glfwSetKeyCallback
 import cglfw.glfwSetMouseButtonCallback
 import cglfw.glfwSetScrollCallback
@@ -32,6 +33,7 @@ import kotlinx.cinterop.asStableRef
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.staticCFunction
+import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
 import kotlin.native.concurrent.ensureNeverFrozen
 
@@ -136,6 +138,10 @@ class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) :
     companion object {
         operator fun invoke(width: Int = 1280, height: Int = 720, title: String = "Hazel Engine"): Window {
             Hazel.coreAssert(glfwInit() == GLFW_TRUE) { "Could not initialize GLFW!" }
+
+            glfwSetErrorCallback(staticCFunction { error, message ->
+                Hazel.error { "GLFW error ($error): ${message?.toKString()}" }
+            })
 
             glfwDefaultWindowHints()
 
