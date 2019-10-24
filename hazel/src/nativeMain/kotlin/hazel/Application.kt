@@ -1,6 +1,7 @@
 package hazel
 
 import hazel.math.FloatVector4
+import hazel.math.degrees
 import hazel.renderer.BufferElement
 import hazel.renderer.BufferLayout
 import hazel.renderer.OrthographicCamera
@@ -11,8 +12,6 @@ import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
 import hazel.renderer.vertexBufferOf
-import kotlin.math.PI
-import kotlin.system.measureTimeMicros
 
 abstract class Application {
     val window = Window().apply { setEventCallback(::onEvent) }
@@ -136,26 +135,23 @@ abstract class Application {
         addOverlay(imGuiLayer)
 
         while (isRunning) {
-            val frameTime = measureTimeMicros {
-                RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
-                RenderCommand.clear()
+            RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
+            RenderCommand.clear()
 
-                camera.rotation = (45 * PI / 180).toFloat()
+            camera.rotation = 45f.degrees
 
-                Renderer.scene(camera) {
-                    submit(blueShader, squareVertexArray)
-                    submit(shader, vertexArray)
-                }
-
-                layerStack.forEach { it.onUpdate() }
-
-                imGuiLayer.begin()
-                layerStack.forEach { it.onImGuiRender() }
-                imGuiLayer.end()
-
-                window.onUpdate()
+            Renderer.scene(camera) {
+                submit(blueShader, squareVertexArray)
+                submit(shader, vertexArray)
             }
-            Hazel.debug { "FPS: ${100_000_000 / frameTime / 100f}" }
+
+            layerStack.forEach { it.onUpdate() }
+
+            imGuiLayer.begin()
+            layerStack.forEach { it.onImGuiRender() }
+            imGuiLayer.end()
+
+            window.onUpdate()
         }
     }
 

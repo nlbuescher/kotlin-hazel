@@ -7,6 +7,30 @@ sealed class Matrix4x4<T : Number> {
     abstract operator fun get(row: Int): Vector4<T>
     abstract operator fun set(row: Int, value: Vector4<T>)
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Matrix4x4<*>) return false
+
+        if (this[0] != other[0]) return false
+        if (this[1] != other[1]) return false
+        if (this[2] != other[2]) return false
+        if (this[3] != other[3]) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = this[0].hashCode()
+        result += 31 * this[1].hashCode()
+        result += 31 * this[2].hashCode()
+        result += 31 * this[3].hashCode()
+        return result
+    }
+
+    override fun toString() = "${this[0]}\n${this[1]}\n${this[2]}\n${this[3]}"
+
+    abstract fun copy(): Matrix4x4<T>
+
     // matrix
 
     abstract fun inv(): Matrix4x4<T>
@@ -20,24 +44,20 @@ sealed class Matrix4x4<T : Number> {
     abstract operator fun times(scalar: T): Matrix4x4<T>
     abstract operator fun div(scalar: T): Matrix4x4<T>
 
-/*
     abstract operator fun plusAssign(scalar: T)
     abstract operator fun minusAssign(scalar: T)
     abstract operator fun timesAssign(scalar: T)
     abstract operator fun divAssign(scalar: T)
-*/
 
     abstract operator fun plus(other: Matrix4x4<T>): Matrix4x4<T>
     abstract operator fun minus(other: Matrix4x4<T>): Matrix4x4<T>
     abstract operator fun times(other: Matrix4x4<T>): Matrix4x4<T>
     abstract operator fun div(other: Matrix4x4<T>): Matrix4x4<T>
 
-/*
     abstract operator fun plusAssign(other: Matrix4x4<T>)
     abstract operator fun minusAssign(other: Matrix4x4<T>)
     abstract operator fun timesAssign(other: Matrix4x4<T>)
     abstract operator fun divAssign(other: Matrix4x4<T>)
-*/
 }
 
 class FloatMatrix4x4(
@@ -77,7 +97,7 @@ class FloatMatrix4x4(
         else -> throw IndexOutOfBoundsException()
     }
 
-    fun copy() = FloatMatrix4x4(this[0].copy(), this[1].copy(), this[2].copy(), this[3].copy())
+    override fun copy() = FloatMatrix4x4(this[0].copy(), this[1].copy(), this[2].copy(), this[3].copy())
 
     fun toFloatArray() = floatArrayOf(*this[0].toFloatArray(), *this[1].toFloatArray(), *this[2].toFloatArray(), *this[3].toFloatArray())
 
@@ -145,12 +165,10 @@ class FloatMatrix4x4(
     override fun times(scalar: Float) = FloatMatrix4x4(this[0] * scalar, this[1] * scalar, this[2] * scalar, this[3] * scalar)
     override fun div(scalar: Float) = FloatMatrix4x4(this[0] / scalar, this[1] / scalar, this[2] / scalar, this[3] / scalar)
 
-/*
     override fun plusAssign(scalar: Float) = run { this[0].plusAssign(scalar); this[1].plusAssign(scalar); this[2].plusAssign(scalar); this[3].plusAssign(scalar) }
     override fun minusAssign(scalar: Float) = run { this[0].minusAssign(scalar); this[1].minusAssign(scalar); this[2].minusAssign(scalar); this[3].minusAssign(scalar) }
     override fun timesAssign(scalar: Float) = run { this[0].timesAssign(scalar); this[1].timesAssign(scalar); this[2].timesAssign(scalar); this[3].timesAssign(scalar) }
     override fun divAssign(scalar: Float) = run { this[0].divAssign(scalar); this[1].divAssign(scalar); this[2].divAssign(scalar); this[3].divAssign(scalar) }
-*/
 
 
     override fun plus(other: Matrix4x4<Float>) = FloatMatrix4x4(this[0] + other[0], this[1] + other[1], this[2] + other[2], this[3] + other[3])
@@ -165,43 +183,36 @@ class FloatMatrix4x4(
     override fun div(other: Matrix4x4<Float>) = this * other.inv()
 
 
-/*
     override fun plusAssign(other: Matrix4x4<Float>) = run { this[0].plusAssign(other[0]); this[1].plusAssign(other[1]); this[2].plusAssign(other[2]); this[3].plusAssign(other[3]) }
     override fun minusAssign(other: Matrix4x4<Float>) = run { this[0].minusAssign(other[0]); this[1].minusAssign(other[1]); this[2].minusAssign(other[2]); this[3].minusAssign(other[3]) }
     override fun timesAssign(other: Matrix4x4<Float>) {
-        val (a00, a01, a02, a03) = this[0]
-        val (a10, a11, a12, a13) = this[1]
-        val (a20, a21, a22, a23) = this[2]
-        val (a30, a31, a32, a33) = this[3]
+        val temp00 = this[0][0] * other[0][0] + this[1][0] * other[0][1] + this[2][0] * other[0][2] + this[3][0] * other[0][3]
+        val temp01 = this[0][1] * other[0][0] + this[1][1] * other[0][1] + this[2][1] * other[0][2] + this[3][1] * other[0][3]
+        val temp02 = this[0][2] * other[0][0] + this[1][2] * other[0][1] + this[2][2] * other[0][2] + this[3][2] * other[0][3]
+        val temp03 = this[0][3] * other[0][0] + this[1][3] * other[0][1] + this[2][3] * other[0][2] + this[3][3] * other[0][3]
 
-        val (b00, b01, b02, b03) = this[0]
-        val (b10, b11, b12, b13) = this[1]
-        val (b20, b21, b22, b23) = this[2]
-        val (b30, b31, b32, b33) = this[3]
+        val temp10 = this[0][0] * other[1][0] + this[1][0] * other[1][1] + this[2][0] * other[1][2] + this[3][0] * other[1][3]
+        val temp11 = this[0][1] * other[1][0] + this[1][1] * other[1][1] + this[2][1] * other[1][2] + this[3][1] * other[1][3]
+        val temp12 = this[0][2] * other[1][0] + this[1][2] * other[1][1] + this[2][2] * other[1][2] + this[3][2] * other[1][3]
+        val temp13 = this[0][3] * other[1][0] + this[1][3] * other[1][1] + this[2][3] * other[1][2] + this[3][3] * other[1][3]
 
-        this[0][0] = a00 * b00 + a10 * b01 + a20 * b02 + a30 * b03
-        this[0][1] = a01 * b00 + a11 * b01 + a21 * b02 + a31 * b03
-        this[0][2] = a02 * b00 + a12 * b01 + a22 * b02 + a32 * b03
-        this[0][3] = a03 * b00 + a13 * b01 + a23 * b02 + a33 * b03
+        val temp20 = this[0][0] * other[2][0] + this[1][0] * other[2][1] + this[2][0] * other[2][2] + this[3][0] * other[2][3]
+        val temp21 = this[0][1] * other[2][0] + this[1][1] * other[2][1] + this[2][1] * other[2][2] + this[3][1] * other[2][3]
+        val temp22 = this[0][2] * other[2][0] + this[1][2] * other[2][1] + this[2][2] * other[2][2] + this[3][2] * other[2][3]
+        val temp23 = this[0][3] * other[2][0] + this[1][3] * other[2][1] + this[2][3] * other[2][2] + this[3][3] * other[2][3]
 
-        this[1][0] = a00 * b10 + a10 * b11 + a20 * b12 + a30 * b13
-        this[1][1] = a01 * b10 + a11 * b11 + a21 * b12 + a31 * b13
-        this[1][2] = a02 * b10 + a12 * b11 + a22 * b12 + a32 * b13
-        this[1][3] = a03 * b10 + a13 * b11 + a23 * b12 + a33 * b13
+        val temp30 = this[0][0] * other[3][0] + this[1][0] * other[3][1] + this[2][0] * other[3][2] + this[3][0] * other[3][3]
+        val temp31 = this[0][1] * other[3][0] + this[1][1] * other[3][1] + this[2][1] * other[3][2] + this[3][1] * other[3][3]
+        val temp32 = this[0][2] * other[3][0] + this[1][2] * other[3][1] + this[2][2] * other[3][2] + this[3][2] * other[3][3]
+        val temp33 = this[0][3] * other[3][0] + this[1][3] * other[3][1] + this[2][3] * other[3][2] + this[3][3] * other[3][3]
 
-        this[2][0] = a00 * b20 + a10 * b21 + a20 * b22 + a30 * b23
-        this[2][1] = a01 * b20 + a11 * b21 + a21 * b22 + a31 * b23
-        this[2][2] = a02 * b20 + a12 * b21 + a22 * b22 + a32 * b23
-        this[2][3] = a03 * b20 + a13 * b21 + a23 * b22 + a33 * b23
-
-        this[3][0] = a00 * b30 + a10 * b31 + a20 * b32 + a30 * b33
-        this[3][1] = a01 * b30 + a11 * b31 + a21 * b32 + a31 * b33
-        this[3][2] = a02 * b30 + a12 * b31 + a22 * b32 + a32 * b33
-        this[3][3] = a03 * b30 + a13 * b31 + a23 * b32 + a33 * b33
+        this[0][0] = temp00; this[0][1] = temp01; this[0][2] = temp02; this[0][3] = temp03
+        this[1][0] = temp10; this[1][1] = temp11; this[1][2] = temp12; this[1][3] = temp13
+        this[2][0] = temp20; this[2][1] = temp21; this[2][2] = temp22; this[2][3] = temp23
+        this[3][0] = temp30; this[3][1] = temp31; this[3][2] = temp32; this[3][3] = temp33
     }
 
     override fun divAssign(other: Matrix4x4<Float>) = this.timesAssign(other.inv())
-*/
 
 
     override fun translate(vector: Vector3<Float>) = copy().also {

@@ -1,5 +1,9 @@
 package hazel.math
 
+import kotlin.math.PI
+
+val Float.degrees: Float get() = (this * PI / 180).toFloat()
+
 fun orthographicProjectionOf(
     left: Float,
     right: Float,

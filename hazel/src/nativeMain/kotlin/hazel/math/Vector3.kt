@@ -2,7 +2,7 @@ package hazel.math
 
 import kotlin.math.sqrt
 
-abstract class Vector3<T : Number> {
+sealed class Vector3<T : Number> {
     abstract var x: T
     abstract var y: T
     abstract var z: T
@@ -11,8 +11,35 @@ abstract class Vector3<T : Number> {
     operator fun component2() = y
     operator fun component3() = z
 
-    abstract operator fun get(index: Int): T
-    abstract operator fun set(index: Int, value: T)
+    operator fun get(index: Int): T = when (index) {
+        0 -> x; 1 -> y; 2 -> z
+        else -> throw IndexOutOfBoundsException()
+    }
+
+    operator fun set(index: Int, value: T) = when (index) {
+        0 -> x = value; 1 -> y = value; 2 -> z = value
+        else -> throw IndexOutOfBoundsException()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Vector3<*>) return false
+
+        if (x != other.x) return false
+        if (y != other.y) return false
+        if (z != other.z) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = x.hashCode()
+        result = 31 * result + y.hashCode()
+        result = 31 * result + z.hashCode()
+        return result
+    }
+
+    override fun toString() = "[$x, $y, $z]"
 
     abstract fun copy(): Vector3<T>
 
@@ -32,24 +59,20 @@ abstract class Vector3<T : Number> {
     abstract operator fun times(scalar: T): Vector3<T>
     abstract operator fun div(scalar: T): Vector3<T>
 
-/*
     abstract operator fun plusAssign(scalar: T)
     abstract operator fun minusAssign(scalar: T)
     abstract operator fun timesAssign(scalar: T)
     abstract operator fun divAssign(scalar: T)
-*/
 
     abstract operator fun plus(other: Vector3<T>): Vector3<T>
     abstract operator fun minus(other: Vector3<T>): Vector3<T>
     abstract operator fun times(other: Vector3<T>): Vector3<T>
     abstract operator fun div(other: Vector3<T>): Vector3<T>
 
-/*
     abstract operator fun plusAssign(other: Vector3<T>)
     abstract operator fun minusAssign(other: Vector3<T>)
     abstract operator fun timesAssign(other: Vector3<T>)
     abstract operator fun divAssign(other: Vector3<T>)
-*/
 }
 
 class FloatVector3(
@@ -58,16 +81,6 @@ class FloatVector3(
     override var z: Float
 ) : Vector3<Float>() {
     constructor() : this(0f, 0f, 0f)
-
-    override fun get(index: Int): Float = when (index) {
-        0 -> x; 1 -> y; 2 -> z
-        else -> throw IndexOutOfBoundsException()
-    }
-
-    override fun set(index: Int, value: Float) = when (index) {
-        0 -> x = value; 1 -> y = value; 2 -> z = value
-        else -> throw IndexOutOfBoundsException()
-    }
 
     override fun copy() = FloatVector3(x, y, z)
 
@@ -93,22 +106,18 @@ class FloatVector3(
     override fun times(scalar: Float) = FloatVector3(x * scalar, y * scalar, z * scalar)
     override fun div(scalar: Float) = FloatVector3(x / scalar, y / scalar, z / scalar)
 
-/*
     override fun plusAssign(scalar: Float) = run { x += scalar; y += scalar; z += scalar }
     override fun minusAssign(scalar: Float) = run { x -= scalar; y -= scalar; z -= scalar }
     override fun timesAssign(scalar: Float) = run { x *= scalar; y *= scalar; z *= scalar }
     override fun divAssign(scalar: Float) = run { x /= scalar; y /= scalar; z /= scalar }
-*/
 
     override fun plus(other: Vector3<Float>) = FloatVector3(x + other.x, y + other.y, z + other.z)
     override fun minus(other: Vector3<Float>) = FloatVector3(x - other.x, y - other.y, z - other.z)
     override fun times(other: Vector3<Float>) = FloatVector3(x * other.x, y * other.y, z * other.z)
     override fun div(other: Vector3<Float>) = FloatVector3(x / other.x, y / other.y, z / other.z)
 
-/*
     override fun plusAssign(other: Vector3<Float>) = run { x += other.x; y += other.y; z += other.z }
     override fun minusAssign(other: Vector3<Float>) = run { x -= other.x; y -= other.y; z -= other.z }
     override fun timesAssign(other: Vector3<Float>) = run { x *= other.x; y *= other.y; z *= other.z }
     override fun divAssign(other: Vector3<Float>) = run { x /= other.x; y /= other.y; z /= other.z }
-*/
 }
