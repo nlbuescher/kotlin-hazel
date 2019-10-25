@@ -1,10 +1,10 @@
 import hazel.Application
-import hazel.Event
 import hazel.Hazel
 import hazel.Input
 import hazel.Key
 import hazel.Layer
 import hazel.core.TimeStep
+import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
 import hazel.math.degrees
@@ -49,6 +49,7 @@ class ExampleLayer : Layer("ExampleLayer") {
             layout(location = 1) in vec4 a_Color;
             
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
             
             out vec3 v_Position;
             out vec4 v_Color;
@@ -56,7 +57,7 @@ class ExampleLayer : Layer("ExampleLayer") {
             void main() {
                 v_Position = a_Position;
                 v_Color = a_Color;
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+                gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
             }
         """.trimIndent()
 
@@ -80,12 +81,15 @@ class ExampleLayer : Layer("ExampleLayer") {
     private val blueShader: Shader
     private val squareVertexArray = VertexArray()
 
+    private val squarePosition = FloatVector3()
+    private val squareMoveSpeed: Float = 1f
+
     init {
         val squareVertexBuffer = vertexBufferOf(
-            -0.75f, -0.75f, 0f,
-            0.75f, -0.75f, 0f,
-            0.75f, 0.75f, 0f,
-            -0.75f, 0.75f, 0f
+            -0.5f, -0.5f, 0f,
+            +0.5f, -0.5f, 0f,
+            +0.5f, +0.5f, 0f,
+            -0.5f, +0.5f, 0f
         )
         squareVertexBuffer.layout = BufferLayout(
             BufferElement(ShaderDataType.Float3, "a_Position")
@@ -99,12 +103,13 @@ class ExampleLayer : Layer("ExampleLayer") {
             layout(location = 0) in vec3 a_Position;
             
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
 
             out vec3 v_Position;
             
             void main() {
                 v_Position = a_Position;
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+                gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
             }
         """.trimIndent()
 
@@ -125,20 +130,30 @@ class ExampleLayer : Layer("ExampleLayer") {
 
 
     override fun onUpdate(timeStep: TimeStep) {
-        if (Input.isKeyPressed(Key.LEFT))
+        if (Input.isKeyPressed(Key.A))
             cameraPosition.x -= cameraMoveSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.RIGHT))
+        else if (Input.isKeyPressed(Key.D))
             cameraPosition.x += cameraMoveSpeed * timeStep.inSeconds
 
-        if (Input.isKeyPressed(Key.UP))
+        if (Input.isKeyPressed(Key.W))
             cameraPosition.y += cameraMoveSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.DOWN))
+        else if (Input.isKeyPressed(Key.S))
             cameraPosition.y -= cameraMoveSpeed * timeStep.inSeconds
 
-        if (Input.isKeyPressed(Key.A))
+        if (Input.isKeyPressed(Key.Q))
             cameraRotation += cameraRotationSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.D))
+        else if (Input.isKeyPressed(Key.E))
             cameraRotation -= cameraRotationSpeed * timeStep.inSeconds
+
+        if (Input.isKeyPressed(Key.LEFT))
+            squarePosition.x -= squareMoveSpeed * timeStep.inSeconds
+        else if (Input.isKeyPressed(Key.RIGHT))
+            squarePosition.x += squareMoveSpeed * timeStep.inSeconds
+
+        if (Input.isKeyPressed(Key.UP))
+            squarePosition.y += squareMoveSpeed * timeStep.inSeconds
+        else if (Input.isKeyPressed(Key.DOWN))
+            squarePosition.y -= squareMoveSpeed * timeStep.inSeconds
 
         RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
         RenderCommand.clear()
@@ -147,15 +162,18 @@ class ExampleLayer : Layer("ExampleLayer") {
         camera.rotation = cameraRotation
 
         Renderer.scene(camera) {
-            submit(blueShader, squareVertexArray)
+            val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f, 0.1f, 0.1f))
+
+            for (y in 0 until 20) {
+                for (x in 0 until 20) {
+                    val position = FloatVector3(x * 0.11f, y * 0.11f, 0f)
+                    val transform = FloatMatrix4x4(1f).translate(position) * scale
+                    submit(blueShader, squareVertexArray, transform)
+                }
+            }
             submit(shader, vertexArray)
         }
     }
-
-    override fun onImGuiRender() {
-    }
-
-    override fun onEvent(event: Event) {}
 }
 
 class Sandbox : Application() {

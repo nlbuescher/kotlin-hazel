@@ -27,9 +27,10 @@ object Renderer {
         endScene()
     }
 
-    fun submit(shader: Shader, vertexArray: VertexArray) {
+    fun submit(shader: Shader, vertexArray: VertexArray, transform: FloatMatrix4x4 = FloatMatrix4x4()) {
         shader.bind()
         shader.uploadUniform("u_ViewProjection", sceneData.viewProjectionMatrix)
+        shader.uploadUniform("u_Transform", transform)
 
         vertexArray.bind()
         RenderCommand.drawIndexed(vertexArray)

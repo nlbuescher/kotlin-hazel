@@ -35,7 +35,8 @@ sealed class Matrix4x4<T : Number> {
 
     abstract fun inv(): Matrix4x4<T>
     abstract fun translate(vector: Vector3<T>): Matrix4x4<T>
-    abstract fun rotate(angle: Float, vector: Vector3<Float>): FloatMatrix4x4
+    abstract fun rotate(angle: Float, vector: Vector3<T>): Matrix4x4<T>
+    abstract fun scale(vector: Vector3<T>): Matrix4x4<T>
 
     // arithmetic
 
@@ -247,4 +248,6 @@ class FloatMatrix4x4(
             this[3]
         )
     }
+
+    override fun scale(vector: Vector3<Float>) = FloatMatrix4x4(this[0] * vector[0], this[1] * vector[1], this[2] * vector[2], this[3])
 }
