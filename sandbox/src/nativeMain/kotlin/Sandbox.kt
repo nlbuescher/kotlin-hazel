@@ -78,7 +78,7 @@ class ExampleLayer : Layer("ExampleLayer") {
         shader = Shader(vertexSource, fragmentSource)
     }
 
-    private val blueShader: Shader
+    private val flatColorShader: Shader
     private val squareVertexArray = VertexArray()
 
     private val squarePosition = FloatVector3()
@@ -97,7 +97,7 @@ class ExampleLayer : Layer("ExampleLayer") {
         squareVertexArray.addVertexBuffer(squareVertexBuffer)
         squareVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u, 2u, 3u, 0u)
 
-        val blueVertexSource = """
+        val flatColorVertexSource = """
             #version 330 core
             
             layout(location = 0) in vec3 a_Position;
@@ -113,19 +113,21 @@ class ExampleLayer : Layer("ExampleLayer") {
             }
         """.trimIndent()
 
-        val blueFragmentSource = """
+        val flatColorFragmentSource = """
             #version 330 core
             
             layout(location = 0) out vec4 color;
             
             in vec3 v_Position;
             
+            uniform vec4 u_Color;
+            
             void main() {
-                color = vec4(0.0, 0.0, 1.0, 1.0);
+                color = u_Color;
             }
         """.trimIndent()
 
-        blueShader = Shader(blueVertexSource, blueFragmentSource)
+        flatColorShader = Shader(flatColorVertexSource, flatColorFragmentSource)
     }
 
 
@@ -164,11 +166,20 @@ class ExampleLayer : Layer("ExampleLayer") {
         Renderer.scene(camera) {
             val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f, 0.1f, 0.1f))
 
+            val redColor = FloatVector4(1f, 0f, 0f, 0f)
+            val blueColor = FloatVector4(0f, 0f, 1f, 0f)
+
             for (y in 0 until 20) {
                 for (x in 0 until 20) {
                     val position = FloatVector3(x * 0.11f, y * 0.11f, 0f)
                     val transform = FloatMatrix4x4(1f).translate(position) * scale
-                    submit(blueShader, squareVertexArray, transform)
+
+                    if (x % 2 == 0)
+                        flatColorShader.uploadUniform("u_Color", redColor)
+                    else
+                        flatColorShader.uploadUniform("u_Color", blueColor)
+
+                    submit(flatColorShader, squareVertexArray, transform)
                 }
             }
             submit(shader, vertexArray)
