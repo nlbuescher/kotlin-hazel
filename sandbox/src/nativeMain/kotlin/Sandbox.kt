@@ -4,8 +4,10 @@ import hazel.Hazel
 import hazel.Input
 import hazel.Key
 import hazel.Layer
+import hazel.core.TimeStep
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
+import hazel.math.degrees
 import hazel.renderer.BufferElement
 import hazel.renderer.BufferLayout
 import hazel.renderer.OrthographicCamera
@@ -20,9 +22,9 @@ import hazel.renderer.vertexBufferOf
 class ExampleLayer : Layer("ExampleLayer") {
     private val camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f)
     private val cameraPosition = FloatVector3()
-    private val cameraMoveSpeed: Float = 0.1f
+    private val cameraMoveSpeed: Float = 5f
     private var cameraRotation: Float = 0f
-    private val cameraRotationSpeed: Float = 0.1f
+    private val cameraRotationSpeed: Float = 180f.degrees
 
     private val shader: Shader
     private val vertexArray = VertexArray()
@@ -122,24 +124,21 @@ class ExampleLayer : Layer("ExampleLayer") {
     }
 
 
-    override fun onUpdate() {
+    override fun onUpdate(timeStep: TimeStep) {
         if (Input.isKeyPressed(Key.LEFT))
-            cameraPosition.x -= cameraMoveSpeed
-
-        if (Input.isKeyPressed(Key.RIGHT))
-            cameraPosition.x += cameraMoveSpeed
-
-        if (Input.isKeyPressed(Key.DOWN))
-            cameraPosition.y -= cameraMoveSpeed
+            cameraPosition.x -= cameraMoveSpeed * timeStep.inSeconds
+        else if (Input.isKeyPressed(Key.RIGHT))
+            cameraPosition.x += cameraMoveSpeed * timeStep.inSeconds
 
         if (Input.isKeyPressed(Key.UP))
-            cameraPosition.y += cameraMoveSpeed
-
-        if (Input.isKeyPressed(Key.D))
-            cameraRotation -= cameraRotationSpeed
+            cameraPosition.y += cameraMoveSpeed * timeStep.inSeconds
+        else if (Input.isKeyPressed(Key.DOWN))
+            cameraPosition.y -= cameraMoveSpeed * timeStep.inSeconds
 
         if (Input.isKeyPressed(Key.A))
-            cameraRotation += cameraRotationSpeed
+            cameraRotation += cameraRotationSpeed * timeStep.inSeconds
+        else if (Input.isKeyPressed(Key.D))
+            cameraRotation -= cameraRotationSpeed * timeStep.inSeconds
 
         RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
         RenderCommand.clear()

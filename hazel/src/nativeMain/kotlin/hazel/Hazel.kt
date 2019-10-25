@@ -15,7 +15,9 @@ object Hazel {
     private val start = MonoClock.markNow()
 
     val application: Application get() = _application ?: error("must instantiate an Application first!")
-    val time get() = start.elapsedNow().inSeconds
+
+    /** current time in seconds since application start */
+    val time: Float get() = start.elapsedNow().inSeconds.toFloat()
 
 
     fun run(application: Application) {

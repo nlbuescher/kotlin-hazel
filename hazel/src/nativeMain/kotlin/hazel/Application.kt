@@ -1,11 +1,16 @@
 package hazel
 
+import hazel.core.TimeStepUnit.SECONDS
+import hazel.core.toTimeStep
+
 abstract class Application {
     val window = Window().apply { setEventCallback(::onEvent) }
 
     private var isRunning: Boolean = true
     private val layerStack = LayerStack()
     private val imGuiLayer = ImGuiLayer()
+
+    private var lastFrameTime: Float = 0f
 
     fun addLayer(layer: Layer) {
         layerStack.add(layer)
@@ -22,7 +27,11 @@ abstract class Application {
         addOverlay(imGuiLayer)
 
         while (isRunning) {
-            layerStack.forEach { it.onUpdate() }
+            val time = Hazel.time
+            val timeStep = (time - lastFrameTime).toTimeStep(SECONDS)
+            lastFrameTime = time
+
+            layerStack.forEach { it.onUpdate(timeStep) }
 
             imGuiLayer.begin()
             layerStack.forEach { it.onImGuiRender() }

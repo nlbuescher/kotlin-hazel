@@ -1,10 +1,12 @@
 package hazel
 
+import hazel.core.TimeStep
+
 
 open class Layer(val debugName: String = "Layer") {
     open fun onAttach() {}
     open fun onDetach() {}
-    open fun onUpdate() {}
+    open fun onUpdate(timeStep: TimeStep) {}
     open fun onImGuiRender() {}
     open fun onEvent(event: Event) {}
 }
