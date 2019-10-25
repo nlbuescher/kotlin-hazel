@@ -142,9 +142,21 @@ internal inline fun glShaderSource(shader: UInt, string: String) = memScoped {
 
 // U
 
-internal inline fun glUniform4f(location: Int, f1: Float, f2: Float, f3: Float, f4: Float) = copengl.glUniform4f!!(location, f1, f2, f3, f4)
+internal inline fun glUniform(location: Int, i: Int) = copengl.glUniform1i!!(location, i)
 
-internal inline fun glUniformMatrix4fv(location: Int, transpose: Boolean, matrix: FloatArray) = matrix.usePinned {
+internal inline fun glUniform(location: Int, f: Float) = copengl.glUniform1f!!(location, f)
+
+internal inline fun glUniform(location: Int, f1: Float, f2: Float) = copengl.glUniform2f!!(location, f1, f2)
+
+internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float) = copengl.glUniform3f!!(location, f1, f2, f3)
+
+internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float, f4: Float) = copengl.glUniform4f!!(location, f1, f2, f3, f4)
+
+internal inline fun glUniformMatrix3(location: Int, transpose: Boolean, matrix: FloatArray) = matrix.usePinned {
+    copengl.glUniformMatrix3fv!!(location, 1, if (transpose) GL_TRUE.convert() else GL_FALSE.convert(), it.addressOf(0))
+}
+
+internal inline fun glUniformMatrix4(location: Int, transpose: Boolean, matrix: FloatArray) = matrix.usePinned {
     copengl.glUniformMatrix4fv!!(location, 1, if (transpose) GL_TRUE.convert() else GL_FALSE.convert(), it.addressOf(0))
 }
 

@@ -12,9 +12,7 @@ interface VertexArray : Disposable {
     fun addVertexBuffer(vertexBuffer: VertexBuffer)
 }
 
-fun VertexArray(): VertexArray {
-    return when (Renderer.api) {
-        RenderAPI.API.None -> TODO("RenderAPI.None is currently not supported")
-        RenderAPI.API.OpenGL -> OpenGLVertexArray()
-    }
+fun VertexArray(): VertexArray = when (Renderer.api) {
+    RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
+    RenderAPI.API.OpenGL -> OpenGLVertexArray()
 }

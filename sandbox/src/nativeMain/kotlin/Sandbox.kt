@@ -1,3 +1,6 @@
+import cimgui.igBegin
+import cimgui.igColorEdit3
+import cimgui.igEnd
 import hazel.Application
 import hazel.Hazel
 import hazel.Input
@@ -17,7 +20,10 @@ import hazel.renderer.Shader
 import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
+import hazel.renderer.opengl.OpenGLShader
 import hazel.renderer.vertexBufferOf
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 
 class ExampleLayer : Layer("ExampleLayer") {
     private val camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f)
@@ -83,6 +89,7 @@ class ExampleLayer : Layer("ExampleLayer") {
 
     private val squarePosition = FloatVector3()
     private val squareMoveSpeed: Float = 1f
+    private val squareColor = FloatVector3(0f, 0f, 1f)
 
     init {
         val squareVertexBuffer = vertexBufferOf(
@@ -120,10 +127,10 @@ class ExampleLayer : Layer("ExampleLayer") {
             
             in vec3 v_Position;
             
-            uniform vec4 u_Color;
+            uniform vec3 u_Color;
             
             void main() {
-                color = u_Color;
+                color = vec4(u_Color, 1.0f);
             }
         """.trimIndent()
 
@@ -166,24 +173,27 @@ class ExampleLayer : Layer("ExampleLayer") {
         Renderer.scene(camera) {
             val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f, 0.1f, 0.1f))
 
-            val redColor = FloatVector4(1f, 0f, 0f, 0f)
-            val blueColor = FloatVector4(0f, 0f, 1f, 0f)
+            flatColorShader.bind()
+            (flatColorShader as OpenGLShader).uploadUniform("u_Color", squareColor)
 
             for (y in 0 until 20) {
                 for (x in 0 until 20) {
                     val position = FloatVector3(x * 0.11f, y * 0.11f, 0f)
                     val transform = FloatMatrix4x4(1f).translate(position) * scale
 
-                    if (x % 2 == 0)
-                        flatColorShader.uploadUniform("u_Color", redColor)
-                    else
-                        flatColorShader.uploadUniform("u_Color", blueColor)
-
                     submit(flatColorShader, squareVertexArray, transform)
                 }
             }
             submit(shader, vertexArray)
         }
+    }
+
+    override fun onImGuiRender() {
+        igBegin("Settings", null, 0)
+        squareColor.asFloatArray().usePinned {
+            igColorEdit3("Square Color", it.addressOf(0), 0)
+        }
+        igEnd()
     }
 }
 

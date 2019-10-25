@@ -75,16 +75,37 @@ sealed class Vector3<T : Number> {
     abstract operator fun divAssign(other: Vector3<T>)
 }
 
-class FloatVector3(
-    override var x: Float,
-    override var y: Float,
-    override var z: Float
-) : Vector3<Float>() {
+class FloatVector3(private val storage: FloatArray) : Vector3<Float>() {
+    constructor(x: Float, y: Float, z: Float) : this(floatArrayOf(x, y, z))
     constructor() : this(0f, 0f, 0f)
+
+    override var x: Float
+        get() = storage[0]
+        set(value) = storage.set(0, value)
+
+    override var y: Float
+        get() = storage[1]
+        set(value) = storage.set(1, value)
+
+    override var z: Float
+        get() = storage[2]
+        set(value) = storage.set(2, value)
+
+    var r: Float
+        get() = x
+        set(value) = run { x = value }
+
+    var g: Float
+        get() = x
+        set(value) = run { x = value }
+
+    var b: Float
+        get() = x
+        set(value) = run { x = value }
 
     override fun copy() = FloatVector3(x, y, z)
 
-    fun toFloatArray() = floatArrayOf(x, y, z)
+    fun asFloatArray() = storage
 
     // geometric
 

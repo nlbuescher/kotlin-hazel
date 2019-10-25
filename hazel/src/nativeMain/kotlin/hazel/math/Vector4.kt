@@ -78,13 +78,25 @@ sealed class Vector4<T : Number> {
     abstract operator fun divAssign(other: Vector4<T>)
 }
 
-class FloatVector4(
-    override var x: Float,
-    override var y: Float,
-    override var z: Float,
-    override var w: Float
-) : Vector4<Float>() {
+class FloatVector4(private val storage: FloatArray) : Vector4<Float>() {
+    constructor(x: Float, y: Float, z: Float, w: Float) : this(floatArrayOf(x, y, z, w))
     constructor() : this(0f, 0f, 0f, 0f)
+
+    override var x: Float
+        get() = storage[0]
+        set(value) = storage.set(0, value)
+
+    override var y: Float
+        get() = storage[1]
+        set(value) = storage.set(1, value)
+
+    override var z: Float
+        get() = storage[2]
+        set(value) = storage.set(2, value)
+
+    override var w: Float
+        get() = storage[3]
+        set(value) = storage.set(3, value)
 
     var r: Float
         get() = x
@@ -104,7 +116,7 @@ class FloatVector4(
 
     override fun copy() = FloatVector4(x, y, z, w)
 
-    fun toFloatArray() = floatArrayOf(x, y, z, w)
+    fun asFloatArray() = storage
 
     // geometric
 

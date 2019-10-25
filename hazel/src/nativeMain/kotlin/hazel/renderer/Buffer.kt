@@ -57,11 +57,9 @@ interface VertexBuffer : Disposable {
     var layout: BufferLayout
 }
 
-fun vertexBufferOf(vararg vertices: Float): VertexBuffer {
-    return when (Renderer.api) {
-        RenderAPI.API.None -> TODO("RenderAPI.None is currently not supported")
-        RenderAPI.API.OpenGL -> OpenGLVertexBuffer(vertices)
-    }
+fun vertexBufferOf(vararg vertices: Float): VertexBuffer = when (Renderer.api) {
+    RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
+    RenderAPI.API.OpenGL -> OpenGLVertexBuffer(vertices)
 }
 
 interface IndexBuffer : Disposable {
@@ -70,9 +68,7 @@ interface IndexBuffer : Disposable {
     fun unbind()
 }
 
-fun indexBufferOf(vararg indices: UInt): IndexBuffer {
-    return when (Renderer.api) {
-        RenderAPI.API.None -> TODO("RenderAPI.None is currently not supported")
-        RenderAPI.API.OpenGL -> OpenGLIndexBuffer(indices)
-    }
+fun indexBufferOf(vararg indices: UInt): IndexBuffer = when (Renderer.api) {
+    RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
+    RenderAPI.API.OpenGL -> OpenGLIndexBuffer(indices)
 }

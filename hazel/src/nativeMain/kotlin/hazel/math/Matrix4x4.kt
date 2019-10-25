@@ -100,7 +100,7 @@ class FloatMatrix4x4(
 
     override fun copy() = FloatMatrix4x4(this[0].copy(), this[1].copy(), this[2].copy(), this[3].copy())
 
-    fun toFloatArray() = floatArrayOf(*this[0].toFloatArray(), *this[1].toFloatArray(), *this[2].toFloatArray(), *this[3].toFloatArray())
+    fun toFloatArray() = floatArrayOf(*this[0].asFloatArray(), *this[1].asFloatArray(), *this[2].asFloatArray(), *this[3].asFloatArray())
 
     // matrix
 
