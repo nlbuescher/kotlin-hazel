@@ -72,7 +72,8 @@ sealed class Vector2<T : Number> {
 
 class FloatVector2(private val storage: FloatArray) : Vector2<Float>() {
     constructor(x: Float, y: Float) : this(floatArrayOf(x, y))
-    constructor() : this(0f, 0f)
+    constructor(f: Float) : this(f, f)
+    constructor() : this(0f)
 
     override var x: Float
         get() = storage[0]

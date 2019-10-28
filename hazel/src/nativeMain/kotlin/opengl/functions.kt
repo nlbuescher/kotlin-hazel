@@ -35,6 +35,8 @@ internal inline fun glAttachShader(program: UInt, shader: UInt) = copengl.glAtta
 
 internal inline fun glBindBuffer(target: Int, buffer: UInt) = copengl.glBindBuffer!!(target.convert(), buffer)
 
+internal inline fun glBindTextureUnit(unit: Int, texture: UInt) = copengl.glBindTextureUnit!!(unit.convert(), texture)
+
 internal inline fun glBindVertexArray(array: UInt) = copengl.glBindVertexArray!!(array)
 
 internal inline fun glBufferData(target: Int, data: FloatArray, usage: Int) = data.usePinned {
@@ -62,6 +64,12 @@ internal inline fun glCreateProgram() = copengl.glCreateProgram!!()
 
 internal inline fun glCreateShader(shaderType: Int): UInt = copengl.glCreateShader!!(shaderType.convert())
 
+internal inline fun glCreateTexture(textureType: Int): UInt = glCreateTextures(textureType, 1).first()
+
+internal inline fun glCreateTextures(textureType: Int, n: Int) = UIntArray(n).apply {
+    usePinned { copengl.glCreateTextures!!(textureType.convert(), n, it.addressOf(0)) }
+}
+
 internal inline fun glCreateVertexArray() = glCreateVertexArrays(1).first()
 
 internal inline fun glCreateVertexArrays(n: Int) = UIntArray(n).apply {
@@ -80,6 +88,10 @@ internal inline fun glDeleteBuffers(n: Int, buffers: UIntArray) {
 internal inline fun glDeleteProgram(program: UInt) = copengl.glDeleteProgram!!(program)
 
 internal inline fun glDeleteShader(shader: UInt) = copengl.glDeleteShader!!(shader)
+
+internal inline fun glDeleteTextures(vararg textures: UInt) = textures.usePinned {
+    copengl.glDeleteTextures(textures.size, it.addressOf(0))
+}
 
 internal inline fun glDeleteVertexArrays(vararg arrays: UInt) = arrays.usePinned {
     copengl.glDeleteVertexArrays!!(arrays.size, it.addressOf(0))
@@ -137,6 +149,19 @@ internal inline fun glShaderSource(shader: UInt, string: String) = memScoped {
     val source = alloc<CPointerVar<ByteVar>>()
     source.value = string.cstr.ptr
     copengl.glShaderSource!!(shader, 1, source.ptr, 0L.toCPointer())
+}
+
+
+// T
+
+internal inline fun glTextureParameter(texture: UInt, pname: Int, param: Int) = copengl.glTextureParameteri!!(texture, pname.convert(), param)
+
+internal inline fun glTextureStorage2D(texture: UInt, levels: Int, internalFormat: Int, width: Int, height: Int) {
+    copengl.glTextureStorage2D!!(texture, levels, internalFormat.convert(), width, height)
+}
+
+internal inline fun glTextureSubImage2D(texture: UInt, level: Int, xOffset: Int, yOffset: Int, width: Int, height: Int, format: Int, type: Int, pixels: ByteArray) = pixels.usePinned {
+    copengl.glTextureSubImage2D!!(texture, level, xOffset, yOffset, width, height, format.convert(), type.convert(), it.addressOf(0))
 }
 
 

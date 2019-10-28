@@ -20,6 +20,7 @@ kotlin {
             cinterops.create("cglfw")
             cinterops.create("cimgui")
             cinterops.create("copengl")
+            cinterops.create("cstb_image")
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
@@ -41,6 +42,7 @@ kotlin {
         languageSettings.apply {
             enableLanguageFeature("MultiPlatformProjects")
             enableLanguageFeature("InlineClasses")
+            useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
             useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
             useExperimentalAnnotation("kotlin.time.ExperimentalTime")
         }

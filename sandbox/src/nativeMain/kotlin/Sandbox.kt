@@ -18,6 +18,7 @@ import hazel.renderer.RenderCommand
 import hazel.renderer.Renderer
 import hazel.renderer.Shader
 import hazel.renderer.ShaderDataType
+import hazel.renderer.Texture2D
 import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
 import hazel.renderer.opengl.OpenGLShader
@@ -38,8 +39,8 @@ class ExampleLayer : Layer("ExampleLayer") {
     init {
         val vertexBuffer = vertexBufferOf(
             -0.5f, -0.5f, 0f, 1f, 0f, 1f, 1f,
-            0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
-            0.0f, 0.5f, 0f, 1f, 1f, 0f, 1f
+            +0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
+            +0.0f, +0.5f, 0f, 1f, 1f, 0f, 1f
         )
         vertexBuffer.layout = BufferLayout(
             BufferElement(ShaderDataType.Float3, "a_Position"),
@@ -85,6 +86,8 @@ class ExampleLayer : Layer("ExampleLayer") {
     }
 
     private val flatColorShader: Shader
+    private val textureShader: Shader
+    private val texture: Texture2D
     private val squareVertexArray = VertexArray()
 
     private val squarePosition = FloatVector3()
@@ -93,13 +96,14 @@ class ExampleLayer : Layer("ExampleLayer") {
 
     init {
         val squareVertexBuffer = vertexBufferOf(
-            -0.5f, -0.5f, 0f,
-            +0.5f, -0.5f, 0f,
-            +0.5f, +0.5f, 0f,
-            -0.5f, +0.5f, 0f
+            -0.5f, -0.5f, 0f, 0f, 0f,
+            +0.5f, -0.5f, 0f, 1f, 0f,
+            +0.5f, +0.5f, 0f, 1f, 1f,
+            -0.5f, +0.5f, 0f, 0f, 1f
         )
         squareVertexBuffer.layout = BufferLayout(
-            BufferElement(ShaderDataType.Float3, "a_Position")
+            BufferElement(ShaderDataType.Float3, "a_Position"),
+            BufferElement(ShaderDataType.Float2, "a_TextureCoordinate")
         )
         squareVertexArray.addVertexBuffer(squareVertexBuffer)
         squareVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u, 2u, 3u, 0u)
@@ -135,6 +139,44 @@ class ExampleLayer : Layer("ExampleLayer") {
         """.trimIndent()
 
         flatColorShader = Shader(flatColorVertexSource, flatColorFragmentSource)
+
+        val textureVertexSource = """
+            #version 330 core
+            
+            layout(location = 0) in vec3 a_Position;
+            layout(location = 1) in vec2 a_TextureCoordinate;
+            
+            uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
+            
+            out vec2 v_TextureCoordinate;
+ 
+            void main() {
+                v_TextureCoordinate = a_TextureCoordinate;
+                gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+            }
+        """.trimIndent()
+
+        val textureFragmentSource = """
+            #version 330 core
+            
+            layout(location = 0) out vec4 color;
+            
+            in vec2 v_TextureCoordinate;
+            
+            uniform sampler2D u_Texture;
+            
+            void main() {
+                color = texture(u_Texture, v_TextureCoordinate);
+            }
+        """.trimIndent()
+
+        textureShader = Shader(textureVertexSource, textureFragmentSource)
+
+        texture = Texture2D("assets/textures/Checkerboard.png")
+
+        textureShader.bind()
+        textureShader.uploadUniform("u_Texture", 0)
     }
 
 
@@ -171,7 +213,7 @@ class ExampleLayer : Layer("ExampleLayer") {
         camera.rotation = cameraRotation
 
         Renderer.scene(camera) {
-            val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f, 0.1f, 0.1f))
+            val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f))
 
             flatColorShader.bind()
             (flatColorShader as OpenGLShader).uploadUniform("u_Color", squareColor)
@@ -184,7 +226,13 @@ class ExampleLayer : Layer("ExampleLayer") {
                     submit(flatColorShader, squareVertexArray, transform)
                 }
             }
-            submit(shader, vertexArray)
+
+            // square
+            texture.bind()
+            submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
+
+            // triangle
+            //submit(shader, vertexArray)
         }
     }
 

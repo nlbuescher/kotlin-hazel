@@ -80,7 +80,8 @@ sealed class Vector4<T : Number> {
 
 class FloatVector4(private val storage: FloatArray) : Vector4<Float>() {
     constructor(x: Float, y: Float, z: Float, w: Float) : this(floatArrayOf(x, y, z, w))
-    constructor() : this(0f, 0f, 0f, 0f)
+    constructor(f: Float) : this(f, f, f, f)
+    constructor() : this(0f)
 
     override var x: Float
         get() = storage[0]
