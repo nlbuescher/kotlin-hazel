@@ -10,6 +10,7 @@ object RenderCommand {
         get() = RenderAPI.api
         set(new) = run { RenderAPI.api = new }
 
+    fun init() = renderAPI.init()
 
     fun setClearColor(color: FloatVector4) {
         renderAPI.setClearColor(color)

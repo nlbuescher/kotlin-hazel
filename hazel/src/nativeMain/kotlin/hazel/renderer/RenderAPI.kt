@@ -10,6 +10,7 @@ interface RenderAPI {
         None, OpenGL
     }
 
+    fun init()
 
     fun setClearColor(color: FloatVector4)
     fun clear()

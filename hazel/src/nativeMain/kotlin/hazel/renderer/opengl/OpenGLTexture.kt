@@ -4,6 +4,8 @@ import copengl.GL_LINEAR
 import copengl.GL_NEAREST
 import copengl.GL_RGB
 import copengl.GL_RGB8
+import copengl.GL_RGBA
+import copengl.GL_RGBA8
 import copengl.GL_TEXTURE_2D
 import copengl.GL_TEXTURE_MAG_FILTER
 import copengl.GL_TEXTURE_MIN_FILTER
@@ -47,13 +49,21 @@ class OpenGLTexture2D(private val path: String) : Texture2D {
 
         width = meta[0]; height = meta[1]
 
+        val (internalFormat, dataFormat) = when (meta[2]) {
+            4 -> GL_RGBA8 to GL_RGBA
+            3 -> GL_RGB8 to GL_RGB
+            else -> 0 to 0
+        }
+
+        Hazel.coreAssert(internalFormat != 0 && dataFormat != 0) { "Format not supported!" }
+
         rendererId = glCreateTexture(GL_TEXTURE_2D)
-        glTextureStorage2D(rendererId, 1, GL_RGB8, width, height)
+        glTextureStorage2D(rendererId, 1, internalFormat, width, height)
 
         glTextureParameter(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTextureParameter(rendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
-        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data)
+        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data)
     }
 
 

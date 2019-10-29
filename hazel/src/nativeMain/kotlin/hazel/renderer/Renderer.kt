@@ -14,6 +14,8 @@ object Renderer {
         get() = RenderAPI.api
         set(new) = run { RenderAPI.api = new }
 
+    fun init() = RenderCommand.init()
+
     private fun beginScene(camera: OrthographicCamera) {
         sceneData.viewProjectionMatrix = camera.viewProjectionMatrix
     }

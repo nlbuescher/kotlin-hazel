@@ -2,6 +2,7 @@ package hazel
 
 import hazel.core.TimeStepUnit.SECONDS
 import hazel.core.toTimeStep
+import hazel.renderer.Renderer
 
 abstract class Application {
     val window = Window().apply { setEventCallback(::onEvent) }
@@ -11,6 +12,10 @@ abstract class Application {
     private val imGuiLayer = ImGuiLayer()
 
     private var lastFrameTime: Float = 0f
+
+    init {
+        Renderer.init()
+    }
 
     fun addLayer(layer: Layer) {
         layerStack.add(layer)

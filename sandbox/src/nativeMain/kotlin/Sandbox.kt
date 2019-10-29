@@ -88,6 +88,7 @@ class ExampleLayer : Layer("ExampleLayer") {
     private val flatColorShader: Shader
     private val textureShader: Shader
     private val texture: Texture2D
+    private val chernoLogoTexture: Texture2D
     private val squareVertexArray = VertexArray()
 
     private val squarePosition = FloatVector3()
@@ -174,6 +175,7 @@ class ExampleLayer : Layer("ExampleLayer") {
         textureShader = Shader(textureVertexSource, textureFragmentSource)
 
         texture = Texture2D("assets/textures/Checkerboard.png")
+        chernoLogoTexture = Texture2D("assets/textures/ChernoLogo.png")
 
         textureShader.bind()
         textureShader.uploadUniform("u_Texture", 0)
@@ -229,6 +231,8 @@ class ExampleLayer : Layer("ExampleLayer") {
 
             // square
             texture.bind()
+            submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
+            chernoLogoTexture.bind()
             submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
 
             // triangle
