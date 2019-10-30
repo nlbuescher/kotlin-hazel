@@ -15,7 +15,6 @@ import cstb_image.stbi_image_free
 import cstb_image.stbi_load
 import cstb_image.stbi_set_flip_vertically_on_load
 import hazel.Hazel
-import hazel.coreAssert
 import hazel.renderer.Texture2D
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned

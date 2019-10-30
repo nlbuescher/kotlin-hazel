@@ -16,6 +16,7 @@ import kotlinx.cinterop.convert
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.pin
 import kotlinx.cinterop.placeTo
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.sizeOf
@@ -161,8 +162,13 @@ internal inline fun glTextureStorage2D(texture: UInt, levels: Int, internalForma
     copengl.glTextureStorage2D!!(texture, levels, internalFormat.convert(), width, height)
 }
 
-internal inline fun glTextureSubImage2D(texture: UInt, level: Int, xOffset: Int, yOffset: Int, width: Int, height: Int, format: Int, type: Int, pixels: ByteArray) = pixels.usePinned {
-    copengl.glTextureSubImage2D!!(texture, level, xOffset, yOffset, width, height, format.convert(), type.convert(), it.addressOf(0))
+internal inline fun glTextureSubImage2D(texture: UInt, level: Int, xOffset: Int, yOffset: Int, width: Int, height: Int, format: Int, type: Int, pixels: ByteArray?) {
+    val data = pixels?.pin()
+    try {
+        copengl.glTextureSubImage2D!!(texture, level, xOffset, yOffset, width, height, format.convert(), type.convert(), data?.addressOf(0))
+    } finally {
+        data?.unpin()
+    }
 }
 
 

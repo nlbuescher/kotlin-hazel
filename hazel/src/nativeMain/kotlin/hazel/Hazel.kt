@@ -1,7 +1,8 @@
 package hazel
 
 import hazel.core.use
-import kotlin.contracts.contract
+import platform.posix.SIGTRAP
+import platform.posix.raise
 import kotlin.time.MonoClock
 
 private var _application: Application? = null
@@ -38,6 +39,12 @@ object Hazel {
     internal fun coreWarn(message: () -> Any?) = coreLogger.warn(message().toString())
     internal fun coreError(message: () -> Any?) = coreLogger.error(message().toString())
     internal fun coreCritical(message: () -> Any?) = coreLogger.critical(message().toString())
+    internal fun coreAssert(test: Boolean, message: () -> Any? = { null }) {
+        if (Platform.isDebugBinary && !test) {
+            coreCritical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
+            raise(SIGTRAP)
+        }
+    }
 
     fun trace(message: () -> Any?) = clientLogger.trace(message().toString())
     fun debug(message: () -> Any?) = clientLogger.debug(message().toString())
@@ -45,14 +52,10 @@ object Hazel {
     fun warn(message: () -> Any?) = clientLogger.warn(message().toString())
     fun error(message: () -> Any?) = clientLogger.error(message().toString())
     fun critical(message: () -> Any?) = clientLogger.critical(message().toString())
-}
-
-internal fun Hazel.coreAssert(test: Boolean, message: () -> Any? = { null }) {
-    contract { returns() implies test }
-    check(test) { coreCritical { "Assertion failed${message()?.let { ": $it" } ?: ""}" } }
-}
-
-fun Hazel.assert(test: Boolean, message: () -> Any? = { null }) {
-    contract { returns() implies test }
-    check(test) { critical { "Assertion failed${message()?.let { ": $it" } ?: ""}" } }
+    fun assert(test: Boolean, message: () -> Any? = { null }) {
+        if (Platform.isDebugBinary && !test) {
+            critical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
+            raise(SIGTRAP)
+        }
+    }
 }

@@ -38,15 +38,22 @@ import platform.posix.fopen
 
 class OpenGLShader : Shader {
 
+    override val name: String
+
     private var rendererId: UInt = 0u
 
     constructor(filepath: String) {
         val source = readFile(filepath) ?: ""
         val shaderSourcesMap = preProcess(source)
         compile(shaderSourcesMap)
+
+        val nameStart = filepath.lastIndexOfAny(charArrayOf('/', '\\')).let { if (it == -1) 0 else it + 1 }
+        val nameEnd = filepath.lastIndexOf('.').let { if (it == -1) filepath.length else it }
+        this.name = filepath.substring(nameStart, nameEnd)
     }
 
-    constructor(vertexSource: String, fragmentSource: String) {
+    constructor(name: String, vertexSource: String, fragmentSource: String) {
+        this.name = name
         val sources = mapOf(GL_VERTEX_SHADER to vertexSource, GL_FRAGMENT_SHADER to fragmentSource)
         compile(sources)
     }
@@ -113,10 +120,10 @@ class OpenGLShader : Shader {
         var pos = source.indexOf(typeToken)
         while (pos != -1) {
             val eol = source.indexOfAny(charArrayOf('\r', '\n'), pos)
-            if (eol == -1) Hazel.coreCritical { "Syntax error" }
+            Hazel.coreAssert(eol != -1) { "Syntax error" }
             val begin = pos + typeToken.length + 1
             val type = source.substring(begin, eol)
-            if (type.toShaderType() == 0) Hazel.coreCritical { "Invalid shader type specified" }
+            Hazel.coreAssert(type.toShaderType() != 0) { "Invalid shader type specified" }
 
             val nextLinePos = source.indexOfNone(charArrayOf('\r', '\n'), eol)
             pos = source.indexOf(typeToken, nextLinePos)
@@ -143,7 +150,7 @@ class OpenGLShader : Shader {
 
                 glDeleteShader(shader)
 
-                Hazel.coreCritical { "Shader failed to compile!" }
+                Hazel.coreAssert(false) { "Shader failed to compile!" }
                 Hazel.coreError { infoLog }
                 break
             }
@@ -163,7 +170,7 @@ class OpenGLShader : Shader {
             for (id in glShaderIds)
                 glDeleteShader(id)
 
-            Hazel.coreCritical { "Shaders failed to link!" }
+            Hazel.coreAssert(false) { "Shaders failed to link!" }
             Hazel.coreError { infoLog }
             return
 
@@ -181,7 +188,7 @@ private fun String.toShaderType() = when (this) {
     "fragment",
     "pixel" -> GL_FRAGMENT_SHADER
     else -> {
-        Hazel.coreCritical { "Unknown shader type $this!" }
+        Hazel.coreAssert(false) { "Unknown shader type $this!" }
         0
     }
 }

@@ -18,6 +18,7 @@ import hazel.renderer.RenderCommand
 import hazel.renderer.Renderer
 import hazel.renderer.Shader
 import hazel.renderer.ShaderDataType
+import hazel.renderer.ShaderLibrary
 import hazel.renderer.Texture2D
 import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
@@ -33,8 +34,10 @@ class ExampleLayer : Layer("ExampleLayer") {
     private var cameraRotation: Float = 0f
     private val cameraRotationSpeed: Float = 180f.degrees
 
-    private val shader: Shader
-    private val vertexArray = VertexArray()
+    private val shaderLibrary = ShaderLibrary()
+
+    private val triangleShader: Shader
+    private val triangleVertexArray = VertexArray()
 
     init {
         val vertexBuffer = vertexBufferOf(
@@ -46,10 +49,10 @@ class ExampleLayer : Layer("ExampleLayer") {
             BufferElement(ShaderDataType.Float3, "a_Position"),
             BufferElement(ShaderDataType.Float4, "a_Color")
         )
-        vertexArray.addVertexBuffer(vertexBuffer)
-        vertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u)
+        triangleVertexArray.addVertexBuffer(vertexBuffer)
+        triangleVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u)
 
-        val vertexSource = """
+        val triangleVertexSource = """
             #version 330 core
             
             layout(location = 0) in vec3 a_Position;
@@ -68,7 +71,7 @@ class ExampleLayer : Layer("ExampleLayer") {
             }
         """.trimIndent()
 
-        val fragmentSource = """
+        val triangleFragmentSource = """
             #version 330 core
             
             layout(location = 0) out vec4 color;
@@ -82,11 +85,10 @@ class ExampleLayer : Layer("ExampleLayer") {
             }
         """.trimIndent()
 
-        shader = Shader(vertexSource, fragmentSource)
+        triangleShader = Shader("VertexColor", triangleVertexSource, triangleFragmentSource)
     }
 
     private val flatColorShader: Shader
-    private val textureShader: Shader
     private val texture: Texture2D
     private val chernoLogoTexture: Texture2D
     private val squareVertexArray = VertexArray()
@@ -139,15 +141,15 @@ class ExampleLayer : Layer("ExampleLayer") {
             }
         """.trimIndent()
 
-        flatColorShader = Shader(flatColorVertexSource, flatColorFragmentSource)
+        flatColorShader = Shader("FlatColor", flatColorVertexSource, flatColorFragmentSource)
 
-        textureShader = Shader("assets/shaders/Texture.glsl")
+        val textureShader = shaderLibrary.load("assets/shaders/Texture.glsl")
 
         texture = Texture2D("assets/textures/Checkerboard.png")
         chernoLogoTexture = Texture2D("assets/textures/ChernoLogo.png")
 
         textureShader.bind()
-        textureShader.uploadUniform("u_Texture", 0)
+        (textureShader as OpenGLShader).uploadUniform("u_Texture", 0)
     }
 
 
@@ -198,6 +200,8 @@ class ExampleLayer : Layer("ExampleLayer") {
                 }
             }
 
+            val textureShader = shaderLibrary["Texture"]
+
             // square
             texture.bind()
             submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
@@ -218,13 +222,13 @@ class ExampleLayer : Layer("ExampleLayer") {
     }
 
     override fun dispose() {
-        shader.dispose()
-        vertexArray.dispose()
-        flatColorShader.dispose()
-        textureShader.dispose()
-        texture.dispose()
-        chernoLogoTexture.dispose()
         squareVertexArray.dispose()
+        chernoLogoTexture.dispose()
+        texture.dispose()
+        flatColorShader.dispose()
+        triangleVertexArray.dispose()
+        triangleShader.dispose()
+        shaderLibrary.dispose()
     }
 }
 

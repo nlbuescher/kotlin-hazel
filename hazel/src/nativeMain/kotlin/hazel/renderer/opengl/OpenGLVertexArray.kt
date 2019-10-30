@@ -4,7 +4,6 @@ import copengl.GL_BOOL
 import copengl.GL_FLOAT
 import copengl.GL_INT
 import hazel.Hazel
-import hazel.coreAssert
 import hazel.renderer.IndexBuffer
 import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
