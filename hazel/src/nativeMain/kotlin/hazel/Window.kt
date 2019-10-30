@@ -131,7 +131,7 @@ class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) :
     override fun dispose() {
         glfwGetWindowUserPointer(ptr)!!.asStableRef<Window>().dispose()
         glfwDestroyWindow(ptr)
-        glfwTerminate() // causes segfault (exit code 139) on linux
+        //glfwTerminate() // causes segfault (exit code 139) on linux
     }
 
 

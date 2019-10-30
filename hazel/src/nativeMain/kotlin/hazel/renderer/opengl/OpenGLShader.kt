@@ -12,6 +12,10 @@ import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
 import hazel.renderer.Shader
+import kotlinx.cinterop.toKString
+import kotlinx.io.core.readBytes
+import kotlinx.io.core.use
+import kotlinx.io.streams.Input
 import opengl.glAttachShader
 import opengl.glCompileShader
 import opengl.glCreateProgram
@@ -30,89 +34,21 @@ import opengl.glUniform
 import opengl.glUniformMatrix3
 import opengl.glUniformMatrix4
 import opengl.glUseProgram
+import platform.posix.fopen
 
-class OpenGLShader(vertexSource: String, fragmentSource: String) : Shader {
+class OpenGLShader : Shader {
 
-    private val rendererId: UInt
+    private var rendererId: UInt = 0u
 
-    init {
-        // create an empty vertex shader handle
-        val vertexShader = glCreateShader(GL_VERTEX_SHADER)
+    constructor(filepath: String) {
+        val source = readFile(filepath) ?: ""
+        val shaderSourcesMap = preProcess(source)
+        compile(shaderSourcesMap)
+    }
 
-        // send the vertex shader source code to GL
-        glShaderSource(vertexShader, vertexSource)
-
-        // compile the vertex shader
-        glCompileShader(vertexShader)
-
-
-        if (glGetShaderiv(vertexShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            rendererId = 0u
-
-            val infoLog = glGetShaderInfoLog(vertexShader)
-
-            // we don't need the shader anymore
-            glDeleteShader(vertexShader)
-
-            Hazel.coreCritical { "Vertex shader failed to compile!" }
-            Hazel.coreError { infoLog }
-        } else {
-
-            // create an empty fragment shader handle
-            val fragmentShader = glCreateShader(GL_FRAGMENT_SHADER)
-
-            // send the fragment shader source code to GL
-            glShaderSource(fragmentShader, fragmentSource)
-
-            // compile the fragment shader
-            glCompileShader(fragmentShader)
-
-            if (glGetShaderiv(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE) {
-                rendererId = 0u
-
-                val infoLog = glGetShaderInfoLog(fragmentShader)
-
-                // we don't need either shader anymore
-                glDeleteShader(vertexShader)
-                glDeleteShader(fragmentShader)
-
-                Hazel.coreCritical { "Fragment shader failed to compile!" }
-                Hazel.coreError { infoLog }
-            } else {
-
-                // vertex and fragment shaders are successfully compiled
-                // now time to link them together into a program
-                // get a program object
-                val program = glCreateProgram()
-
-                // attach our shaders to our program
-                glAttachShader(program, vertexShader)
-                glAttachShader(program, fragmentShader)
-
-                // link our program
-                glLinkProgram(program)
-
-                if (glGetProgramiv(program, GL_LINK_STATUS) == GL_FALSE) {
-                    rendererId = 0u
-                    val infoLog = glGetProgramInfoLog(rendererId)
-
-                    // we don't need the program or the shaders anymore
-                    glDeleteProgram(program)
-                    glDeleteShader(vertexShader)
-                    glDeleteShader(fragmentShader)
-
-                    Hazel.coreCritical { "Shaders failed to link!" }
-                    Hazel.coreError { infoLog }
-
-                } else {
-                    rendererId = program
-
-                    // always detach shaders after a successful link
-                    glDetachShader(program, vertexShader)
-                    glDetachShader(program, fragmentShader)
-                }
-            }
-        }
+    constructor(vertexSource: String, fragmentSource: String) {
+        val sources = mapOf(GL_VERTEX_SHADER to vertexSource, GL_FRAGMENT_SHADER to fragmentSource)
+        compile(sources)
     }
 
     override fun bind() {
@@ -161,4 +97,107 @@ class OpenGLShader(vertexSource: String, fragmentSource: String) : Shader {
     override fun dispose() {
         glDeleteProgram(rendererId)
     }
+
+    private fun readFile(filepath: String): String? {
+        return fopen(filepath, "r")?.let { file ->
+            Input(file).use { it.readBytes() }.toKString()
+        } ?: run {
+            Hazel.coreError { "Could not open file `$filepath`" }
+            null
+        }
+    }
+
+    private fun preProcess(source: String): Map<Int, String> {
+        val shaderSources = mutableMapOf<Int, String>()
+        val typeToken = "#type"
+        var pos = source.indexOf(typeToken)
+        while (pos != -1) {
+            val eol = source.indexOfAny(charArrayOf('\r', '\n'), pos)
+            if (eol == -1) Hazel.coreCritical { "Syntax error" }
+            val begin = pos + typeToken.length + 1
+            val type = source.substring(begin, eol)
+            if (type.toShaderType() == 0) Hazel.coreCritical { "Invalid shader type specified" }
+
+            val nextLinePos = source.indexOfNone(charArrayOf('\r', '\n'), eol)
+            pos = source.indexOf(typeToken, nextLinePos)
+            shaderSources[type.toShaderType()] = source.substring(nextLinePos, if (pos == -1) source.lastIndex else pos)
+        }
+
+        return shaderSources
+    }
+
+    private fun compile(shaderSources: Map<Int, String>) {
+        val program = glCreateProgram()
+
+        val glShaderIds = MutableList(shaderSources.size) { 0u }
+
+        for ((type, source) in shaderSources) {
+            val shader = glCreateShader(type)
+
+            glShaderSource(shader, source)
+
+            glCompileShader(shader)
+
+            if (glGetShaderiv(shader, GL_COMPILE_STATUS) == GL_FALSE) {
+                val infoLog = glGetShaderInfoLog(shader)
+
+                glDeleteShader(shader)
+
+                Hazel.coreCritical { "Shader failed to compile!" }
+                Hazel.coreError { infoLog }
+                break
+            }
+
+            glAttachShader(program, shader)
+            glShaderIds.add(shader)
+        }
+
+        glLinkProgram(program)
+
+        if (glGetProgramiv(program, GL_LINK_STATUS) == GL_FALSE) {
+            rendererId = 0u
+            val infoLog = glGetProgramInfoLog(rendererId)
+
+            glDeleteProgram(program)
+
+            for (id in glShaderIds)
+                glDeleteShader(id)
+
+            Hazel.coreCritical { "Shaders failed to link!" }
+            Hazel.coreError { infoLog }
+            return
+
+        }
+
+        for (id in glShaderIds)
+            glDetachShader(program, id)
+
+        rendererId = program
+    }
+}
+
+private fun String.toShaderType() = when (this) {
+    "vertex" -> GL_VERTEX_SHADER
+    "fragment",
+    "pixel" -> GL_FRAGMENT_SHADER
+    else -> {
+        Hazel.coreCritical { "Unknown shader type $this!" }
+        0
+    }
+}
+
+/**
+ * Finds the index of the first occurrence of any character this is not one of the specified [chars] in this char
+ * sequence, starting from the specified [startIndex] and optionally ignoring the case.
+ *
+ * @param ignoreCase `true` to ignore character case when matching a character. By default `false`.
+ * @return An index of the first occurrence of matched character not from [chars] or -1 if no match is found.
+ */
+private fun CharSequence.indexOfNone(chars: CharArray, startIndex: Int = 0, ignoreCase: Boolean = false): Int {
+    for (index in startIndex.coerceAtLeast(0)..lastIndex) {
+        val charAtIndex = get(index)
+        if (chars.any { !it.equals(charAtIndex, ignoreCase) })
+            return index
+    }
+    return -1
 }
