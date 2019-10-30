@@ -216,6 +216,16 @@ class ExampleLayer : Layer("ExampleLayer") {
         }
         igEnd()
     }
+
+    override fun dispose() {
+        shader.dispose()
+        vertexArray.dispose()
+        flatColorShader.dispose()
+        textureShader.dispose()
+        texture.dispose()
+        chernoLogoTexture.dispose()
+        squareVertexArray.dispose()
+    }
 }
 
 class Sandbox : Application() {

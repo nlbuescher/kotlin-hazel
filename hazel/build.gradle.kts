@@ -1,6 +1,6 @@
 @file:Suppress("UNUSED_VARIABLE")
 
-import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
+import org.gradle.internal.os.OperatingSystem
 
 plugins {
     kotlin("multiplatform")
@@ -13,7 +13,7 @@ repositories {
 val kotlinxIoVersion by extra("0.1.15")
 
 kotlin {
-    val os = org.gradle.internal.os.OperatingSystem.current()
+    val os = OperatingSystem.current()
 
     if (os.isLinux) linuxX64("linux") {
         val main by compilations.existing {

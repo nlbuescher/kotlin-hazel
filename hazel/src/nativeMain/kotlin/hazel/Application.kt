@@ -1,10 +1,11 @@
 package hazel
 
+import hazel.core.Disposable
 import hazel.core.TimeStepUnit.SECONDS
 import hazel.core.toTimeStep
 import hazel.renderer.Renderer
 
-abstract class Application {
+abstract class Application : Disposable {
     val window = Window().apply { setEventCallback(::onEvent) }
 
     private var isRunning: Boolean = true
@@ -60,7 +61,10 @@ abstract class Application {
     @Suppress("UNUSED_PARAMETER")
     private fun onWindowClose(event: WindowCloseEvent): Boolean {
         isRunning = false
-        window.dispose()
         return true
+    }
+
+    override fun dispose() {
+        window.dispose()
     }
 }

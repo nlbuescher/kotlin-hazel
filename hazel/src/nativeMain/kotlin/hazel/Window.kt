@@ -23,6 +23,7 @@ import cglfw.glfwSetWindowSizeCallback
 import cglfw.glfwSetWindowUserPointer
 import cglfw.glfwTerminate
 import cnames.structs.GLFWwindow
+import hazel.core.Disposable
 import hazel.renderer.GraphicsContext
 import hazel.renderer.opengl.OpenGLContext
 import kotlinx.cinterop.CPointer
@@ -131,7 +132,7 @@ class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) :
     override fun dispose() {
         glfwGetWindowUserPointer(ptr)!!.asStableRef<Window>().dispose()
         glfwDestroyWindow(ptr)
-        //glfwTerminate() // causes segfault (exit code 139) on linux
+        glfwTerminate()
     }
 
 

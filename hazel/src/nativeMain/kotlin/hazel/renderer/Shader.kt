@@ -1,6 +1,6 @@
 package hazel.renderer
 
-import hazel.Disposable
+import hazel.core.Disposable
 import hazel.renderer.opengl.OpenGLShader
 
 interface Shader : Disposable {
@@ -8,7 +8,7 @@ interface Shader : Disposable {
     fun unbind()
 }
 
-fun Shader(filepath: String) = when(Renderer.api) {
+fun Shader(filepath: String) = when (Renderer.api) {
     RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
     RenderAPI.API.OpenGL -> OpenGLShader(filepath)
 }

@@ -25,6 +25,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
 
 // convenience functions for kotlin use of OpenGL functions
+// these functions convert kotlin types to the proper cinterop types
 
 // A
 

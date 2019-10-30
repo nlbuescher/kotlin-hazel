@@ -1,5 +1,6 @@
 package hazel
 
+import hazel.core.use
 import kotlin.contracts.contract
 import kotlin.time.MonoClock
 
@@ -27,7 +28,7 @@ object Hazel {
         coreWarn { "Initialized Log!" }
         info { "Hello!" }
 
-        application.run()
+        application.use { it.run() }
     }
 
 

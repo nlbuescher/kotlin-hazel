@@ -1,6 +1,6 @@
 package hazel.renderer
 
-import hazel.Disposable
+import hazel.core.Disposable
 import hazel.renderer.opengl.OpenGLVertexArray
 
 interface VertexArray : Disposable {

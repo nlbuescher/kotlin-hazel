@@ -1,5 +1,7 @@
 @file:Suppress("UNUSED_VARIABLE")
 
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     kotlin("multiplatform")
 }
@@ -9,7 +11,7 @@ repositories {
 }
 
 kotlin {
-    val os = org.gradle.internal.os.OperatingSystem.current()
+    val os = OperatingSystem.current()
 
     if (os.isLinux) linuxX64("linux") {
         binaries {
