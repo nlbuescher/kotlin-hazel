@@ -16,11 +16,13 @@ kotlin {
     val os = OperatingSystem.current()
 
     if (os.isLinux) linuxX64("linux") {
-        val main by compilations.existing {
-            cinterops.create("cglfw")
-            cinterops.create("cimgui")
-            cinterops.create("copengl")
-            cinterops.create("cstb_image")
+        val main by compilations.getting {
+            cinterops {
+                create("cglfw")
+                create("cimgui")
+                create("copengl")
+                create("cstb_image")
+            }
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 resources.srcDir("src/nativeMain/resources")
@@ -30,10 +32,10 @@ kotlin {
                 }
             }
         }
-        val test by compilations.existing {
-            defaultSourceSet {
-                kotlin.srcDir("src/nativeTest/kotlin")
-                resources.srcDir("src/nativeTest/resources")
+
+        afterEvaluate {
+            main.cinterops["cimgui"].apply {
+                tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleRelease")
             }
         }
     }
@@ -48,8 +50,4 @@ kotlin {
             useExperimentalAnnotation("kotlinx.io.core.ExperimentalIoApi")
         }
     }
-}
-
-tasks.findByName("cinteropCimguiLinux")?.apply {
-    dependsOn(":cimgui:build")
 }

@@ -6,7 +6,7 @@ depends.linux = posix
 compilerOpts = -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS
 compilerOpts.linux = -I/usr/include -I../cimgui
 
-linkerOpts.linux = -L../cimgui/build/lib/main/debug -lcimgui -lGL -lGLEW -lglfw
+linkerOpts.linux = -L../cimgui/build/lib/main/release -lcimgui -lGL -lGLEW -lglfw
 
 ---
 
