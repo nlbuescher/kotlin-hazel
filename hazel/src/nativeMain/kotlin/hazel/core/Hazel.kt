@@ -1,6 +1,5 @@
-package hazel
+package hazel.core
 
-import hazel.core.use
 import platform.posix.SIGTRAP
 import platform.posix.raise
 import kotlin.time.MonoClock

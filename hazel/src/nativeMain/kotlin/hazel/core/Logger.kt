@@ -1,11 +1,15 @@
-package hazel
+package hazel.core
 
-import kotlinx.cinterop.*
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.toKString
 import platform.posix.localtime
 import platform.posix.strftime
 import platform.posix.time
 import platform.posix.time_tVar
-
 
 internal class Logger(private val name: String) {
     private val timestamp: String

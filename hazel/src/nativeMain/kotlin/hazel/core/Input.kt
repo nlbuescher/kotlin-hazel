@@ -1,4 +1,4 @@
-package hazel
+package hazel.core
 
 import cglfw.GLFW_PRESS
 import cglfw.GLFW_REPEAT

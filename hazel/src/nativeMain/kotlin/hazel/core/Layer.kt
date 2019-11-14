@@ -1,8 +1,4 @@
-package hazel
-
-import hazel.core.Disposable
-import hazel.core.TimeStep
-
+package hazel.core
 
 open class Layer(val debugName: String = "Layer") : Disposable {
     open fun onAttach() {}

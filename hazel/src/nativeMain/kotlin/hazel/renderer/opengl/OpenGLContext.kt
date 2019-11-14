@@ -8,7 +8,7 @@ import copengl.GL_VENDOR
 import copengl.GL_VERSION
 import copengl.glGetString
 import copengl.glewInit
-import hazel.Hazel
+import hazel.core.Hazel
 import hazel.renderer.GraphicsContext
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer

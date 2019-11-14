@@ -1,4 +1,4 @@
-package hazel
+package hazel.core
 
 import cglfw.glfwGetCurrentContext
 import cglfw.glfwMakeContextCurrent

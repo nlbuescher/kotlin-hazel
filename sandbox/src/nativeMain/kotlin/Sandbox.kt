@@ -1,11 +1,11 @@
 import cimgui.igBegin
 import cimgui.igColorEdit3
 import cimgui.igEnd
-import hazel.Application
-import hazel.Event
-import hazel.Hazel
-import hazel.Layer
-import hazel.OrthographicCameraController
+import hazel.renderer.OrthographicCameraController
+import hazel.core.Application
+import hazel.core.Event
+import hazel.core.Hazel
+import hazel.core.Layer
 import hazel.core.TimeStep
 import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector3

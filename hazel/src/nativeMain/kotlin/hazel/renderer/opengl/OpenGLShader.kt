@@ -5,7 +5,7 @@ import copengl.GL_FALSE
 import copengl.GL_FRAGMENT_SHADER
 import copengl.GL_LINK_STATUS
 import copengl.GL_VERTEX_SHADER
-import hazel.Hazel
+import hazel.core.Hazel
 import hazel.math.FloatMatrix3x3
 import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector2

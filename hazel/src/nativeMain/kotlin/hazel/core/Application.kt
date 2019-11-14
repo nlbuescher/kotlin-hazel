@@ -1,8 +1,6 @@
-package hazel
+package hazel.core
 
-import hazel.core.Disposable
 import hazel.core.TimeStepUnit.SECONDS
-import hazel.core.toTimeStep
 import hazel.renderer.Renderer
 
 abstract class Application : Disposable {

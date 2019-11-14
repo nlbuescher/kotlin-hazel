@@ -1,4 +1,4 @@
-package hazel
+package hazel.core
 
 import cglfw.GLFW_PRESS
 import cglfw.GLFW_RELEASE
@@ -23,7 +23,6 @@ import cglfw.glfwSetWindowSizeCallback
 import cglfw.glfwSetWindowUserPointer
 import cglfw.glfwTerminate
 import cnames.structs.GLFWwindow
-import hazel.core.Disposable
 import hazel.renderer.GraphicsContext
 import hazel.renderer.opengl.OpenGLContext
 import kotlinx.cinterop.CPointer

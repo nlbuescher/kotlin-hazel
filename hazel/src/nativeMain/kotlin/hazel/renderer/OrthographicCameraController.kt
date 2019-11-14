@@ -1,9 +1,13 @@
-package hazel
+package hazel.renderer
 
+import hazel.core.Event
+import hazel.core.Input
+import hazel.core.Key
+import hazel.core.MouseScrolledEvent
 import hazel.core.TimeStep
+import hazel.core.WindowResizeEvent
 import hazel.math.FloatVector3
 import hazel.math.degrees
-import hazel.renderer.OrthographicCamera
 
 class OrthographicCameraController(
     private var aspectRatio: Float,

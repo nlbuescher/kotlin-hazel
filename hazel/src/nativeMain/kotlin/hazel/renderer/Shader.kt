@@ -1,6 +1,6 @@
 package hazel.renderer
 
-import hazel.Hazel
+import hazel.core.Hazel
 import hazel.core.Disposable
 import hazel.renderer.opengl.OpenGLShader
 
