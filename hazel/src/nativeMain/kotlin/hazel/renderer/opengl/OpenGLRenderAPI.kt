@@ -11,6 +11,7 @@ import copengl.glBlendFunc
 import copengl.glClearColor
 import copengl.glDrawElements
 import copengl.glEnable
+import copengl.glViewport
 import hazel.math.FloatVector4
 import hazel.renderer.RenderAPI
 import hazel.renderer.VertexArray
@@ -21,6 +22,10 @@ class OpenGLRenderAPI : RenderAPI {
     override fun init() {
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    }
+
+    override fun setViewport(x: Int, y: Int, width: Int, height: Int) {
+        glViewport(x, y, width, height)
     }
 
     override fun setClearColor(color: FloatVector4) {

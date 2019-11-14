@@ -2,18 +2,16 @@ import cimgui.igBegin
 import cimgui.igColorEdit3
 import cimgui.igEnd
 import hazel.Application
+import hazel.Event
 import hazel.Hazel
-import hazel.Input
-import hazel.Key
 import hazel.Layer
+import hazel.OrthographicCameraController
 import hazel.core.TimeStep
 import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
-import hazel.math.degrees
 import hazel.renderer.BufferElement
 import hazel.renderer.BufferLayout
-import hazel.renderer.OrthographicCamera
 import hazel.renderer.RenderCommand
 import hazel.renderer.Renderer
 import hazel.renderer.Shader
@@ -28,11 +26,7 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 
 class ExampleLayer : Layer("ExampleLayer") {
-    private val camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f)
-    private val cameraPosition = FloatVector3()
-    private val cameraMoveSpeed: Float = 5f
-    private var cameraRotation: Float = 0f
-    private val cameraRotationSpeed: Float = 180f.degrees
+    private val cameraController = OrthographicCameraController(1280f / 720f, true)
 
     private val shaderLibrary = ShaderLibrary()
 
@@ -92,9 +86,6 @@ class ExampleLayer : Layer("ExampleLayer") {
     private val texture: Texture2D
     private val chernoLogoTexture: Texture2D
     private val squareVertexArray = VertexArray()
-
-    private val squarePosition = FloatVector3()
-    private val squareMoveSpeed: Float = 1f
     private val squareColor = FloatVector3(0f, 0f, 1f)
 
     init {
@@ -154,38 +145,14 @@ class ExampleLayer : Layer("ExampleLayer") {
 
 
     override fun onUpdate(timeStep: TimeStep) {
-        if (Input.isKeyPressed(Key.A))
-            cameraPosition.x -= cameraMoveSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.D))
-            cameraPosition.x += cameraMoveSpeed * timeStep.inSeconds
+        // Update
+        cameraController.onUpdate(timeStep)
 
-        if (Input.isKeyPressed(Key.W))
-            cameraPosition.y += cameraMoveSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.S))
-            cameraPosition.y -= cameraMoveSpeed * timeStep.inSeconds
-
-        if (Input.isKeyPressed(Key.Q))
-            cameraRotation += cameraRotationSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.E))
-            cameraRotation -= cameraRotationSpeed * timeStep.inSeconds
-
-        if (Input.isKeyPressed(Key.LEFT))
-            squarePosition.x -= squareMoveSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.RIGHT))
-            squarePosition.x += squareMoveSpeed * timeStep.inSeconds
-
-        if (Input.isKeyPressed(Key.UP))
-            squarePosition.y += squareMoveSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.DOWN))
-            squarePosition.y -= squareMoveSpeed * timeStep.inSeconds
-
+        // Render
         RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
         RenderCommand.clear()
 
-        camera.position = cameraPosition
-        camera.rotation = cameraRotation
-
-        Renderer.scene(camera) {
+        Renderer.scene(cameraController.camera) {
             val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f))
 
             flatColorShader.bind()
@@ -219,6 +186,10 @@ class ExampleLayer : Layer("ExampleLayer") {
             igColorEdit3("Square Color", it.addressOf(0), 0)
         }
         igEnd()
+    }
+
+    override fun onEvent(event: Event) {
+        cameraController.onEvent(event)
     }
 
     override fun dispose() {

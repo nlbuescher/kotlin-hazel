@@ -16,6 +16,10 @@ object Renderer {
 
     fun init() = RenderCommand.init()
 
+    fun onWindowResize(width: Int, height: Int) {
+        RenderCommand.setViewport(0, 0, width, height)
+    }
+
     private fun beginScene(camera: OrthographicCamera) {
         sceneData.viewProjectionMatrix = camera.viewProjectionMatrix
     }

@@ -63,37 +63,37 @@ class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) :
         })
 
         glfwSetKeyCallback(ptr, staticCFunction { window, key, _ /*scanCode*/, action, _ /*mods*/ ->
-            val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
+            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
             when (action) {
-                GLFW_RELEASE -> data.eventCallback?.invoke(KeyReleasedEvent(Key.fromGlfw(key)))
-                GLFW_PRESS -> data.eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 0))
-                GLFW_REPEAT -> data.eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 1))
+                GLFW_RELEASE -> context.eventCallback?.invoke(KeyReleasedEvent(Key.fromGlfw(key)))
+                GLFW_PRESS -> context.eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 0))
+                GLFW_REPEAT -> context.eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 1))
             }
         })
 
         glfwSetCharCallback(ptr, staticCFunction { window, character ->
-            val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            data.eventCallback?.invoke(KeyTypedEvent(Key.fromGlfw(character.toInt())))
+            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
+            context.eventCallback?.invoke(KeyTypedEvent(Key.fromGlfw(character.toInt())))
         })
 
         glfwSetMouseButtonCallback(ptr, staticCFunction { window, button, action, _ /*mods*/ ->
-            val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
+            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
             when (action) {
-                GLFW_RELEASE -> data.eventCallback?.invoke(MouseButtonReleasedEvent(MouseButton.fromGlfw(button)))
-                GLFW_PRESS -> data.eventCallback?.invoke(MouseButtonPressedEvent(MouseButton.fromGlfw(button)))
+                GLFW_RELEASE -> context.eventCallback?.invoke(MouseButtonReleasedEvent(MouseButton.fromGlfw(button)))
+                GLFW_PRESS -> context.eventCallback?.invoke(MouseButtonPressedEvent(MouseButton.fromGlfw(button)))
             }
         })
 
         glfwSetScrollCallback(ptr, staticCFunction { window, xOffset, yOffset ->
-            val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
+            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
             val event = MouseScrolledEvent(xOffset.toFloat(), yOffset.toFloat())
-            data.eventCallback?.invoke(event)
+            context.eventCallback?.invoke(event)
         })
 
         glfwSetCursorPosCallback(ptr, staticCFunction { window, x, y ->
-            val data = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
+            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
             val event = MouseMovedEvent(x.toFloat(), y.toFloat())
-            data.eventCallback?.invoke(event)
+            context.eventCallback?.invoke(event)
         })
     }
 

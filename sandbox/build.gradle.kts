@@ -22,7 +22,6 @@ kotlin {
         val main by compilations.existing {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
-                resources.srcDir("src/nativeMain/resources")
 
                 dependencies {
                     api(project(":hazel"))

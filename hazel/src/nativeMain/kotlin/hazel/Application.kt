@@ -9,6 +9,8 @@ abstract class Application : Disposable {
     val window = Window().apply { setEventCallback(::onEvent) }
 
     private var isRunning: Boolean = true
+    private var isMinimized: Boolean = false
+
     private val layerStack = LayerStack()
     private val imGuiLayer = ImGuiLayer()
 
@@ -37,7 +39,9 @@ abstract class Application : Disposable {
             val timeStep = (time - lastFrameTime).toTimeStep(SECONDS)
             lastFrameTime = time
 
-            layerStack.forEach { it.onUpdate(timeStep) }
+            if (!isMinimized) {
+                layerStack.forEach { it.onUpdate(timeStep) }
+            }
 
             imGuiLayer.begin()
             layerStack.forEach { it.onImGuiRender() }
@@ -48,14 +52,26 @@ abstract class Application : Disposable {
     }
 
     fun onEvent(event: Event) {
-        with(Event.Dispatcher(event)) {
-            dispatch(::onWindowClose)
-        }
+        event.dispatch(::onWindowResize)
+        event.dispatch(::onWindowClose)
 
         for (layer in layerStack.reversed()) {
             layer.onEvent(event)
             if (event.isHandled) break
         }
+    }
+
+    private fun onWindowResize(event: WindowResizeEvent): Boolean {
+        if (event.width == 0 || event.height == 0) {
+            isMinimized = true
+            return true
+        }
+
+        isMinimized = false
+
+        Renderer.onWindowResize(event.width, event.height)
+
+        return false
     }
 
     @Suppress("UNUSED_PARAMETER")

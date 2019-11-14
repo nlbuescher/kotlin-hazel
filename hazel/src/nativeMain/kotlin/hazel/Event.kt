@@ -10,18 +10,16 @@ sealed class Event {
     override fun toString(): String = name
 
 
-    class Dispatcher(private val event: Event) {
-        inline fun <reified T : Event> dispatch(noinline function: (T) -> Boolean): Boolean =
-            dispatch(T::class, function)
+    inline fun <reified T : Event> dispatch(noinline function: (T) -> Boolean): Boolean =
+        dispatch(T::class, function)
 
-        fun <T : Event> dispatch(klass: KClass<T>, function: (T) -> Boolean): Boolean {
-            if (klass.isInstance(event)) {
-                @Suppress("UNCHECKED_CAST")
-                event.isHandled = function(event as T)
-                return true
-            }
-            return false
+    fun <T : Event> dispatch(klass: KClass<T>, function: (T) -> Boolean): Boolean {
+        if (klass.isInstance(this)) {
+            @Suppress("UNCHECKED_CAST")
+            isHandled = function(this as T)
+            return true
         }
+        return false
     }
 }
 

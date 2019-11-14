@@ -12,6 +12,7 @@ interface RenderAPI {
 
     fun init()
 
+    fun setViewport(x: Int, y: Int, width: Int, height: Int)
     fun setClearColor(color: FloatVector4)
     fun clear()
 

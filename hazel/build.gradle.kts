@@ -25,7 +25,6 @@ kotlin {
             }
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
-                resources.srcDir("src/nativeMain/resources")
 
                 dependencies {
                     implementation("org.jetbrains.kotlinx:kotlinx-io-native:$kotlinxIoVersion")
