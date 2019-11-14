@@ -1,7 +1,6 @@
 import cimgui.igBegin
 import cimgui.igColorEdit3
 import cimgui.igEnd
-import hazel.renderer.OrthographicCameraController
 import hazel.core.Application
 import hazel.core.Event
 import hazel.core.Hazel
@@ -12,6 +11,7 @@ import hazel.math.FloatVector3
 import hazel.math.FloatVector4
 import hazel.renderer.BufferElement
 import hazel.renderer.BufferLayout
+import hazel.renderer.OrthographicCameraController
 import hazel.renderer.RenderCommand
 import hazel.renderer.Renderer
 import hazel.renderer.Shader
@@ -205,7 +205,8 @@ class ExampleLayer : Layer("ExampleLayer") {
 
 class Sandbox : Application() {
     init {
-        addLayer(ExampleLayer())
+        //addLayer(ExampleLayer())
+        addLayer(Sandbox2D())
     }
 }
 
