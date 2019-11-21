@@ -117,7 +117,6 @@ class OpenGLShader : Shader {
             fseek(file, 0L, SEEK_SET)
             ByteArray(size).usePinned {
                 fread(it.addressOf(0), 1, size.convert(), file)
-                println(it.get().contentToString())
                 it.addressOf(0).toKString()
             }
         } ?: run {
