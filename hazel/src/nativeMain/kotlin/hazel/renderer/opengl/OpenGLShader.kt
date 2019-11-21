@@ -12,10 +12,10 @@ import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
 import hazel.renderer.Shader
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.toKString
-import kotlinx.io.core.readBytes
-import kotlinx.io.core.use
-import kotlinx.io.streams.Input
+import kotlinx.cinterop.usePinned
 import opengl.glAttachShader
 import opengl.glCompileShader
 import opengl.glCreateProgram
@@ -34,7 +34,12 @@ import opengl.glUniform
 import opengl.glUniformMatrix3
 import opengl.glUniformMatrix4
 import opengl.glUseProgram
+import platform.posix.SEEK_END
+import platform.posix.SEEK_SET
 import platform.posix.fopen
+import platform.posix.fread
+import platform.posix.fseek
+import platform.posix.ftell
 
 class OpenGLShader : Shader {
 
@@ -107,7 +112,14 @@ class OpenGLShader : Shader {
 
     private fun readFile(filepath: String): String? {
         return fopen(filepath, "r")?.let { file ->
-            Input(file).use { it.readBytes() }.toKString()
+            fseek(file, 0L, SEEK_END)
+            val size = ftell(file).toInt()
+            fseek(file, 0L, SEEK_SET)
+            ByteArray(size).usePinned {
+                fread(it.addressOf(0), 1, size.convert(), file)
+                println(it.get().contentToString())
+                it.addressOf(0).toKString()
+            }
         } ?: run {
             Hazel.coreError { "Could not open file `$filepath`" }
             null

@@ -10,8 +10,6 @@ repositories {
     jcenter()
 }
 
-val kotlinxIoVersion by extra("0.1.15")
-
 kotlin {
     val os = OperatingSystem.current()
 
@@ -25,10 +23,6 @@ kotlin {
             }
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
-
-                dependencies {
-                    implementation("org.jetbrains.kotlinx:kotlinx-io-native:$kotlinxIoVersion")
-                }
             }
         }
 
