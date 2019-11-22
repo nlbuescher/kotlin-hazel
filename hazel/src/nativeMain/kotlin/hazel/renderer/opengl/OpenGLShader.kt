@@ -14,6 +14,7 @@ import hazel.math.FloatVector4
 import hazel.renderer.Shader
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
+import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
 import opengl.glAttachShader
@@ -115,10 +116,9 @@ class OpenGLShader : Shader {
             fseek(file, 0L, SEEK_END)
             val size = ftell(file).toInt()
             fseek(file, 0L, SEEK_SET)
-            ByteArray(size).usePinned {
-                fread(it.addressOf(0), 1, size.convert(), file)
-                it.addressOf(0).toKString()
-            }
+            ByteArray(size).apply {
+                usePinned { fread(it.addressOf(0), 1, size.convert(), file) }
+            }.toKString()
         } ?: run {
             Hazel.coreError { "Could not open file `$filepath`" }
             null

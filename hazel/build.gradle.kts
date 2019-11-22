@@ -40,7 +40,6 @@ kotlin {
             useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
             useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
             useExperimentalAnnotation("kotlin.time.ExperimentalTime")
-            useExperimentalAnnotation("kotlinx.io.core.ExperimentalIoApi")
         }
     }
 }

@@ -14,7 +14,10 @@ object Renderer {
         get() = RenderAPI.api
         set(new) = run { RenderAPI.api = new }
 
-    fun init() = RenderCommand.init()
+    fun init() {
+        RenderCommand.init()
+        Renderer2D.init()
+    }
 
     fun onWindowResize(width: Int, height: Int) {
         RenderCommand.setViewport(0, 0, width, height)
