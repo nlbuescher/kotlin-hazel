@@ -1,7 +1,6 @@
 package hazel.renderer
 
 import hazel.math.FloatMatrix4x4
-import hazel.renderer.opengl.OpenGLShader
 
 class SceneData {
     var viewProjectionMatrix = FloatMatrix4x4()
@@ -38,11 +37,9 @@ object Renderer {
     }
 
     fun submit(shader: Shader, vertexArray: VertexArray, transform: FloatMatrix4x4 = FloatMatrix4x4()) {
-        shader as OpenGLShader
-
         shader.bind()
-        shader.uploadUniform("u_ViewProjection", sceneData.viewProjectionMatrix)
-        shader.uploadUniform("u_Transform", transform)
+        shader["u_ViewProjection"] = sceneData.viewProjectionMatrix
+        shader["u_Transform"] = transform
 
         vertexArray.bind()
         RenderCommand.drawIndexed(vertexArray)

@@ -4,22 +4,13 @@ import cimgui.igEnd
 import hazel.core.Event
 import hazel.core.Layer
 import hazel.core.TimeStep
-import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
-import hazel.renderer.BufferElement
-import hazel.renderer.BufferLayout
 import hazel.renderer.OrthographicCameraController
 import hazel.renderer.RenderCommand
-import hazel.renderer.Renderer
 import hazel.renderer.Renderer2D
-import hazel.renderer.Shader
-import hazel.renderer.ShaderDataType
-import hazel.renderer.VertexArray
-import hazel.renderer.indexBufferOf
-import hazel.renderer.opengl.OpenGLShader
-import hazel.renderer.vertexBufferOf
+import hazel.renderer.Texture2D
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 
@@ -29,7 +20,11 @@ class Sandbox2D : Layer("Sandbox2D") {
 
     private val squareColor = FloatVector4(0f, 0f, 1f, 1f)
 
-    override fun onAttach() {}
+    private lateinit var checkerBoardTexture: Texture2D
+
+    override fun onAttach() {
+        checkerBoardTexture = Texture2D("assets/textures/Checkerboard.png")
+    }
 
     override fun onDetach() {}
 
@@ -44,6 +39,7 @@ class Sandbox2D : Layer("Sandbox2D") {
         Renderer2D.scene(cameraController.camera) {
             drawQuad(FloatVector2(-1f, 0f), FloatVector2(0.8f, 0.8f), FloatVector4(1f, 0f, 0f, 1f))
             drawQuad(FloatVector2(0.5f, -0.5f), FloatVector2(0.5f, 0.75f), FloatVector4(0f, 1f, 0f, 1f))
+            drawQuad(FloatVector3(0f, 0f, -0.1f), FloatVector2(10f, 10f), checkerBoardTexture)
         }
     }
 

@@ -13,6 +13,7 @@ interface Shader : Disposable {
     fun bind()
     fun unbind()
 
+    operator fun set(name: String, int: Int)
     operator fun set(name: String, vector: FloatVector3)
     operator fun set(name: String, vector: FloatVector4)
     operator fun set(name: String, matrix: FloatMatrix4x4)

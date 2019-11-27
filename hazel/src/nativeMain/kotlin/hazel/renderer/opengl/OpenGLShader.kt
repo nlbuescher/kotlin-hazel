@@ -71,6 +71,7 @@ class OpenGLShader : Shader {
         glUseProgram(0u)
     }
 
+    override fun set(name: String, int: Int) = uploadUniform(name, int)
     override fun set(name: String, vector: FloatVector3) = uploadUniform(name, vector)
     override fun set(name: String, vector: FloatVector4) = uploadUniform(name, vector)
     override fun set(name: String, matrix: FloatMatrix4x4) = uploadUniform(name, matrix)

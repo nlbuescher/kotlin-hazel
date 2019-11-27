@@ -20,7 +20,6 @@ import hazel.renderer.ShaderLibrary
 import hazel.renderer.Texture2D
 import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
-import hazel.renderer.opengl.OpenGLShader
 import hazel.renderer.vertexBufferOf
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -140,7 +139,7 @@ class ExampleLayer : Layer("ExampleLayer") {
         chernoLogoTexture = Texture2D("assets/textures/ChernoLogo.png")
 
         textureShader.bind()
-        (textureShader as OpenGLShader).uploadUniform("u_Texture", 0)
+        textureShader["u_Texture"] = 0
     }
 
 
@@ -156,7 +155,7 @@ class ExampleLayer : Layer("ExampleLayer") {
             val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f))
 
             flatColorShader.bind()
-            (flatColorShader as OpenGLShader).uploadUniform("u_Color", squareColor)
+            flatColorShader["u_Color"]= squareColor
 
             for (y in 0 until 20) {
                 for (x in 0 until 20) {

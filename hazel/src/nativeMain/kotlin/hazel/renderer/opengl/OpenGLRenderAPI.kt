@@ -3,6 +3,7 @@ package hazel.renderer.opengl
 import copengl.GL_BLEND
 import copengl.GL_COLOR_BUFFER_BIT
 import copengl.GL_DEPTH_BUFFER_BIT
+import copengl.GL_DEPTH_TEST
 import copengl.GL_ONE_MINUS_SRC_ALPHA
 import copengl.GL_SRC_ALPHA
 import copengl.GL_TRIANGLES
@@ -22,6 +23,8 @@ class OpenGLRenderAPI : RenderAPI {
     override fun init() {
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        glEnable(GL_DEPTH_TEST)
     }
 
     override fun setViewport(x: Int, y: Int, width: Int, height: Int) {
