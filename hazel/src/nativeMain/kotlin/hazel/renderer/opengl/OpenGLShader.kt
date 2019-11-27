@@ -14,7 +14,6 @@ import hazel.math.FloatVector4
 import hazel.renderer.Shader
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
-import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
 import opengl.glAttachShader
@@ -71,6 +70,10 @@ class OpenGLShader : Shader {
     override fun unbind() {
         glUseProgram(0u)
     }
+
+    override fun set(name: String, vector: FloatVector3) = uploadUniform(name, vector)
+    override fun set(name: String, vector: FloatVector4) = uploadUniform(name, vector)
+    override fun set(name: String, matrix: FloatMatrix4x4) = uploadUniform(name, matrix)
 
     fun uploadUniform(name: String, int: Int) {
         val location = glGetUniformLocation(rendererId, name)

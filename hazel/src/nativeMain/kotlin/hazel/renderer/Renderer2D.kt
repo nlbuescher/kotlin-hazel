@@ -38,8 +38,7 @@ object Renderer2D {
 
     private fun beginScene(camera: OrthographicCamera) {
         flatColorShader.bind()
-        (flatColorShader as OpenGLShader).uploadUniform("u_ViewProjection", camera.viewProjectionMatrix)
-        (flatColorShader as OpenGLShader).uploadUniform("u_Transform", FloatMatrix4x4(1f))
+        flatColorShader["u_ViewProjection"] = camera.viewProjectionMatrix
     }
 
     private fun endScene() {}
@@ -55,7 +54,10 @@ object Renderer2D {
 
     fun drawQuad(position: FloatVector3, size: FloatVector2, color: FloatVector4) {
         flatColorShader.bind()
-        (flatColorShader as OpenGLShader).uploadUniform("u_Color", color)
+        flatColorShader["u_Color"] = color
+
+        val transform = FloatMatrix4x4(1f).translate(position).scale(FloatVector3(size.x, size.y, 1f))
+        flatColorShader["u_Transform"] = transform
 
         quadVertexArray.bind()
         RenderCommand.drawIndexed(quadVertexArray)

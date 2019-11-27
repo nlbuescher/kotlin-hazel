@@ -29,12 +29,9 @@ class Sandbox2D : Layer("Sandbox2D") {
 
     private val squareColor = FloatVector4(0f, 0f, 1f, 1f)
 
-    override fun onAttach() {
-    }
+    override fun onAttach() {}
 
-    override fun onDetach() {
-
-    }
+    override fun onDetach() {}
 
     override fun onUpdate(timeStep: TimeStep) {
         // update
@@ -45,11 +42,9 @@ class Sandbox2D : Layer("Sandbox2D") {
         RenderCommand.clear()
 
         Renderer2D.scene(cameraController.camera) {
-            drawQuad(FloatVector2(0f, 0f), FloatVector2(1f, 1f), FloatVector4(1f, 0f, 0f, 1f))
+            drawQuad(FloatVector2(-1f, 0f), FloatVector2(0.8f, 0.8f), FloatVector4(1f, 0f, 0f, 1f))
+            drawQuad(FloatVector2(0.5f, -0.5f), FloatVector2(0.5f, 0.75f), FloatVector4(0f, 1f, 0f, 1f))
         }
-        // TODO Add Shader.set(FloatMatrix4x4), Shader.set(FloatVector4)
-        //flatColorShader.bind()
-        //(flatColorShader as OpenGLShader).uploadUniform("u_Color", squareColor)
     }
 
     override fun onImGuiRender() {

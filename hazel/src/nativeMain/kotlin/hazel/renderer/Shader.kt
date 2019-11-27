@@ -1,7 +1,10 @@
 package hazel.renderer
 
-import hazel.core.Hazel
 import hazel.core.Disposable
+import hazel.core.Hazel
+import hazel.math.FloatMatrix4x4
+import hazel.math.FloatVector3
+import hazel.math.FloatVector4
 import hazel.renderer.opengl.OpenGLShader
 
 interface Shader : Disposable {
@@ -9,6 +12,10 @@ interface Shader : Disposable {
 
     fun bind()
     fun unbind()
+
+    operator fun set(name: String, vector: FloatVector3)
+    operator fun set(name: String, vector: FloatVector4)
+    operator fun set(name: String, matrix: FloatMatrix4x4)
 }
 
 fun Shader(filepath: String): Shader = when (Renderer.api) {
