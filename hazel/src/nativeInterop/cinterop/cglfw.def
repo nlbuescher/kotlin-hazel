@@ -12,4 +12,4 @@ compilerOpts.mingw = -IC:/msys64/mingw64/include
 
 linkerOpts.linux = -L/usr/lib -lglfw
 linkerOpts.osx = -L/usr/local/lib -lglfw
-linkerOpts.mingw = -LC:/msys64/mingw64/lib -Wl,-Bstatic -lstdc++ -static -lglfw3 -lgdi32
+linkerOpts.mingw = -LC:/msys64/mingw64/lib -lglfw3

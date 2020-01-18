@@ -12,23 +12,43 @@ repositories {
 
 kotlin {
     val os = OperatingSystem.current()
-
-    if (os.isLinux) linuxX64("linux") {
-        val main by compilations.getting {
-            cinterops {
-                create("cglfw")
-                create("cimgui")
-                create("copengl")
-                create("cstb_image")
+    when {
+        os.isLinux -> linuxX64("linux") {
+            val main by compilations.getting {
+                cinterops {
+                    create("cglfw")
+                    create("cimgui")
+                    create("copengl")
+                    create("cstb_image")
+                }
+                defaultSourceSet {
+                    kotlin.srcDir("src/nativeMain/kotlin")
+                }
             }
-            defaultSourceSet {
-                kotlin.srcDir("src/nativeMain/kotlin")
+
+            afterEvaluate {
+                main.cinterops["cimgui"].apply {
+                    tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleRelease")
+                }
             }
         }
+        os.isWindows -> mingwX64("mingw") {
+            val main by compilations.getting {
+                cinterops {
+                    create("cglfw")
+                    create("cimgui")
+                    create("copengl")
+                    create("cstb_image")
+                }
+                defaultSourceSet {
+                    kotlin.srcDir("src/nativeMain/kotlin")
+                }
+            }
 
-        afterEvaluate {
-            main.cinterops["cimgui"].apply {
-                tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleRelease")
+            afterEvaluate {
+                main.cinterops["cimgui"].apply {
+                    tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleReleaseWindows")
+                }
             }
         }
     }

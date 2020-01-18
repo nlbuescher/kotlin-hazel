@@ -1,7 +1,5 @@
 package hazel.core
 
-import platform.posix.SIGTRAP
-import platform.posix.raise
 import kotlin.time.MonoClock
 
 private var _application: Application? = null
@@ -41,7 +39,7 @@ object Hazel {
     internal fun coreAssert(test: Boolean, message: () -> Any? = { null }) {
         if (Platform.isDebugBinary && !test) {
             coreCritical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
-            raise(SIGTRAP)
+            //raise(SIGTRAP) // doesn't actually work
         }
     }
 
@@ -54,7 +52,7 @@ object Hazel {
     fun assert(test: Boolean, message: () -> Any? = { null }) {
         if (Platform.isDebugBinary && !test) {
             critical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
-            raise(SIGTRAP)
+            //raise(SIGTRAP) // doesn't actually work
         }
     }
 }

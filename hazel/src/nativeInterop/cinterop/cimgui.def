@@ -5,8 +5,10 @@ depends.linux = posix
 
 compilerOpts = -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS
 compilerOpts.linux = -I/usr/include -I../cimgui
+compilerOpts.mingw = -IC:/msys2/mingw64/include -I../cimgui
 
-linkerOpts.linux = -L../cimgui/build/lib/main/release -lcimgui -lGL -lGLEW -lglfw
+linkerOpts.linux = -L/usr/lib -L../cimgui/build/lib/main/release -lcimgui -lGL -lGLEW -lglfw
+linkerOpts.mingw = -LC:/msys2/mingw64/lib -L../cimgui/build/lib/main/release/windows -lcimgui -lopengl32 -lglew32 -lglfw3
 
 ---
 

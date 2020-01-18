@@ -12,19 +12,36 @@ repositories {
 
 kotlin {
     val os = OperatingSystem.current()
+    when {
+        os.isLinux -> linuxX64("linux") {
+            binaries {
+                executable("Sandbox") {
+                    entryPoint = "main"
+                }
+            }
+            val main by compilations.existing {
+                defaultSourceSet {
+                    kotlin.srcDir("src/nativeMain/kotlin")
 
-    if (os.isLinux) linuxX64("linux") {
-        binaries {
-            executable("Sandbox") {
-                entryPoint = "main"
+                    dependencies {
+                        api(project(":hazel"))
+                    }
+                }
             }
         }
-        val main by compilations.existing {
-            defaultSourceSet {
-                kotlin.srcDir("src/nativeMain/kotlin")
+        os.isWindows -> mingwX64("mingw") {
+            binaries {
+                executable("Sandbox") {
+                    entryPoint = "main"
+                }
+            }
+            val main by compilations.existing {
+                defaultSourceSet {
+                    kotlin.srcDir("src/nativeMain/kotlin")
 
-                dependencies {
-                    api(project(":hazel"))
+                    dependencies {
+                        api(project(":hazel"))
+                    }
                 }
             }
         }
