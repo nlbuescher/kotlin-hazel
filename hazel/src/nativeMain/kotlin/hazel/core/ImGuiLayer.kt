@@ -67,11 +67,6 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
         igDestroyContext(null)
     }
 
-    override fun onImGuiRender() = memScoped {
-        val show = alloc<BooleanVar>()
-        igShowDemoWindow(show.ptr)
-    }
-
     fun begin() {
         igImplOpenGL3NewFrame()
         igImplGlfwNewFrame()
