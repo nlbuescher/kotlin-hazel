@@ -70,14 +70,14 @@ class OpenGLTexture2D : Texture2D {
 
         width = meta[0]; height = meta[1]
 
-        val (`if`, df) = when (meta[2]) {
+        val (ifmt, dfmt) = when (meta[2]) {
             4 -> GL_RGBA8 to GL_RGBA
             3 -> GL_RGB8 to GL_RGB
             else -> 0 to 0
         }
 
-        internalFormat = `if`
-        dataFormat = df
+        internalFormat = ifmt
+        dataFormat = dfmt
 
         Hazel.coreAssert(internalFormat != 0 && dataFormat != 0) { "Format not supported!" }
 

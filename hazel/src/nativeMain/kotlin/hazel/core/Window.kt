@@ -21,6 +21,7 @@ import cglfw.glfwSetWindowCloseCallback
 import cglfw.glfwSetWindowSize
 import cglfw.glfwSetWindowSizeCallback
 import cglfw.glfwSetWindowUserPointer
+import cglfw.glfwSwapInterval
 import cglfw.glfwTerminate
 import cnames.structs.GLFWwindow
 import hazel.renderer.GraphicsContext
@@ -41,10 +42,18 @@ class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) :
 
     private val context: GraphicsContext
 
+    var isVSync: Boolean = false // dummy value should be overridden in init
+        set(value) {
+            glfwSwapInterval(if (value) 1 else 0)
+            field = value
+        }
+
     init {
         ensureNeverFrozen()
 
         context = OpenGLContext(ptr).also { it.init() }
+
+        isVSync = true
 
         glfwSetWindowUserPointer(ptr, StableRef.create(this).asCPointer())
 
