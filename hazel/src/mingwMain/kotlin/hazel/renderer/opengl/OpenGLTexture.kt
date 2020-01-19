@@ -60,7 +60,7 @@ class OpenGLTexture2D : Texture2D {
             stbi_set_flip_vertically_on_load(1)
             stbi_load(path, pinned.addressOf(0), pinned.addressOf(1), pinned.addressOf(2), 0)?.let { pointer ->
                 val size = sizeOf(pointer)
-                ByteArray(size.toInt()).apply {
+                ByteArray(size).apply {
                     usePinned { memcpy(it.addressOf(0), pointer, size.toULong()) }
                     stbi_image_free(pointer)
                 }
