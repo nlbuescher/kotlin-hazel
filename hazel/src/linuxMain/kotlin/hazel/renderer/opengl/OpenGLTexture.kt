@@ -26,13 +26,36 @@ import opengl.glTextureStorage2D
 import opengl.glTextureSubImage2D
 import platform.posix.memcpy
 
-class OpenGLTexture2D(private val path: String) : Texture2D {
+class OpenGLTexture2D : Texture2D {
+    private val path: String?
+
     override val width: Int
     override val height: Int
 
+    private val internalFormat: Int
+    private val dataFormat: Int
+
     private val rendererId: UInt
 
-    init {
+
+    constructor(width: Int, height: Int) {
+        this.path = null
+        this.width = width
+        this.height = height
+
+        internalFormat = GL_RGBA8
+        dataFormat = GL_RGBA
+
+        rendererId = glCreateTexture(GL_TEXTURE_2D)
+        glTextureStorage2D(rendererId, 1, internalFormat, width, height)
+
+        glTextureParameter(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTextureParameter(rendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    }
+
+    constructor(path: String) {
+        this.path = path
+
         val meta = IntArray(3)
         val data = meta.usePinned { pinned ->
             stbi_set_flip_vertically_on_load(1)
@@ -48,11 +71,14 @@ class OpenGLTexture2D(private val path: String) : Texture2D {
 
         width = meta[0]; height = meta[1]
 
-        val (internalFormat, dataFormat) = when (meta[2]) {
+        val (`if`, df) = when (meta[2]) {
             4 -> GL_RGBA8 to GL_RGBA
             3 -> GL_RGB8 to GL_RGB
             else -> 0 to 0
         }
+
+        internalFormat = `if`
+        dataFormat = df
 
         Hazel.coreAssert(internalFormat != 0 && dataFormat != 0) { "Format not supported!" }
 
@@ -65,6 +91,12 @@ class OpenGLTexture2D(private val path: String) : Texture2D {
         glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data)
     }
 
+
+    override fun setData(data: ByteArray) {
+        val bpp = if (dataFormat == GL_RGBA) 4 else 3
+        Hazel.coreAssert(data.size == width * height * bpp) { "Data must be entire texture" }
+        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data)
+    }
 
     override fun bind(slot: Int) {
         glBindTextureUnit(slot, rendererId)
