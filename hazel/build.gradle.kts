@@ -28,7 +28,7 @@ kotlin {
 
             afterEvaluate {
                 main.cinterops["cimgui"].apply {
-                    tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleRelease")
+                    tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleReleaseLinux")
                 }
             }
         }
