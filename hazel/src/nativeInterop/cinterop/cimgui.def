@@ -4,5 +4,5 @@ headers = cimgui.h cimgui_impl.h
 
 compilerOpts = -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS -I../cimgui
 
-linkerOpts.linux = -L../cimgui/build/lib/main/release/linux -lcimgui -lGL -lGLEW -lglfw
-linkerOpts.mingw = -L../cimgui/build/lib/main/release/windows -lcimgui -lopengl32 -lglew32 -lglfw3
+linkerOpts.linux = -lGL -lGLEW -lglfw
+linkerOpts.mingw = -lopengl32 -lglew32 -lglfw3

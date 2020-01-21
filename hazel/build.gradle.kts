@@ -34,6 +34,10 @@ kotlin {
             defaultSourceSet {
                 kotlin.srcDir("src/nativeMain/kotlin")
             }
+            kotlinOptions {
+                val binary = file("../cimgui/build/lib/main/release/${os.name.toLowerCase()}/libcimgui.a")
+                freeCompilerArgs = listOf("-include-binary", binary.absolutePath)
+            }
         }
     }
 
