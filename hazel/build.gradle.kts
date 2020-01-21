@@ -26,7 +26,6 @@ kotlin {
                     dependencies {
                         api(project(":imgui"))
                         implementation("com.kgl:kgl-glfw:$kglVersion")
-                        implementation("com.kgl:kgl-glfw-static:$kglVersion")
                         implementation("com.kgl:kgl-opengl:$kglVersion")
                     }
                 }
@@ -57,7 +56,6 @@ kotlin {
         languageSettings.apply {
             enableLanguageFeature("MultiPlatformProjects")
             enableLanguageFeature("InlineClasses")
-            useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
             useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
             useExperimentalAnnotation("kotlin.time.ExperimentalTime")
         }
