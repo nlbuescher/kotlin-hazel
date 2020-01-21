@@ -1,20 +1,20 @@
 package hazel.renderer.opengl
 
-import copengl.GL_BOOL
-import copengl.GL_FLOAT
-import copengl.GL_INT
+import com.kgl.opengl.GL_BOOL
+import com.kgl.opengl.GL_FLOAT
+import com.kgl.opengl.GL_INT
+import com.kgl.opengl.glBindVertexArray
+import com.kgl.opengl.glEnableVertexAttribArray
 import hazel.core.Hazel
+import hazel.opengl.glCreateVertexArray
+import hazel.opengl.glDeleteVertexArrays
+import hazel.opengl.glVertexAttribPointer
 import hazel.renderer.IndexBuffer
 import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
 import hazel.renderer.VertexBuffer
-import opengl.glBindVertexArray
-import opengl.glCreateVertexArray
-import opengl.glDeleteVertexArrays
-import opengl.glEnableVertexAttribArray
-import opengl.glVertexAttribPointer
 
-private fun ShaderDataType.toOpenGLBaseType() = when (this) {
+private fun ShaderDataType.toOpenGLBaseType(): UInt = when (this) {
     ShaderDataType.Boolean -> GL_BOOL
     ShaderDataType.Int -> GL_INT
     ShaderDataType.Int2 -> GL_INT

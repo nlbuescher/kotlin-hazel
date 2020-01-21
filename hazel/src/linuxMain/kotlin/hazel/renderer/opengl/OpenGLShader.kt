@@ -1,39 +1,44 @@
 package hazel.renderer.opengl
 
-import copengl.GL_COMPILE_STATUS
-import copengl.GL_FALSE
-import copengl.GL_FRAGMENT_SHADER
-import copengl.GL_LINK_STATUS
-import copengl.GL_VERTEX_SHADER
+import com.kgl.opengl.GL_COMPILE_STATUS
+import com.kgl.opengl.GL_FALSE
+import com.kgl.opengl.GL_FRAGMENT_SHADER
+import com.kgl.opengl.GL_LINK_STATUS
+import com.kgl.opengl.GL_VERTEX_SHADER
+import com.kgl.opengl.glAttachShader
+import com.kgl.opengl.glCompileShader
+import com.kgl.opengl.glCreateProgram
+import com.kgl.opengl.glCreateShader
+import com.kgl.opengl.glDeleteProgram
+import com.kgl.opengl.glDeleteShader
+import com.kgl.opengl.glDetachShader
+import com.kgl.opengl.glGetProgramInfoLog
+import com.kgl.opengl.glGetShaderInfoLog
+import com.kgl.opengl.glLinkProgram
+import com.kgl.opengl.glShaderSource
+import com.kgl.opengl.glUniform1f
+import com.kgl.opengl.glUniform1i
+import com.kgl.opengl.glUniform2f
+import com.kgl.opengl.glUniform3f
+import com.kgl.opengl.glUniform4f
+import com.kgl.opengl.glUseProgram
 import hazel.core.Hazel
 import hazel.math.FloatMatrix3x3
 import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
+import hazel.opengl.glGetProgramiv
+import hazel.opengl.glGetShaderiv
+import hazel.opengl.glGetUniformLocation
+import hazel.opengl.glUniform
+import hazel.opengl.glUniformMatrix3
+import hazel.opengl.glUniformMatrix4
 import hazel.renderer.Shader
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
-import opengl.glAttachShader
-import opengl.glCompileShader
-import opengl.glCreateProgram
-import opengl.glCreateShader
-import opengl.glDeleteProgram
-import opengl.glDeleteShader
-import opengl.glDetachShader
-import opengl.glGetProgramInfoLog
-import opengl.glGetProgramiv
-import opengl.glGetShaderInfoLog
-import opengl.glGetShaderiv
-import opengl.glGetUniformLocation
-import opengl.glLinkProgram
-import opengl.glShaderSource
-import opengl.glUniform
-import opengl.glUniformMatrix3
-import opengl.glUniformMatrix4
-import opengl.glUseProgram
 import platform.posix.SEEK_END
 import platform.posix.SEEK_SET
 import platform.posix.fopen
@@ -129,8 +134,8 @@ class OpenGLShader : Shader {
         }
     }
 
-    private fun preProcess(source: String): Map<Int, String> {
-        val shaderSources = mutableMapOf<Int, String>()
+    private fun preProcess(source: String): Map<UInt, String> {
+        val shaderSources = mutableMapOf<UInt, String>()
         val typeToken = "#type"
         var pos = source.indexOf(typeToken)
         while (pos != -1) {
@@ -138,7 +143,7 @@ class OpenGLShader : Shader {
             Hazel.coreAssert(eol != -1) { "Syntax error" }
             val begin = pos + typeToken.length + 1
             val type = source.substring(begin, eol)
-            Hazel.coreAssert(type.toShaderType() != 0) { "Invalid shader type specified" }
+            Hazel.coreAssert(type.toShaderType() != 0u) { "Invalid shader type specified" }
 
             val nextLinePos = source.indexOfNone(charArrayOf('\r', '\n'), eol)
             pos = source.indexOf(typeToken, nextLinePos)
@@ -148,7 +153,7 @@ class OpenGLShader : Shader {
         return shaderSources
     }
 
-    private fun compile(shaderSources: Map<Int, String>) {
+    private fun compile(shaderSources: Map<UInt, String>) {
         val program = glCreateProgram()
 
         val glShaderIds = MutableList(shaderSources.size) { 0u }
@@ -198,13 +203,13 @@ class OpenGLShader : Shader {
     }
 }
 
-private fun String.toShaderType() = when (this) {
+private fun String.toShaderType(): UInt = when (this) {
     "vertex" -> GL_VERTEX_SHADER
     "fragment",
     "pixel" -> GL_FRAGMENT_SHADER
     else -> {
         Hazel.coreAssert(false) { "Unknown shader type $this!" }
-        0
+        0u
     }
 }
 

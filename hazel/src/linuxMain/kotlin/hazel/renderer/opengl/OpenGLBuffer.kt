@@ -1,15 +1,15 @@
 package hazel.renderer.opengl
 
-import copengl.GL_ARRAY_BUFFER
-import copengl.GL_ELEMENT_ARRAY_BUFFER
-import copengl.GL_STATIC_DRAW
+import com.kgl.opengl.GL_ARRAY_BUFFER
+import com.kgl.opengl.GL_ELEMENT_ARRAY_BUFFER
+import com.kgl.opengl.GL_STATIC_DRAW
+import com.kgl.opengl.glBindBuffer
+import hazel.opengl.glBufferData
+import hazel.opengl.glCreateBuffer
+import hazel.opengl.glDeleteBuffer
 import hazel.renderer.BufferLayout
 import hazel.renderer.IndexBuffer
 import hazel.renderer.VertexBuffer
-import opengl.glBindBuffer
-import opengl.glBufferData
-import opengl.glCreateBuffer
-import opengl.glDeleteBuffer
 
 internal class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
     private val rendererId: UInt = glCreateBuffer()

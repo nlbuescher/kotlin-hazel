@@ -8,7 +8,7 @@ interface Texture : Disposable {
     val height: Int
 
     fun setData(data: ByteArray)
-    fun bind(slot: Int = 0)
+    fun bind(slot: UInt = 0u)
 }
 
 interface Texture2D : Texture

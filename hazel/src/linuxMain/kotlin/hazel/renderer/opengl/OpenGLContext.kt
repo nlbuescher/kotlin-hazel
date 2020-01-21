@@ -3,11 +3,10 @@ package hazel.renderer.opengl
 import cglfw.glfwMakeContextCurrent
 import cglfw.glfwSwapBuffers
 import cnames.structs.GLFWwindow
-import copengl.GL_RENDERER
-import copengl.GL_VENDOR
-import copengl.GL_VERSION
-import copengl.glGetString
-import copengl.glewInit
+import com.kgl.opengl.GL_RENDERER
+import com.kgl.opengl.GL_VENDOR
+import com.kgl.opengl.GL_VERSION
+import com.kgl.opengl.glGetString
 import hazel.core.Hazel
 import hazel.renderer.GraphicsContext
 import kotlinx.cinterop.ByteVar
@@ -24,7 +23,6 @@ internal class OpenGLContext(
 
     override fun init() {
         glfwMakeContextCurrent(windowHandle)
-        glewInit()
 
         Hazel.coreInfo {
             """

@@ -7,8 +7,11 @@ plugins {
 }
 
 repositories {
+    maven("https://dl.bintray.com/dominaezzz/kotlin-native")
     jcenter()
 }
+
+val kglVersion = "0.1.9-dev-5"
 
 kotlin {
     val os = OperatingSystem.current()
@@ -16,13 +19,19 @@ kotlin {
         os.isLinux -> linuxX64("linux") {
             val main by compilations.getting {
                 cinterops {
-                    create("cglfw")
+                    //create("cglfw")
                     create("cimgui")
-                    create("copengl")
+                    //create("copengl")
                     create("cstb_image")
                 }
                 defaultSourceSet {
                     kotlin.srcDir("src/nativeMain/kotlin")
+
+                    dependencies {
+                        implementation("com.kgl:kgl-glfw:$kglVersion")
+                        implementation("com.kgl:kgl-glfw-static:$kglVersion")
+                        implementation("com.kgl:kgl-opengl:$kglVersion")
+                    }
                 }
             }
 
