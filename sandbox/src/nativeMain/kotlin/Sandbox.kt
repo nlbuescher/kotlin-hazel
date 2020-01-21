@@ -1,6 +1,3 @@
-import cimgui.igBegin
-import cimgui.igColorEdit3
-import cimgui.igEnd
 import hazel.core.Application
 import hazel.core.Event
 import hazel.core.Hazel
@@ -21,6 +18,9 @@ import hazel.renderer.Texture2D
 import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
 import hazel.renderer.vertexBufferOf
+import imgui.igBegin
+import imgui.igColorEdit3
+import imgui.igEnd
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 
@@ -155,7 +155,7 @@ class ExampleLayer : Layer("ExampleLayer") {
             val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f))
 
             flatColorShader.bind()
-            flatColorShader["u_Color"]= squareColor
+            flatColorShader["u_Color"] = squareColor
 
             for (y in 0 until 20) {
                 for (x in 0 until 20) {

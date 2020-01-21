@@ -18,26 +18,17 @@ kotlin {
     when {
         os.isLinux -> linuxX64("linux") {
             val main by compilations.getting {
-                cinterops {
-                    //create("cglfw")
-                    create("cimgui")
-                    //create("copengl")
-                    create("cstb_image")
-                }
+                cinterops.create("cstb_image")
+
                 defaultSourceSet {
                     kotlin.srcDir("src/nativeMain/kotlin")
 
                     dependencies {
+                        api(project(":imgui"))
                         implementation("com.kgl:kgl-glfw:$kglVersion")
                         implementation("com.kgl:kgl-glfw-static:$kglVersion")
                         implementation("com.kgl:kgl-opengl:$kglVersion")
                     }
-                }
-            }
-
-            afterEvaluate {
-                main.cinterops["cimgui"].apply {
-                    tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleReleaseLinux")
                 }
             }
         }

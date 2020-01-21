@@ -1,5 +1,7 @@
 package = cstb_image
 
+excludedFunctions = stbi__err
+
 ---
 
 #include <malloc.h>

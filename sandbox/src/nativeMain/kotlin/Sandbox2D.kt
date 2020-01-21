@@ -1,7 +1,3 @@
-import cimgui.igBegin
-import cimgui.igColorEdit4
-import cimgui.igEnd
-import cimgui.igText
 import hazel.core.Event
 import hazel.core.Layer
 import hazel.core.TimeStep
@@ -12,6 +8,10 @@ import hazel.renderer.OrthographicCameraController
 import hazel.renderer.RenderCommand
 import hazel.renderer.Renderer2D
 import hazel.renderer.Texture2D
+import imgui.igBegin
+import imgui.igColorEdit4
+import imgui.igEnd
+import imgui.igText
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlin.system.measureNanoTime

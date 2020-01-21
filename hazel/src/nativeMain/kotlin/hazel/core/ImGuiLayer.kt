@@ -2,35 +2,30 @@ package hazel.core
 
 import cglfw.glfwGetCurrentContext
 import cglfw.glfwMakeContextCurrent
-import cimgui.ImGuiCol_.ImGuiCol_WindowBg
-import cimgui.ImGuiConfigFlags_DockingEnable
-import cimgui.ImGuiConfigFlags_NavEnableKeyboard
-import cimgui.ImGuiConfigFlags_ViewportsEnable
-import cimgui.igCreateContext
-import cimgui.igDestroyContext
-import cimgui.igGetDrawData
-import cimgui.igGetIO
-import cimgui.igGetStyle
-import cimgui.igImplGlfwInitForOpenGL
-import cimgui.igImplGlfwNewFrame
-import cimgui.igImplGlfwShutdown
-import cimgui.igImplOpenGL3Init
-import cimgui.igImplOpenGL3NewFrame
-import cimgui.igImplOpenGL3RenderDrawData
-import cimgui.igImplOpenGL3Shutdown
-import cimgui.igNewFrame
-import cimgui.igRender
-import cimgui.igRenderPlatformWindowsDefault
-import cimgui.igShowDemoWindow
-import cimgui.igStyleColorsDark
-import cimgui.igUpdatePlatformWindows
-import kotlinx.cinterop.BooleanVar
-import kotlinx.cinterop.alloc
+import imgui.ImGuiCol_.ImGuiCol_WindowBg
+import imgui.ImGuiConfigFlags_DockingEnable
+import imgui.ImGuiConfigFlags_NavEnableKeyboard
+import imgui.ImGuiConfigFlags_ViewportsEnable
+import imgui.igCreateContext
+import imgui.igDestroyContext
+import imgui.igGetDrawData
+import imgui.igGetIO
+import imgui.igGetStyle
+import imgui.igImplGlfwInitForOpenGL
+import imgui.igImplGlfwNewFrame
+import imgui.igImplGlfwShutdown
+import imgui.igImplOpenGL3Init
+import imgui.igImplOpenGL3NewFrame
+import imgui.igImplOpenGL3RenderDrawData
+import imgui.igImplOpenGL3Shutdown
+import imgui.igNewFrame
+import imgui.igRender
+import imgui.igRenderPlatformWindowsDefault
+import imgui.igStyleColorsDark
+import imgui.igUpdatePlatformWindows
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.get
-import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.pointed
-import kotlinx.cinterop.ptr
 
 open class ImGuiLayer : Overlay("ImGuiLayer") {
     override fun onAttach() {

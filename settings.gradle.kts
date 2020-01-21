@@ -4,4 +4,5 @@ rootProject.name = "kotlin-hazel"
 
 include("hazel")
 include("sandbox")
-include("cimgui")
+include("imgui")
+include("imgui:cimgui")
