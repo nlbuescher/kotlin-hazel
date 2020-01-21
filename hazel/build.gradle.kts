@@ -1,6 +1,7 @@
 @file:Suppress("UNUSED_VARIABLE")
 
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
@@ -10,45 +11,28 @@ repositories {
     jcenter()
 }
 
+val os: OperatingSystem = OperatingSystem.current()
+
 kotlin {
-    val os = OperatingSystem.current()
     when {
-        os.isLinux -> linuxX64("linux") {
-            val main by compilations.getting {
-                cinterops {
-                    create("cglfw")
-                    create("cimgui")
-                    create("copengl")
-                    create("cstb_image")
-                }
-                defaultSourceSet {
-                    kotlin.srcDir("src/nativeMain/kotlin")
-                }
-            }
+        os.isLinux -> linuxX64("linux")
+        os.isWindows -> mingwX64("mingw")
+    }
 
-            afterEvaluate {
-                main.cinterops["cimgui"].apply {
-                    tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleReleaseLinux")
+    targets.withType<KotlinNativeTarget> {
+        compilations["main"].apply {
+            cinterops {
+                create("cglfw")
+                create("copengl")
+                create("cstb_image")
+                create("cimgui") {
+                    tasks.named(interopProcessingTaskName) {
+                        dependsOn(":cimgui:assembleRelease${os.name}")
+                    }
                 }
             }
-        }
-        os.isWindows -> mingwX64("mingw") {
-            val main by compilations.getting {
-                cinterops {
-                    create("cglfw")
-                    create("cimgui")
-                    create("copengl")
-                    create("cstb_image")
-                }
-                defaultSourceSet {
-                    kotlin.srcDir("src/nativeMain/kotlin")
-                }
-            }
-
-            afterEvaluate {
-                main.cinterops["cimgui"].apply {
-                    tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleReleaseWindows")
-                }
+            defaultSourceSet {
+                kotlin.srcDir("src/nativeMain/kotlin")
             }
         }
     }
