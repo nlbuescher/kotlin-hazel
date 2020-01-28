@@ -11,6 +11,7 @@ repositories {
     jcenter()
 }
 
+val imguiVersion = "0.1.0-dev-2"
 val kglVersion = "0.1.9-dev-5"
 
 kotlin {
@@ -24,7 +25,11 @@ kotlin {
                     kotlin.srcDir("src/nativeMain/kotlin")
 
                     dependencies {
-                        api(project(":imgui"))
+                        //api(project(":imgui"))
+                        implementation("com.kotlin-imgui:imgui:$imguiVersion")
+                        implementation("com.kotlin-imgui:imgui-glfw:$imguiVersion")
+                        implementation("com.kotlin-imgui:imgui-opengl:$imguiVersion")
+
                         implementation("com.kgl:kgl-glfw:$kglVersion")
                         implementation("com.kgl:kgl-opengl:$kglVersion")
                     }

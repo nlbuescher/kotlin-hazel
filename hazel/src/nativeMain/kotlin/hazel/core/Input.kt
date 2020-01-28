@@ -1,41 +1,28 @@
 package hazel.core
 
-import cglfw.GLFW_PRESS
-import cglfw.GLFW_REPEAT
-import cglfw.glfwGetCursorPos
-import cglfw.glfwGetKey
-import cglfw.glfwGetMouseButton
-import kotlinx.cinterop.DoubleVar
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
-import kotlinx.cinterop.value
+import com.kgl.glfw.Action
+import com.kgl.glfw.KeyboardKey
 
 object Input {
     fun isKeyPressed(key: Key): Boolean {
-        val state = glfwGetKey(Hazel.application.window.ptr, key.value)
-        return state == GLFW_PRESS || state == GLFW_REPEAT
+        val state = Hazel.application.window.internal.getKey(key.toGlfw())
+        return state == Action.Press || state == Action.Repeat
     }
 
     fun isMouseButtonPressed(button: MouseButton): Boolean {
-        val state = glfwGetMouseButton(Hazel.application.window.ptr, button.value)
-        return state == GLFW_PRESS
+        val state = Hazel.application.window.internal.getMouseButton(button.toGlfw())
+        return state == Action.Press
     }
 
-    val mousePosition: Pair<Float, Float>
-        get() = memScoped {
-            val x = alloc<DoubleVar>()
-            val y = alloc<DoubleVar>()
-            glfwGetCursorPos(Hazel.application.window.ptr, x.ptr, y.ptr)
-            x.value.toFloat() to y.value.toFloat()
-        }
+    val mousePosition: Pair<Double, Double>
+        get() = Hazel.application.window.internal.cursorPosition
 }
 
-fun Key.toGlfw() = value
-fun Key.Companion.fromGlfw(key: Int) = Key(key)
+fun Key.toGlfw() = KeyboardKey.from(value)
+fun Key.Companion.fromGlfw(key: KeyboardKey) = Key(key.value)
 
-fun MouseButton.toGlfw() = value
-fun MouseButton.Companion.fromGlfw(button: Int) = MouseButton(button)
+fun MouseButton.toGlfw() = com.kgl.glfw.MouseButton.from(value)
+fun MouseButton.Companion.fromGlfw(button: com.kgl.glfw.MouseButton) = MouseButton(button.value)
 
 inline class Key(val value: Int) {
     companion object {

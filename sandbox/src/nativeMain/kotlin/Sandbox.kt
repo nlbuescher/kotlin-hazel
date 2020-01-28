@@ -1,3 +1,4 @@
+import com.imgui.ImGui
 import hazel.core.Application
 import hazel.core.Event
 import hazel.core.Hazel
@@ -18,11 +19,6 @@ import hazel.renderer.Texture2D
 import hazel.renderer.VertexArray
 import hazel.renderer.indexBufferOf
 import hazel.renderer.vertexBufferOf
-import imgui.igBegin
-import imgui.igColorEdit3
-import imgui.igEnd
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.usePinned
 
 class ExampleLayer : Layer("ExampleLayer") {
     private val cameraController = OrthographicCameraController(1280f / 720f, true)
@@ -180,11 +176,11 @@ class ExampleLayer : Layer("ExampleLayer") {
     }
 
     override fun onImGuiRender() {
-        igBegin("Settings", null, 0)
-        squareColor.asFloatArray().usePinned {
-            igColorEdit3("Square Color", it.addressOf(0), 0)
+        with(ImGui) {
+            begin("Settings")
+            colorEdit3("Square Color", squareColor.asFloatArray())
+            end()
         }
-        igEnd()
     }
 
     override fun onEvent(event: Event) {

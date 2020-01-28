@@ -2,6 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cimgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cimgui/imgui" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/imgui/cimgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/imgui/cimgui/imgui" vcs="Git" />
   </component>
 </project>

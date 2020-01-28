@@ -1,4 +1,7 @@
+import cimgui.internal.igText
+import com.imgui.ImGui
 import hazel.core.Event
+import hazel.core.Hazel
 import hazel.core.Layer
 import hazel.core.TimeStep
 import hazel.math.FloatVector2
@@ -8,12 +11,6 @@ import hazel.renderer.OrthographicCameraController
 import hazel.renderer.RenderCommand
 import hazel.renderer.Renderer2D
 import hazel.renderer.Texture2D
-import imgui.igBegin
-import imgui.igColorEdit4
-import imgui.igEnd
-import imgui.igText
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.usePinned
 import kotlin.system.measureNanoTime
 
 class Sandbox2D : Layer("Sandbox2D") {
@@ -33,6 +30,7 @@ class Sandbox2D : Layer("Sandbox2D") {
     override fun onDetach() {}
 
     override fun onUpdate(timeStep: TimeStep) {
+        Hazel.debug { "start update" }
         profile("Sandbox2D.onUpdate") {
             // update
             profile("cameraController.onUpdate") {
@@ -53,20 +51,21 @@ class Sandbox2D : Layer("Sandbox2D") {
                 }
             }
         }
+        Hazel.debug { "end update" }
     }
 
     override fun onImGuiRender() {
-        igBegin("Settings", null, 0)
-        squareColor.asFloatArray().usePinned {
-            igColorEdit4("Square Color", it.addressOf(0), 0)
-        }
+        with(ImGui) {
+            begin("Settings")
+            colorEdit4("Square Color", squareColor.asFloatArray())
 
-        profileResults.forEach {
-            igText("%.3fms  ${it.name}", it.time)
-        }
-        profileResults.clear()
+            profileResults.forEach {
+                igText("%.3fms  ${it.name}", it.time)
+            }
+            profileResults.clear()
 
-        igEnd()
+            end()
+        }
     }
 
     override fun onEvent(event: Event) {
