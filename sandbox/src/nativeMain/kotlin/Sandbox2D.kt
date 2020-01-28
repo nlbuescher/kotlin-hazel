@@ -1,8 +1,8 @@
 import cimgui.igBegin
 import cimgui.igColorEdit4
 import cimgui.igEnd
-import cimgui.igText
 import hazel.core.Event
+import hazel.core.Hazel
 import hazel.core.Layer
 import hazel.core.TimeStep
 import hazel.math.FloatVector2
@@ -14,11 +14,8 @@ import hazel.renderer.Renderer2D
 import hazel.renderer.Texture2D
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
-import kotlin.system.measureNanoTime
 
 class Sandbox2D : Layer("Sandbox2D") {
-    private val profileResults = mutableListOf<ProfileResult>()
-
     private val cameraController = OrthographicCameraController(1280f / 720f)
 
     private val squareColor = FloatVector4(0f, 0f, 1f, 1f)
@@ -33,19 +30,19 @@ class Sandbox2D : Layer("Sandbox2D") {
     override fun onDetach() {}
 
     override fun onUpdate(timeStep: TimeStep) {
-        profile("Sandbox2D.onUpdate") {
+        Hazel.profile("Sandbox2D onUpdate") {
             // update
-            profile("cameraController.onUpdate") {
+            Hazel.profile("Camera Update") {
                 cameraController.onUpdate(timeStep)
             }
 
             // render
-            profile("renderer prep") {
+            Hazel.profile("Renderer Prep") {
                 RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
                 RenderCommand.clear()
             }
 
-            profile("renderer draw") {
+            Hazel.profile("Renderer Draw") {
                 Renderer2D.scene(cameraController.camera) {
                     drawQuad(FloatVector2(-1f, 0f), FloatVector2(0.8f, 0.8f), FloatVector4(1f, 0f, 0f, 1f))
                     drawQuad(FloatVector2(0.5f, -0.5f), FloatVector2(0.5f, 0.75f), FloatVector4(0f, 1f, 0f, 1f))
@@ -60,24 +57,10 @@ class Sandbox2D : Layer("Sandbox2D") {
         squareColor.asFloatArray().usePinned {
             igColorEdit4("Square Color", it.addressOf(0), 0)
         }
-
-        profileResults.forEach {
-            igText("%.3fms  ${it.name}", it.time)
-        }
-        profileResults.clear()
-
         igEnd()
     }
 
     override fun onEvent(event: Event) {
         cameraController.onEvent(event)
-    }
-
-
-    private class ProfileResult(val name: String, val time: Float)
-
-    private fun profile(name: String, block: () -> Unit) {
-        val time: Float = measureNanoTime(block) / 1_000_000f
-        profileResults.add(ProfileResult(name, time))
     }
 }

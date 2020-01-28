@@ -20,3 +20,4 @@ build
 .idea/misc.xml
 
 imgui.ini
+sandbox/*.json

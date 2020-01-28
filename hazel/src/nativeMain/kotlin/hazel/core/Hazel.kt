@@ -1,5 +1,11 @@
 package hazel.core
 
+import hazel.debug.Instrumentor
+import hazel.debug.ProfileResult
+import platform.linux.__NR_gettid
+import platform.posix.SIGTRAP
+import platform.posix.raise
+import platform.posix.syscall
 import kotlin.time.MonoClock
 
 private var _application: Application? = null
@@ -8,16 +14,24 @@ private var _application: Application? = null
         field = value
     }
 
+
 object Hazel {
+    class Config {
+        var isProfileEnabled: Boolean = Platform.isDebugBinary
+        var isAssertsEnabled: Boolean = Platform.isDebugBinary
+    }
+
+    val config = Config()
+
     private val coreLogger = Logger("HAZEL")
     private val clientLogger = Logger("APP")
 
-    private val start = MonoClock.markNow()
+    private val clock = MonoClock.markNow()
 
     val application: Application get() = _application ?: error("must instantiate an Application first!")
 
     /** current time in seconds since application start */
-    val time: Float get() = start.elapsedNow().inSeconds.toFloat()
+    val time: Float get() = clock.elapsedNow().inSeconds.toFloat()
 
 
     fun run(application: Application) {
@@ -26,7 +40,9 @@ object Hazel {
         coreWarn { "Initialized Log!" }
         info { "Hello!" }
 
-        application.use { it.run() }
+        Instrumentor.session("Runtime") {
+            application.use { it.run() }
+        }
     }
 
 
@@ -37,9 +53,9 @@ object Hazel {
     internal fun coreError(message: () -> Any?) = coreLogger.error(message().toString())
     internal fun coreCritical(message: () -> Any?) = coreLogger.critical(message().toString())
     internal fun coreAssert(test: Boolean, message: () -> Any? = { null }) {
-        if (Platform.isDebugBinary && !test) {
+        if (config.isAssertsEnabled && !test) {
             coreCritical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
-            //raise(SIGTRAP) // doesn't actually work
+            raise(SIGTRAP)
         }
     }
 
@@ -50,9 +66,21 @@ object Hazel {
     fun error(message: () -> Any?) = clientLogger.error(message().toString())
     fun critical(message: () -> Any?) = clientLogger.critical(message().toString())
     fun assert(test: Boolean, message: () -> Any? = { null }) {
-        if (Platform.isDebugBinary && !test) {
+        if (config.isAssertsEnabled && !test) {
             critical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
-            //raise(SIGTRAP) // doesn't actually work
+            raise(SIGTRAP)
+        }
+    }
+
+    fun profile(name: String, block: () -> Unit) {
+        if (config.isProfileEnabled) {
+            val start = clock.elapsedNow().inMicroseconds.toLong()
+            block()
+            val end = clock.elapsedNow().inMicroseconds.toLong()
+            val threadId = syscall(__NR_gettid).toUInt()
+            Instrumentor.writeProfile(ProfileResult(name, start, end, threadId))
+        } else {
+            block()
         }
     }
 }
