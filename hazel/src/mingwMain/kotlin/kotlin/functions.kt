@@ -1,8 +1,10 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package kotlin
 
 import platform.posix.__debugbreak
 import platform.windows.GetCurrentThreadId
 
-actual fun breakpoint() = __debugbreak()
+actual inline fun breakpoint() = __debugbreak()
 
-actual fun getThreadId() = GetCurrentThreadId()
+actual inline fun getThreadId() = GetCurrentThreadId()

@@ -1,5 +1,5 @@
 package kotlin
 
-expect fun breakpoint()
+expect inline fun breakpoint()
 
-expect fun getThreadId(): UInt
+expect inline fun getThreadId(): UInt
