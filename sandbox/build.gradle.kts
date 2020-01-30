@@ -1,6 +1,5 @@
-@file:Suppress("UNUSED_VARIABLE")
-
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
@@ -10,38 +9,26 @@ repositories {
     jcenter()
 }
 
-kotlin {
-    val os = OperatingSystem.current()
-    when {
-        os.isLinux -> linuxX64("linux") {
-            binaries {
-                executable("Sandbox") {
-                    entryPoint = "main"
-                }
-            }
-            val main by compilations.existing {
-                defaultSourceSet {
-                    kotlin.srcDir("src/nativeMain/kotlin")
+val os: OperatingSystem = OperatingSystem.current()
 
-                    dependencies {
-                        api(project(":hazel"))
-                    }
-                }
+kotlin {
+    when {
+        os.isLinux -> linuxX64("linux")
+        os.isWindows -> mingwX64("mingw")
+    }
+
+    targets.withType<KotlinNativeTarget> {
+        binaries {
+            executable("Sandbox") {
+                entryPoint = "main"
             }
         }
-        os.isWindows -> mingwX64("mingw") {
-            binaries {
-                executable("Sandbox") {
-                    entryPoint = "main"
-                }
-            }
-            val main by compilations.existing {
-                defaultSourceSet {
-                    kotlin.srcDir("src/nativeMain/kotlin")
+        compilations["main"].apply {
+            defaultSourceSet {
+                kotlin.srcDir("src/nativeMain/kotlin")
 
-                    dependencies {
-                        api(project(":hazel"))
-                    }
+                dependencies {
+                    api(project(":hazel"))
                 }
             }
         }
