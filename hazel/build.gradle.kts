@@ -13,6 +13,20 @@ repositories {
 
 val os: OperatingSystem = OperatingSystem.current()
 
+val osName: String? = when {
+    os.isLinux -> "Linux"
+    os.isWindows -> "Windows"
+    else -> null
+}
+
+val cppTargetName = osName?.toLowerCase()
+
+val cimguiFile: String? = when {
+    os.isLinux -> "libcimgui.a"
+    os.isWindows -> "cimgui.lib"
+    else -> null
+}
+
 kotlin {
     when {
         os.isLinux -> linuxX64("linux")
@@ -27,7 +41,7 @@ kotlin {
                 create("cstb_image")
                 create("cimgui") {
                     tasks.named(interopProcessingTaskName) {
-                        dependsOn(":cimgui:assembleRelease${os.name}")
+                        dependsOn(":cimgui:assembleRelease$osName")
                     }
                 }
             }
@@ -35,7 +49,7 @@ kotlin {
                 kotlin.srcDir("src/nativeMain/kotlin")
             }
             kotlinOptions {
-                val binary = file("../cimgui/build/lib/main/release/${os.name.toLowerCase()}/libcimgui.a")
+                val binary = file("../cimgui/build/lib/main/release/$cppTargetName/$cimguiFile")
                 freeCompilerArgs = listOf("-include-binary", binary.absolutePath)
             }
         }

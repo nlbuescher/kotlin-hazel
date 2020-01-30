@@ -2,10 +2,6 @@ package hazel.core
 
 import hazel.debug.Instrumentor
 import hazel.debug.ProfileResult
-import platform.linux.__NR_gettid
-import platform.posix.SIGTRAP
-import platform.posix.raise
-import platform.posix.syscall
 import kotlin.time.MonoClock
 
 private var _application: Application? = null
@@ -55,7 +51,7 @@ object Hazel {
     internal fun coreAssert(test: Boolean, message: () -> Any? = { null }) {
         if (config.isAssertsEnabled && !test) {
             coreCritical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
-            raise(SIGTRAP)
+            breakpoint()
         }
     }
 
@@ -68,7 +64,7 @@ object Hazel {
     fun assert(test: Boolean, message: () -> Any? = { null }) {
         if (config.isAssertsEnabled && !test) {
             critical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
-            raise(SIGTRAP)
+            breakpoint()
         }
     }
 
@@ -77,8 +73,7 @@ object Hazel {
             val start = clock.elapsedNow().inMicroseconds.toLong()
             block()
             val end = clock.elapsedNow().inMicroseconds.toLong()
-            val threadId = syscall(__NR_gettid).toUInt()
-            Instrumentor.writeProfile(ProfileResult(name, start, end, threadId))
+            Instrumentor.writeProfile(ProfileResult(name, start, end, getThreadId()))
         } else {
             block()
         }
