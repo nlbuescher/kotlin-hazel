@@ -100,6 +100,12 @@ class OpenGLShader : Shader {
         }
     }
 
+    override fun set(name: String, float: Float) {
+        Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Float::class.qualifiedName})") {
+            uploadUniform(name, float)
+        }
+    }
+
     override fun set(name: String, vector: FloatVector3) {
         Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatVector3::class.qualifiedName})") {
             uploadUniform(name, vector)

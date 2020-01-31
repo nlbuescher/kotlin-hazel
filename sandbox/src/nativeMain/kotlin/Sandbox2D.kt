@@ -9,6 +9,7 @@ import hazel.core.profile
 import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
+import hazel.math.degrees
 import hazel.renderer.OrthographicCameraController
 import hazel.renderer.RenderCommand
 import hazel.renderer.Renderer2D
@@ -43,9 +44,9 @@ class Sandbox2D : Layer("Sandbox2D") {
 
             Hazel.profile("Renderer Draw") {
                 Renderer2D.scene(cameraController.camera) {
-                    drawQuad(FloatVector2(-1f, 0f), FloatVector2(0.8f, 0.8f), FloatVector4(1f, 0f, 0f, 1f))
+                    drawRotatedQuad(FloatVector2(-1f, 0f), FloatVector2(0.8f, 0.8f), 45f.degrees, FloatVector4(1f, 0f, 0f, 1f))
                     drawQuad(FloatVector2(0.5f, -0.5f), FloatVector2(0.5f, 0.75f), FloatVector4(0f, 1f, 0f, 1f))
-                    drawQuad(FloatVector3(0f, 0f, -0.1f), FloatVector2(10f, 10f), checkerBoardTexture)
+                    drawQuad(FloatVector3(0f, 0f, -0.1f), FloatVector2(10f, 10f), checkerBoardTexture, 10f, FloatVector4(1f, 0.9f, 0.9f, 1f))
                 }
             }
         }
