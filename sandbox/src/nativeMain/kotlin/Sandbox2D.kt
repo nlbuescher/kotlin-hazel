@@ -5,6 +5,7 @@ import hazel.core.Event
 import hazel.core.Hazel
 import hazel.core.Layer
 import hazel.core.TimeStep
+import hazel.core.profile
 import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
@@ -16,7 +17,7 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 
 class Sandbox2D : Layer("Sandbox2D") {
-    private val cameraController = OrthographicCameraController(1280f / 720f)
+    private val cameraController = OrthographicCameraController(1280f / 720f, true)
 
     private val squareColor = FloatVector4(0f, 0f, 1f, 1f)
 
@@ -30,11 +31,9 @@ class Sandbox2D : Layer("Sandbox2D") {
     override fun onDetach() {}
 
     override fun onUpdate(timeStep: TimeStep) {
-        Hazel.profile("Sandbox2D onUpdate") {
+        Hazel.profile(::onUpdate) {
             // update
-            Hazel.profile("Camera Update") {
-                cameraController.onUpdate(timeStep)
-            }
+            cameraController.onUpdate(timeStep)
 
             // render
             Hazel.profile("Renderer Prep") {

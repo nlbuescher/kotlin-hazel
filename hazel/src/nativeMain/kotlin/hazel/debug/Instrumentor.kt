@@ -23,13 +23,13 @@ private var file: CPointer<FILE>? = null
 
 object Instrumentor {
 
-    fun session(name: String, filepath: String = "profile_result.json", block: () -> Unit) {
+    fun session(name: String, filepath: String = "profile.json", block: () -> Unit) {
         beginSession(name, filepath)
         block()
         endSession()
     }
 
-    private fun beginSession(name: String, filepath: String = "profile_result.json") {
+    private fun beginSession(name: String, filepath: String) {
         if (Hazel.config.isProfileEnabled) {
             file = fopen(filepath, "w")
             writeHeader()
@@ -46,25 +46,27 @@ object Instrumentor {
         }
     }
 
-    internal fun writeProfile(result: ProfileResult) {
-        if (profileCount > 0)
-            fprintf(file, ",")
+    fun writeProfile(result: ProfileResult) {
+        file?.let {
+            if (profileCount > 0)
+                fprintf(it, ",")
 
-        profileCount += 1
+            profileCount += 1
 
-        val name = result.name.replace("'", "\\'")
+            val name = result.name.replace('"', '\'')
 
-        fprintf(file, "{")
-        fprintf(file, "\"cat\":\"function\",")
-        fprintf(file, "\"dur\":${result.end - result.start},")
-        fprintf(file, "\"name\":\"$name\",")
-        fprintf(file, "\"ph\":\"X\",")
-        fprintf(file, "\"pid\":0,")
-        fprintf(file, "\"tid\":${result.threadId},")
-        fprintf(file, "\"ts\":${result.start}")
-        fprintf(file, "}")
+            fprintf(it, "{")
+            fprintf(it, "\"cat\":\"function\",")
+            fprintf(it, "\"dur\":${result.end - result.start},")
+            fprintf(it, "\"name\":\"$name\",")
+            fprintf(it, "\"ph\":\"X\",")
+            fprintf(it, "\"pid\":0,")
+            fprintf(it, "\"tid\":${result.threadId},")
+            fprintf(it, "\"ts\":${result.start}")
+            fprintf(it, "}")
 
-        fflush(file)
+            fflush(it)
+        }
     }
 
     private fun writeHeader() {

@@ -142,6 +142,15 @@ class ExampleLayer : Layer("ExampleLayer") {
         textureShader["u_Texture"] = 0
     }
 
+    override fun dispose() {
+        squareVertexArray.dispose()
+        chernoLogoTexture.dispose()
+        texture.dispose()
+        flatColorShader.dispose()
+        triangleVertexArray.dispose()
+        triangleShader.dispose()
+        shaderLibrary.dispose()
+    }
 
     override fun onUpdate(timeStep: TimeStep) {
         // Update
@@ -155,7 +164,7 @@ class ExampleLayer : Layer("ExampleLayer") {
             val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f))
 
             flatColorShader.bind()
-            flatColorShader["u_Color"]= squareColor
+            flatColorShader["u_Color"] = squareColor
 
             for (y in 0 until 20) {
                 for (x in 0 until 20) {
@@ -190,16 +199,6 @@ class ExampleLayer : Layer("ExampleLayer") {
     override fun onEvent(event: Event) {
         cameraController.onEvent(event)
     }
-
-    override fun dispose() {
-        squareVertexArray.dispose()
-        chernoLogoTexture.dispose()
-        texture.dispose()
-        flatColorShader.dispose()
-        triangleVertexArray.dispose()
-        triangleShader.dispose()
-        shaderLibrary.dispose()
-    }
 }
 
 class Sandbox : Application() {
@@ -210,5 +209,5 @@ class Sandbox : Application() {
 }
 
 fun main() {
-    Hazel.run(Sandbox())
+    Hazel.run(::Sandbox)
 }

@@ -42,9 +42,11 @@ class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) :
 
     private val context: GraphicsContext
 
-    var isVSync: Boolean = false // dummy value should be overridden in init
+    var isVSync: Boolean = false
         set(value) {
-            glfwSwapInterval(if (value) 1 else 0)
+            Hazel.profile("${this::class.qualifiedName}.${::isVSync.name}.set(${Boolean::class.qualifiedName})") {
+                glfwSwapInterval(if (value) 1 else 0)
+            }
             field = value
         }
 
@@ -105,6 +107,14 @@ class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) :
         })
     }
 
+    override fun dispose() {
+        Hazel.profile(::dispose) {
+            glfwGetWindowUserPointer(ptr)!!.asStableRef<Window>().dispose()
+            glfwDestroyWindow(ptr)
+            glfwTerminate()
+        }
+    }
+
 
     var position: Pair<Int, Int>
         get() = memScoped {
@@ -132,30 +142,31 @@ class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) :
 
 
     fun onUpdate() {
-        glfwPollEvents()
-        context.swapBuffers()
-    }
-
-
-    override fun dispose() {
-        glfwGetWindowUserPointer(ptr)!!.asStableRef<Window>().dispose()
-        glfwDestroyWindow(ptr)
-        glfwTerminate()
+        Hazel.profile(::onUpdate) {
+            glfwPollEvents()
+            context.swapBuffers()
+        }
     }
 
 
     companion object {
         operator fun invoke(width: Int = 1280, height: Int = 720, title: String = "Hazel Engine"): Window {
-            Hazel.coreAssert(glfwInit() == GLFW_TRUE) { "Could not initialize GLFW!" }
+            return Hazel.profile(::Window) {
+                Hazel.profile("glfwInit") {
+                    Hazel.coreAssert(glfwInit() == GLFW_TRUE) { "Could not initialize GLFW!" }
+                }
 
-            glfwSetErrorCallback(staticCFunction { error, message ->
-                Hazel.error { "GLFW error ($error): ${message?.toKString()}" }
-            })
+                glfwSetErrorCallback(staticCFunction { error, message ->
+                    Hazel.error { "GLFW error ($error): ${message?.toKString()}" }
+                })
 
-            glfwDefaultWindowHints()
+                glfwDefaultWindowHints()
 
-            val ptr = glfwCreateWindow(width, height, title, null, null) ?: throw Exception("Could not create window.")
-            return Window(ptr)
+                val ptr = Hazel.profile("glfwCreateWindow") {
+                    glfwCreateWindow(width, height, title, null, null) ?: throw Exception("Could not create window.")
+                }
+                Window(ptr)
+            }
         }
     }
 }

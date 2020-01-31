@@ -1,11 +1,13 @@
 package hazel.renderer
 
 import hazel.core.Event
+import hazel.core.Hazel
 import hazel.core.Input
 import hazel.core.Key
 import hazel.core.MouseScrolledEvent
 import hazel.core.TimeStep
 import hazel.core.WindowResizeEvent
+import hazel.core.profile
 import hazel.math.FloatVector3
 import hazel.math.degrees
 
@@ -22,44 +24,52 @@ class OrthographicCameraController(
 
 
     fun onUpdate(timeStep: TimeStep) {
-        if (Input.isKeyPressed(Key.A))
-            cameraPosition.x -= cameraTranslationSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.D))
-            cameraPosition.x += cameraTranslationSpeed * timeStep.inSeconds
+        Hazel.profile(::onUpdate) {
+            if (Input.isKeyPressed(Key.A))
+                cameraPosition.x -= cameraTranslationSpeed * timeStep.inSeconds
+            else if (Input.isKeyPressed(Key.D))
+                cameraPosition.x += cameraTranslationSpeed * timeStep.inSeconds
 
-        if (Input.isKeyPressed(Key.W))
-            cameraPosition.y += cameraTranslationSpeed * timeStep.inSeconds
-        else if (Input.isKeyPressed(Key.S))
-            cameraPosition.y -= cameraTranslationSpeed * timeStep.inSeconds
+            if (Input.isKeyPressed(Key.W))
+                cameraPosition.y += cameraTranslationSpeed * timeStep.inSeconds
+            else if (Input.isKeyPressed(Key.S))
+                cameraPosition.y -= cameraTranslationSpeed * timeStep.inSeconds
 
-        if (allowRotation) {
-            if (Input.isKeyPressed(Key.Q))
-                cameraRotation += cameraRotationSpeed * timeStep.inSeconds
-            else if (Input.isKeyPressed(Key.E))
-                cameraRotation -= cameraRotationSpeed * timeStep.inSeconds
+            if (allowRotation) {
+                if (Input.isKeyPressed(Key.Q))
+                    cameraRotation += cameraRotationSpeed * timeStep.inSeconds
+                else if (Input.isKeyPressed(Key.E))
+                    cameraRotation -= cameraRotationSpeed * timeStep.inSeconds
+            }
+
+            camera.position = cameraPosition
+            camera.rotation = cameraRotation
         }
-
-        camera.position = cameraPosition
-        camera.rotation = cameraRotation
     }
 
     fun onEvent(event: Event) {
-        with(event) {
-            dispatch(::onMouseScrolledEvent)
-            dispatch(::onWindowResizeEvent)
+        Hazel.profile(::onEvent) {
+            with(event) {
+                dispatch(::onMouseScrolledEvent)
+                dispatch(::onWindowResizeEvent)
+            }
         }
     }
 
     private fun onMouseScrolledEvent(event: MouseScrolledEvent): Boolean {
-        zoomLevel -= event.yOffset * 0.25f
-        zoomLevel = zoomLevel.coerceAtLeast(0.25f)
-        camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+        Hazel.profile(::onMouseScrolledEvent) {
+            zoomLevel -= event.yOffset * 0.25f
+            zoomLevel = zoomLevel.coerceAtLeast(0.25f)
+            camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+        }
         return false
     }
 
     private fun onWindowResizeEvent(event: WindowResizeEvent): Boolean {
-        aspectRatio = event.width.toFloat() / event.height.toFloat()
-        camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+        Hazel.profile(::onWindowResizeEvent) {
+            aspectRatio = event.width.toFloat() / event.height.toFloat()
+            camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+        }
         return false
     }
 }

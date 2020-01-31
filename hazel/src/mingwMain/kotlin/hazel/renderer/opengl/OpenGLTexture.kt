@@ -15,6 +15,8 @@ import cstb_image.stbi_image_free
 import cstb_image.stbi_load
 import cstb_image.stbi_set_flip_vertically_on_load
 import hazel.core.Hazel
+import hazel.core.coreAssert
+import hazel.core.profile
 import hazel.renderer.Texture2D
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -38,6 +40,9 @@ class OpenGLTexture2D : Texture2D {
     private val rendererId: UInt
 
     constructor(width: Int, height: Int) {
+        val profiler = Hazel.Profiler("${this::class.qualifiedName}.<init>(${Int::class.qualifiedName},${Int::class.qualifiedName})${this::class.qualifiedName}")
+        profiler.start()
+
         this.path = null
         this.width = width
         this.height = height
@@ -50,19 +55,27 @@ class OpenGLTexture2D : Texture2D {
 
         glTextureParameter(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTextureParameter(rendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+
+        profiler.stop()
     }
 
     constructor(path: String) {
+        val profiler = Hazel.Profiler("${this::class.qualifiedName}.<init>(${String::class.qualifiedName})${this::class.qualifiedName}")
+        profiler.start()
+
         this.path = path
 
         val meta = IntArray(3)
-        val data = meta.usePinned { pinned ->
+        val data: ByteArray? = meta.usePinned { pinned ->
             stbi_set_flip_vertically_on_load(1)
-            stbi_load(path, pinned.addressOf(0), pinned.addressOf(1), pinned.addressOf(2), 0)?.let { pointer ->
-                val size = sizeOf(pointer)
-                ByteArray(size).apply {
-                    usePinned { memcpy(it.addressOf(0), pointer, size.toULong()) }
-                    stbi_image_free(pointer)
+
+            Hazel.profile("stbi_load - ${this::class.qualifiedName}.<init>(${String::class.qualifiedName})${this::class.qualifiedName}") {
+                stbi_load(path, pinned.addressOf(0), pinned.addressOf(1), pinned.addressOf(2), 0)?.let { pointer ->
+                    val size = sizeOf(pointer)
+                    ByteArray(size).apply {
+                        usePinned { memcpy(it.addressOf(0), pointer, size.toULong()) }
+                        stbi_image_free(pointer)
+                    }
                 }
             }
         }
@@ -88,20 +101,27 @@ class OpenGLTexture2D : Texture2D {
         glTextureParameter(rendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
         glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data)
-    }
 
-
-    override fun setData(data: ByteArray) {
-        val bpp = if (dataFormat == GL_RGBA) 4 else 3
-        Hazel.coreAssert(data.size == width * height * bpp) { "Data must be entire texture" }
-        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data)
-    }
-
-    override fun bind(slot: Int) {
-        glBindTextureUnit(slot, rendererId)
+        profiler.stop()
     }
 
     override fun dispose() {
-        glDeleteTextures(rendererId)
+        Hazel.profile(::dispose) {
+            glDeleteTextures(rendererId)
+        }
+    }
+
+    override fun setData(data: ByteArray) {
+        Hazel.profile(::setData) {
+            val bpp = if (dataFormat == GL_RGBA) 4 else 3
+            Hazel.coreAssert(data.size == width * height * bpp) { "Data must be entire texture" }
+            glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data)
+        }
+    }
+
+    override fun bind(slot: Int) {
+        Hazel.profile(::bind) {
+            glBindTextureUnit(slot, rendererId)
+        }
     }
 }
