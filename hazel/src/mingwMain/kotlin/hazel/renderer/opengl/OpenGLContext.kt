@@ -9,6 +9,8 @@ import copengl.GL_VERSION
 import copengl.glGetString
 import copengl.glewInit
 import hazel.core.Hazel
+import hazel.core.coreInfo
+import hazel.core.profile
 import hazel.renderer.GraphicsContext
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
@@ -23,20 +25,24 @@ internal class OpenGLContext(
     private fun CPointer<UByteVar>.toKString() = reinterpret<ByteVar>().toKString()
 
     override fun init() {
-        glfwMakeContextCurrent(windowHandle)
-        glewInit()
+        Hazel.profile(::init) {
+            glfwMakeContextCurrent(windowHandle)
+            glewInit()
 
-        Hazel.coreInfo {
-            """
-            OpenGL Info:
-              Vendor: ${glGetString(GL_VENDOR)?.toKString()}
-              Renderer: ${glGetString(GL_RENDERER)?.toKString()}
-              Version: ${glGetString(GL_VERSION)?.toKString()}
-            """.trimIndent()
+            Hazel.coreInfo {
+                """
+                OpenGL Info:
+                  Vendor: ${glGetString(GL_VENDOR)?.toKString()}
+                  Renderer: ${glGetString(GL_RENDERER)?.toKString()}
+                  Version: ${glGetString(GL_VERSION)?.toKString()}
+                """.trimIndent()
+            }
         }
     }
 
     override fun swapBuffers() {
-        glfwSwapBuffers(windowHandle)
+        Hazel.profile(::swapBuffers) {
+            glfwSwapBuffers(windowHandle)
+        }
     }
 }

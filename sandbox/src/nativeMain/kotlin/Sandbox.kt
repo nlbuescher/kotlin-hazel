@@ -138,6 +138,15 @@ class ExampleLayer : Layer("ExampleLayer") {
         textureShader["u_Texture"] = 0
     }
 
+    override fun dispose() {
+        squareVertexArray.dispose()
+        chernoLogoTexture.dispose()
+        texture.dispose()
+        flatColorShader.dispose()
+        triangleVertexArray.dispose()
+        triangleShader.dispose()
+        shaderLibrary.dispose()
+    }
 
     override fun onUpdate(timeStep: TimeStep) {
         // Update
@@ -186,16 +195,6 @@ class ExampleLayer : Layer("ExampleLayer") {
     override fun onEvent(event: Event) {
         cameraController.onEvent(event)
     }
-
-    override fun dispose() {
-        squareVertexArray.dispose()
-        chernoLogoTexture.dispose()
-        texture.dispose()
-        flatColorShader.dispose()
-        triangleVertexArray.dispose()
-        triangleShader.dispose()
-        shaderLibrary.dispose()
-    }
 }
 
 class Sandbox : Application() {
@@ -206,5 +205,5 @@ class Sandbox : Application() {
 }
 
 fun main() {
-    Hazel.run(Sandbox())
+    Hazel.run(::Sandbox)
 }

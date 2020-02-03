@@ -17,6 +17,7 @@ kotlin {
         os.isLinux -> linuxX64("linux")
         os.isWindows -> mingwX64("mingw")
     }
+
     targets.withType<KotlinNativeTarget> {
         binaries {
             executable("Sandbox") {

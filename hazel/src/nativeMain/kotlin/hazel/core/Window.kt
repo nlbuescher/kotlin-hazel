@@ -7,13 +7,15 @@ import hazel.renderer.opengl.OpenGLContext
 import kotlin.native.concurrent.ensureNeverFrozen
 import com.kgl.glfw.Window as GlfwWindow
 
-class Window @PublishedApi internal constructor(internal val internal: GlfwWindow) : Disposable {
+class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disposable {
 
     private val context: GraphicsContext
 
-    var isVSync: Boolean = false
+    var isVSync: Boolean = false // dummy value should be overridden in init
         set(value) {
-            Glfw.setSwapInterval(if (value) 1 else 0)
+            Hazel.profile("${this::class.qualifiedName}.${::isVSync.name}.set(${Boolean::class.qualifiedName})") {
+                Glfw.setSwapInterval(if (value) 1 else 0)
+            }
             field = value
         }
 
@@ -65,6 +67,12 @@ class Window @PublishedApi internal constructor(internal val internal: GlfwWindo
         }
     }
 
+    override fun dispose() {
+        Hazel.profile(::dispose) {
+            internal.close()
+        }
+    }
+
 
     var position: Pair<Int, Int>
         get() = internal.position
@@ -82,25 +90,29 @@ class Window @PublishedApi internal constructor(internal val internal: GlfwWindo
 
 
     fun onUpdate() {
-        Glfw.pollEvents()
-        context.swapBuffers()
-    }
-
-
-    override fun dispose() {
-        internal.close()
+        Hazel.profile(::onUpdate) {
+            Glfw.pollEvents()
+            context.swapBuffers()
+        }
     }
 
 
     companion object {
         operator fun invoke(width: Int = 1280, height: Int = 720, title: String = "Hazel Engine"): Window {
-            Glfw.init()
+            return Hazel.profile(::Window) {
+                Hazel.profile(Glfw::init) {
+                    Glfw.init()
+                }
 
-            Glfw.setErrorCallback { error, message ->
-                Hazel.error { "GLFW error ($error): $message" }
+                Glfw.setErrorCallback { error, message ->
+                    Hazel.error { "GLFW error ($error): $message" }
+                }
+
+                val internal = Hazel.profile(::GlfwWindow) {
+                    GlfwWindow(width, height, title) {}
+                }
+                Window(internal)
             }
-
-            return Window(com.kgl.glfw.Window(width, height, title, null, null) {})
         }
     }
 }

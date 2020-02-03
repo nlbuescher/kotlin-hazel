@@ -2,6 +2,7 @@ package hazel.renderer
 
 import hazel.core.Disposable
 import hazel.core.Hazel
+import hazel.core.coreAssert
 import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
@@ -14,6 +15,7 @@ interface Shader : Disposable {
     fun unbind()
 
     operator fun set(name: String, int: Int)
+    operator fun set(name: String, float: Float)
     operator fun set(name: String, vector: FloatVector3)
     operator fun set(name: String, vector: FloatVector4)
     operator fun set(name: String, matrix: FloatMatrix4x4)
@@ -32,6 +34,8 @@ fun Shader(name: String, vertexSource: String, fragmentSource: String): Shader =
 class ShaderLibrary : Disposable {
     private val shaders = mutableMapOf<String, Shader>()
 
+    override fun dispose() = shaders.forEach { (_, it) -> it.dispose() }
+
     fun add(shader: Shader) = add(shader.name, shader)
 
     fun add(name: String, shader: Shader) {
@@ -47,6 +51,4 @@ class ShaderLibrary : Disposable {
         Hazel.coreAssert(name in shaders.keys)
         return shaders[name]!!
     }
-
-    override fun dispose() = shaders.forEach { (_, it) -> it.dispose() }
 }

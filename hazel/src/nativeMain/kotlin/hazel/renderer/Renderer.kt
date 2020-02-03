@@ -1,5 +1,7 @@
 package hazel.renderer
 
+import hazel.core.Hazel
+import hazel.core.profile
 import hazel.math.FloatMatrix4x4
 
 class SceneData {
@@ -14,8 +16,14 @@ object Renderer {
         set(new) = run { RenderAPI.api = new }
 
     fun init() {
-        RenderCommand.init()
-        Renderer2D.init()
+        Hazel.profile(::init) {
+            RenderCommand.init()
+            Renderer2D.init()
+        }
+    }
+
+    fun shutdown() {
+        Renderer2D.shutdown()
     }
 
     fun onWindowResize(width: Int, height: Int) {

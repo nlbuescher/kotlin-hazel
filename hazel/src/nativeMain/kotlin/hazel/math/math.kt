@@ -2,6 +2,7 @@ package hazel.math
 
 import kotlin.math.PI
 
+/** Returns the specified numbers of degrees as radians */
 val Float.degrees: Float get() = (this * PI / 180).toFloat()
 
 fun orthographicProjectionOf(
