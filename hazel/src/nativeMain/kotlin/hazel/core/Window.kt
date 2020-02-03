@@ -108,7 +108,7 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
                     Hazel.error { "GLFW error ($error): $message" }
                 }
 
-                val internal = Hazel.profile(::GlfwWindow) {
+                val internal = Hazel.profile("Glfw create window") {
                     GlfwWindow(width, height, title) {}
                 }
                 Window(internal)

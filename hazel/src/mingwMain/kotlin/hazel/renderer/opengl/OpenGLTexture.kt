@@ -119,7 +119,7 @@ class OpenGLTexture2D : Texture2D {
         }
     }
 
-    override fun bind(slot: Int) {
+    override fun bind(slot: UInt) {
         Hazel.profile(::bind) {
             glBindTextureUnit(slot, rendererId)
         }

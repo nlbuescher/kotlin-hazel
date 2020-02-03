@@ -79,12 +79,6 @@ internal inline fun glGetShaderUInt(shader: UInt, pname: UInt): UInt {
     }
 }
 
-internal inline fun glGetUniformLocation(program: UInt, name: String): Int {
-    return memScoped {
-        com.kgl.opengl.glGetUniformLocation(program, name.cstr.placeTo(memScope))
-    }
-}
-
 
 // T
 

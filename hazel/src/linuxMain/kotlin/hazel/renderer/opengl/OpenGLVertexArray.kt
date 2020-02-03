@@ -7,6 +7,8 @@ import com.kgl.opengl.glBindVertexArray
 import com.kgl.opengl.glCreateVertexArray
 import com.kgl.opengl.glEnableVertexAttribArray
 import hazel.core.Hazel
+import hazel.core.coreAssert
+import hazel.core.profile
 import hazel.opengl.glDeleteVertexArrays
 import hazel.opengl.glVertexAttribPointer
 import hazel.renderer.IndexBuffer
@@ -14,7 +16,7 @@ import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
 import hazel.renderer.VertexBuffer
 
-private fun ShaderDataType.toOpenGLBaseType(): UInt = when (this) {
+private fun ShaderDataType.toOpenGLBaseType() = when (this) {
     ShaderDataType.Boolean -> GL_BOOL
     ShaderDataType.Int -> GL_INT
     ShaderDataType.Int2 -> GL_INT
@@ -30,52 +32,70 @@ private fun ShaderDataType.toOpenGLBaseType(): UInt = when (this) {
 
 internal class OpenGLVertexArray : VertexArray {
 
-    private val rendererId: UInt = glCreateVertexArray()
+    private val rendererId: UInt
 
     override val vertexBuffers = mutableListOf<VertexBuffer>()
 
     private lateinit var _indexBuffer: IndexBuffer
     override var indexBuffer: IndexBuffer
         get() = _indexBuffer
-        set(indexBuffer) {
-            glBindVertexArray(rendererId)
-            indexBuffer.bind()
-            _indexBuffer = indexBuffer
+        set(value) {
+            Hazel.profile(::indexBuffer::set) {
+                glBindVertexArray(rendererId)
+                value.bind()
+                _indexBuffer = value
+            }
         }
 
+    init {
+        val profiler = Hazel.Profiler(::OpenGLVertexArray)
+        profiler.start()
 
-    override fun bind() {
-        glBindVertexArray(rendererId)
-    }
+        rendererId = glCreateVertexArray()
 
-    override fun unbind() {
-        glBindVertexArray(0u)
-    }
-
-    override fun addVertexBuffer(vertexBuffer: VertexBuffer) {
-        Hazel.coreAssert(vertexBuffer.layout.elements.isNotEmpty()) { "Vertex buffer has no layout!" }
-
-        glBindVertexArray(rendererId)
-        vertexBuffer.bind()
-
-        vertexBuffer.layout.elements.forEachIndexed { index, element ->
-            glEnableVertexAttribArray(index.toUInt())
-            glVertexAttribPointer(
-                index.toUInt(),
-                element.componentCount,
-                element.type.toOpenGLBaseType(),
-                element.isNormalized,
-                vertexBuffer.layout.stride,
-                element.offset
-            )
-        }
-
-        vertexBuffers.add(vertexBuffer)
+        profiler.stop()
     }
 
     override fun dispose() {
-        vertexBuffers.forEach { it.dispose() }
-        indexBuffer.dispose()
-        glDeleteVertexArrays(rendererId)
+        Hazel.profile(::dispose) {
+            vertexBuffers.forEach { it.dispose() }
+            indexBuffer.dispose()
+            glDeleteVertexArrays(rendererId)
+        }
+    }
+
+    override fun bind() {
+        Hazel.profile(::bind) {
+            glBindVertexArray(rendererId)
+        }
+    }
+
+    override fun unbind() {
+        Hazel.profile(::unbind) {
+            glBindVertexArray(0u)
+        }
+    }
+
+    override fun addVertexBuffer(vertexBuffer: VertexBuffer) {
+        Hazel.profile(::addVertexBuffer) {
+            Hazel.coreAssert(vertexBuffer.layout.elements.isNotEmpty()) { "Vertex buffer has no layout!" }
+
+            glBindVertexArray(rendererId)
+            vertexBuffer.bind()
+
+            vertexBuffer.layout.elements.forEachIndexed { index, element ->
+                glEnableVertexAttribArray(index.toUInt())
+                glVertexAttribPointer(
+                    index.toUInt(),
+                    element.componentCount,
+                    element.type.toOpenGLBaseType(),
+                    element.isNormalized,
+                    vertexBuffer.layout.stride,
+                    element.offset
+                )
+            }
+
+            vertexBuffers.add(vertexBuffer)
+        }
     }
 }
