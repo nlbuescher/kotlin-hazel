@@ -11,13 +11,13 @@ import com.kgl.opengl.GL_TEXTURE_MAG_FILTER
 import com.kgl.opengl.GL_TEXTURE_MIN_FILTER
 import com.kgl.opengl.GL_UNSIGNED_BYTE
 import com.kgl.opengl.glBindTextureUnit
+import com.kgl.opengl.glCreateTexture
 import com.kgl.opengl.glTextureStorage2D
 import cstb_image.sizeOf
 import cstb_image.stbi_image_free
 import cstb_image.stbi_load
 import cstb_image.stbi_set_flip_vertically_on_load
 import hazel.core.Hazel
-import hazel.opengl.glCreateTexture
 import hazel.opengl.glDeleteTextures
 import hazel.opengl.glTextureParameter
 import hazel.opengl.glTextureSubImage2D

@@ -4,9 +4,9 @@ import com.kgl.opengl.GL_BOOL
 import com.kgl.opengl.GL_FLOAT
 import com.kgl.opengl.GL_INT
 import com.kgl.opengl.glBindVertexArray
+import com.kgl.opengl.glCreateVertexArray
 import com.kgl.opengl.glEnableVertexAttribArray
 import hazel.core.Hazel
-import hazel.opengl.glCreateVertexArray
 import hazel.opengl.glDeleteVertexArrays
 import hazel.opengl.glVertexAttribPointer
 import hazel.renderer.IndexBuffer

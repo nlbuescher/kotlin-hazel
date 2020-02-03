@@ -27,75 +27,70 @@ import kotlinx.cinterop.value
 
 // B
 
-internal inline fun glBufferData(target: UInt, data: FloatArray, usage: UInt) = data.usePinned {
-    com.kgl.opengl.glBufferData(target, data.size * sizeOf<FloatVar>(), it.addressOf(0), usage)
+internal inline fun glBufferData(target: UInt, data: FloatArray, usage: UInt) {
+    data.usePinned {
+        com.kgl.opengl.glBufferData(target, data.size * sizeOf<FloatVar>(), it.addressOf(0), usage)
+    }
 }
 
-internal inline fun glBufferData(target: UInt, data: UIntArray, usage: UInt) = data.usePinned {
-    com.kgl.opengl.glBufferData(target, data.size * sizeOf<UIntVar>(), it.addressOf(0), usage)
-}
-
-
-// C
-
-internal inline fun glCreateBuffer() = glCreateBuffers(1).first()
-
-internal inline fun glCreateBuffers(n: Int) = UIntArray(n).apply {
-    usePinned { com.kgl.opengl.glCreateBuffers(n, it.addressOf(0)) }
-}
-
-internal inline fun glCreateTexture(textureType: UInt): UInt = glCreateTextures(textureType, 1).first()
-
-internal inline fun glCreateTextures(textureType: UInt, n: Int) = UIntArray(n).apply {
-    usePinned { com.kgl.opengl.glCreateTextures(textureType, n, it.addressOf(0)) }
-}
-
-internal inline fun glCreateVertexArray() = glCreateVertexArrays(1).first()
-
-internal inline fun glCreateVertexArrays(n: Int) = UIntArray(n).apply {
-    usePinned { com.kgl.opengl.glCreateVertexArrays(n, it.addressOf(0)) }
+internal inline fun glBufferData(target: UInt, data: UIntArray, usage: UInt) {
+    data.usePinned {
+        com.kgl.opengl.glBufferData(target, data.size * sizeOf<UIntVar>(), it.addressOf(0), usage)
+    }
 }
 
 
 // D
 
-internal inline fun glDeleteBuffer(buffer: UInt) = glDeleteBuffers(1, uintArrayOf(buffer))
-
-internal inline fun glDeleteBuffers(n: Int, buffers: UIntArray) {
-    buffers.usePinned { com.kgl.opengl.glDeleteBuffers(n, it.addressOf(0)) }
+internal inline fun glDeleteBuffers(vararg buffers: UInt) {
+    buffers.usePinned {
+        com.kgl.opengl.glDeleteBuffers(buffers.size, it.addressOf(0))
+    }
 }
 
-internal inline fun glDeleteTextures(vararg textures: UInt) = textures.usePinned {
-    com.kgl.opengl.glDeleteTextures(textures.size, it.addressOf(0))
+internal inline fun glDeleteTextures(vararg textures: UInt) {
+    textures.usePinned {
+        com.kgl.opengl.glDeleteTextures(textures.size, it.addressOf(0))
+    }
 }
 
-internal inline fun glDeleteVertexArrays(vararg arrays: UInt) = arrays.usePinned {
-    com.kgl.opengl.glDeleteVertexArrays(arrays.size, it.addressOf(0))
+internal inline fun glDeleteVertexArrays(vararg arrays: UInt) {
+    arrays.usePinned {
+        com.kgl.opengl.glDeleteVertexArrays(arrays.size, it.addressOf(0))
+    }
 }
 
 
 // G
 
-internal inline fun glGetProgramUInt(program: UInt, pname: UInt): UInt = memScoped {
-    val iv = alloc<IntVar>()
-    com.kgl.opengl.glGetProgramiv(program, pname, iv.ptr)
-    iv.value.convert()
+internal inline fun glGetProgramUInt(program: UInt, pname: UInt): UInt {
+    return memScoped {
+        val iv = alloc<IntVar>()
+        com.kgl.opengl.glGetProgramiv(program, pname, iv.ptr)
+        iv.value.convert()
+    }
 }
 
-internal inline fun glGetShaderUInt(shader: UInt, pname: UInt): UInt = memScoped {
-    val iv = alloc<IntVar>()
-    com.kgl.opengl.glGetShaderiv(shader, pname, iv.ptr)
-    iv.value.convert()
+internal inline fun glGetShaderUInt(shader: UInt, pname: UInt): UInt {
+    return memScoped {
+        val iv = alloc<IntVar>()
+        com.kgl.opengl.glGetShaderiv(shader, pname, iv.ptr)
+        iv.value.convert()
+    }
 }
 
-internal inline fun glGetUniformLocation(program: UInt, name: String): Int = memScoped {
-    com.kgl.opengl.glGetUniformLocation(program, name.cstr.placeTo(memScope))
+internal inline fun glGetUniformLocation(program: UInt, name: String): Int {
+    return memScoped {
+        com.kgl.opengl.glGetUniformLocation(program, name.cstr.placeTo(memScope))
+    }
 }
 
 
 // T
 
-internal inline fun glTextureParameter(texture: UInt, pname: UInt, param: UInt) = com.kgl.opengl.glTextureParameteri(texture, pname, param.convert())
+internal inline fun glTextureParameter(texture: UInt, pname: UInt, param: UInt) {
+    com.kgl.opengl.glTextureParameteri(texture, pname, param.convert())
+}
 
 internal inline fun glTextureSubImage2D(texture: UInt, level: Int, xOffset: Int, yOffset: Int, width: Int, height: Int, format: UInt, type: UInt, pixels: ByteArray?) {
     val data = pixels?.pin()
@@ -109,22 +104,36 @@ internal inline fun glTextureSubImage2D(texture: UInt, level: Int, xOffset: Int,
 
 // U
 
-internal inline fun glUniform(location: Int, i: Int) = com.kgl.opengl.glUniform1i(location, i)
-
-internal inline fun glUniform(location: Int, f: Float) = com.kgl.opengl.glUniform1f(location, f)
-
-internal inline fun glUniform(location: Int, f1: Float, f2: Float) = com.kgl.opengl.glUniform2f(location, f1, f2)
-
-internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float) = com.kgl.opengl.glUniform3f(location, f1, f2, f3)
-
-internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float, f4: Float) = com.kgl.opengl.glUniform4f(location, f1, f2, f3, f4)
-
-internal inline fun glUniform(location: Int, transpose: Boolean, matrix: FloatMatrix3x3) = matrix.toFloatArray().usePinned {
-    com.kgl.opengl.glUniformMatrix3fv(location, 1, transpose, it.addressOf(0))
+internal inline fun glUniform(location: Int, i: Int) {
+    com.kgl.opengl.glUniform1i(location, i)
 }
 
-internal inline fun glUniform(location: Int, transpose: Boolean, matrix: FloatMatrix4x4) = matrix.toFloatArray().usePinned {
-    com.kgl.opengl.glUniformMatrix4fv(location, 1, transpose, it.addressOf(0))
+internal inline fun glUniform(location: Int, f: Float) {
+    com.kgl.opengl.glUniform1f(location, f)
+}
+
+internal inline fun glUniform(location: Int, f1: Float, f2: Float) {
+    com.kgl.opengl.glUniform2f(location, f1, f2)
+}
+
+internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float) {
+    com.kgl.opengl.glUniform3f(location, f1, f2, f3)
+}
+
+internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float, f4: Float) {
+    com.kgl.opengl.glUniform4f(location, f1, f2, f3, f4)
+}
+
+internal inline fun glUniform(location: Int, transpose: Boolean, matrix: FloatMatrix3x3) {
+    matrix.toFloatArray().usePinned {
+        com.kgl.opengl.glUniformMatrix3fv(location, 1, transpose, it.addressOf(0))
+    }
+}
+
+internal inline fun glUniform(location: Int, transpose: Boolean, matrix: FloatMatrix4x4) {
+    matrix.toFloatArray().usePinned {
+        com.kgl.opengl.glUniformMatrix4fv(location, 1, transpose, it.addressOf(0))
+    }
 }
 
 

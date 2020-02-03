@@ -4,9 +4,9 @@ import com.kgl.opengl.GL_ARRAY_BUFFER
 import com.kgl.opengl.GL_ELEMENT_ARRAY_BUFFER
 import com.kgl.opengl.GL_STATIC_DRAW
 import com.kgl.opengl.glBindBuffer
+import com.kgl.opengl.glCreateBuffer
 import hazel.opengl.glBufferData
-import hazel.opengl.glCreateBuffer
-import hazel.opengl.glDeleteBuffer
+import hazel.opengl.glDeleteBuffers
 import hazel.renderer.BufferLayout
 import hazel.renderer.IndexBuffer
 import hazel.renderer.VertexBuffer
@@ -30,7 +30,7 @@ internal class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
     }
 
     override fun dispose() {
-        glDeleteBuffer(rendererId)
+        glDeleteBuffers(rendererId)
     }
 }
 
@@ -54,6 +54,6 @@ class OpenGLIndexBuffer(indices: UIntArray) : IndexBuffer {
     }
 
     override fun dispose() {
-        glDeleteBuffer(rendererId)
+        glDeleteBuffers(rendererId)
     }
 }
