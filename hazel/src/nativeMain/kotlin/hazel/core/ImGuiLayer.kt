@@ -1,8 +1,10 @@
 package hazel.core
 
+import cimgui.internal.ImGuiConfigFlags_NavEnableKeyboard
 import com.imgui.ImGui
 import com.imgui.impl.ImGuiGLFW
 import com.imgui.impl.ImguiOpenGL3
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.pointed
 
 open class ImGuiLayer : Overlay("ImGuiLayer") {
@@ -13,8 +15,8 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
     override fun onAttach() {
         with(ImGui) {
             createContext()
-            val io = getIO()
-            //io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_NavEnableKeyboard.convert() // enable keyboard controls
+            val io = getIO().ptr.pointed
+            io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_NavEnableKeyboard.convert() // enable keyboard controls
             //io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_NavEnableGamepad.convert() // enable gamepad controls
             //io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_DockingEnable.convert() // enable docking
             //io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_ViewportsEnable.convert() // enable multi-viewport / platform windows

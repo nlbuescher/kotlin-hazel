@@ -1,6 +1,7 @@
 @file:Suppress("UNUSED_VARIABLE")
 
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
@@ -11,47 +12,32 @@ repositories {
     jcenter()
 }
 
-val imguiVersion = "0.1.0-dev-2"
-val kglVersion = "0.1.9-dev-5"
+val imguiVersion = "0.1.0-dev-3"
+val kglVersion = "0.1.9-dev-6"
+
+val os: OperatingSystem = OperatingSystem.current()
 
 kotlin {
-    val os = OperatingSystem.current()
     when {
-        os.isLinux -> linuxX64("linux") {
-            val main by compilations.getting {
-                cinterops.create("cstb_image")
+        os.isLinux -> linuxX64("linux")
+        os.isWindows -> mingwX64("mingw")
+    }
 
-                defaultSourceSet {
-                    kotlin.srcDir("src/nativeMain/kotlin")
+    targets.withType<KotlinNativeTarget> {
+        compilations["main"].apply {
+            cinterops.create("cstb_image")
 
-                    dependencies {
-                        //api(project(":imgui"))
-                        implementation("com.kotlin-imgui:imgui:$imguiVersion")
-                        implementation("com.kotlin-imgui:imgui-glfw:$imguiVersion")
-                        implementation("com.kotlin-imgui:imgui-opengl:$imguiVersion")
+            defaultSourceSet {
+                kotlin.srcDir("src/nativeMain/kotlin")
 
-                        implementation("com.kgl:kgl-glfw:$kglVersion")
-                        implementation("com.kgl:kgl-opengl:$kglVersion")
-                    }
-                }
-            }
-        }
-        os.isWindows -> mingwX64("mingw") {
-            val main by compilations.getting {
-                cinterops {
-                    create("cglfw")
-                    create("cimgui")
-                    create("copengl")
-                    create("cstb_image")
-                }
-                defaultSourceSet {
-                    kotlin.srcDir("src/nativeMain/kotlin")
-                }
-            }
+                dependencies {
+                    implementation("com.kotlin-imgui:imgui:$imguiVersion")
+                    implementation("com.kotlin-imgui:imgui-glfw:$imguiVersion")
+                    implementation("com.kotlin-imgui:imgui-opengl:$imguiVersion")
 
-            afterEvaluate {
-                main.cinterops["cimgui"].apply {
-                    tasks[interopProcessingTaskName].dependsOn(":cimgui:assembleReleaseWindows")
+                    implementation("com.kgl:kgl-glfw:$kglVersion")
+                    implementation("com.kgl:kgl-glfw-static:$kglVersion")
+                    implementation("com.kgl:kgl-opengl:$kglVersion")
                 }
             }
         }
@@ -63,6 +49,7 @@ kotlin {
             enableLanguageFeature("InlineClasses")
             useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
             useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+            useExperimentalAnnotation("kotlinx.io.core.ExperimentalIoApi")
         }
     }
 }

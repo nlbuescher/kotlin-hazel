@@ -16,11 +16,6 @@ import com.kgl.opengl.glGetProgramInfoLog
 import com.kgl.opengl.glGetShaderInfoLog
 import com.kgl.opengl.glLinkProgram
 import com.kgl.opengl.glShaderSource
-import com.kgl.opengl.glUniform1f
-import com.kgl.opengl.glUniform1i
-import com.kgl.opengl.glUniform2f
-import com.kgl.opengl.glUniform3f
-import com.kgl.opengl.glUniform4f
 import com.kgl.opengl.glUseProgram
 import hazel.core.Hazel
 import hazel.math.FloatMatrix3x3
@@ -28,17 +23,16 @@ import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
-import hazel.opengl.glGetProgramiv
-import hazel.opengl.glGetShaderiv
+import hazel.opengl.glGetProgramUInt
+import hazel.opengl.glGetShaderUInt
 import hazel.opengl.glGetUniformLocation
 import hazel.opengl.glUniform
-import hazel.opengl.glUniformMatrix3
-import hazel.opengl.glUniformMatrix4
 import hazel.renderer.Shader
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
+import kotlinx.io.streams.use
 import platform.posix.SEEK_END
 import platform.posix.SEEK_SET
 import platform.posix.fopen
@@ -108,12 +102,12 @@ class OpenGLShader : Shader {
 
     fun uploadUniform(name: String, matrix: FloatMatrix3x3) {
         val location = glGetUniformLocation(rendererId, name)
-        glUniformMatrix3(location, false, matrix.toFloatArray())
+        glUniform(location, false, matrix)
     }
 
     fun uploadUniform(name: String, matrix: FloatMatrix4x4) {
         val location = glGetUniformLocation(rendererId, name)
-        glUniformMatrix4(location, false, matrix.toFloatArray())
+        glUniform(location, false, matrix)
     }
 
     override fun dispose() {
@@ -121,7 +115,7 @@ class OpenGLShader : Shader {
     }
 
     private fun readFile(filepath: String): String? {
-        return fopen(filepath, "r")?.let { file ->
+        return fopen(filepath, "r")?.use { file ->
             fseek(file, 0L, SEEK_END)
             val size = ftell(file).toInt()
             fseek(file, 0L, SEEK_SET)
@@ -165,7 +159,7 @@ class OpenGLShader : Shader {
 
             glCompileShader(shader)
 
-            if (glGetShaderiv(shader, GL_COMPILE_STATUS) == GL_FALSE) {
+            if (glGetShaderUInt(shader, GL_COMPILE_STATUS) == GL_FALSE) {
                 val infoLog = glGetShaderInfoLog(shader)
 
                 glDeleteShader(shader)
@@ -181,7 +175,7 @@ class OpenGLShader : Shader {
 
         glLinkProgram(program)
 
-        if (glGetProgramiv(program, GL_LINK_STATUS) == GL_FALSE) {
+        if (glGetProgramUInt(program, GL_LINK_STATUS) == GL_FALSE) {
             rendererId = 0u
             val infoLog = glGetProgramInfoLog(rendererId)
 

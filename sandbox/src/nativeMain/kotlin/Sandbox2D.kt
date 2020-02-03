@@ -1,7 +1,6 @@
 import cimgui.internal.igText
 import com.imgui.ImGui
 import hazel.core.Event
-import hazel.core.Hazel
 import hazel.core.Layer
 import hazel.core.TimeStep
 import hazel.math.FloatVector2
@@ -30,7 +29,6 @@ class Sandbox2D : Layer("Sandbox2D") {
     override fun onDetach() {}
 
     override fun onUpdate(timeStep: TimeStep) {
-        Hazel.debug { "start update" }
         profile("Sandbox2D.onUpdate") {
             // update
             profile("cameraController.onUpdate") {
@@ -51,7 +49,6 @@ class Sandbox2D : Layer("Sandbox2D") {
                 }
             }
         }
-        Hazel.debug { "end update" }
     }
 
     override fun onImGuiRender() {

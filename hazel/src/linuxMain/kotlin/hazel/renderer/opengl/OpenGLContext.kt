@@ -8,15 +8,8 @@ import com.kgl.opengl.glGetString
 import hazel.core.Hazel
 import hazel.core.Window
 import hazel.renderer.GraphicsContext
-import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.UByteVar
-import kotlinx.cinterop.reinterpret
-import kotlinx.cinterop.toKString
 
 internal class OpenGLContext(private val window: Window) : GraphicsContext {
-
-    private fun CPointer<UByteVar>.toKString() = reinterpret<ByteVar>().toKString()
 
     override fun init() {
         Glfw.currentContext = window.internal
@@ -24,9 +17,9 @@ internal class OpenGLContext(private val window: Window) : GraphicsContext {
         Hazel.coreInfo {
             """
             OpenGL Info:
-              Vendor: ${glGetString(GL_VENDOR)?.toKString()}
-              Renderer: ${glGetString(GL_RENDERER)?.toKString()}
-              Version: ${glGetString(GL_VERSION)?.toKString()}
+              Vendor: ${glGetString(GL_VENDOR)}
+              Renderer: ${glGetString(GL_RENDERER)}
+              Version: ${glGetString(GL_VERSION)}
             """.trimIndent()
         }
     }

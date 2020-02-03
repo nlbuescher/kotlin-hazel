@@ -2,8 +2,8 @@
 
 package hazel.opengl
 
-import com.kgl.opengl.GL_FALSE
-import com.kgl.opengl.GL_TRUE
+import hazel.math.FloatMatrix3x3
+import hazel.math.FloatMatrix4x4
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.IntVar
@@ -76,13 +76,13 @@ internal inline fun glDeleteVertexArrays(vararg arrays: UInt) = arrays.usePinned
 
 // G
 
-internal inline fun glGetProgramiv(program: UInt, pname: UInt): UInt = memScoped {
+internal inline fun glGetProgramUInt(program: UInt, pname: UInt): UInt = memScoped {
     val iv = alloc<IntVar>()
     com.kgl.opengl.glGetProgramiv(program, pname, iv.ptr)
     iv.value.convert()
 }
 
-internal inline fun glGetShaderiv(shader: UInt, pname: UInt): UInt = memScoped {
+internal inline fun glGetShaderUInt(shader: UInt, pname: UInt): UInt = memScoped {
     val iv = alloc<IntVar>()
     com.kgl.opengl.glGetShaderiv(shader, pname, iv.ptr)
     iv.value.convert()
@@ -119,17 +119,17 @@ internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float) = 
 
 internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float, f4: Float) = com.kgl.opengl.glUniform4f(location, f1, f2, f3, f4)
 
-internal inline fun glUniformMatrix3(location: Int, transpose: Boolean, matrix: FloatArray) = matrix.usePinned {
-    com.kgl.opengl.glUniformMatrix3fv(location, 1, (if (transpose) GL_TRUE else GL_FALSE).convert(), it.addressOf(0))
+internal inline fun glUniform(location: Int, transpose: Boolean, matrix: FloatMatrix3x3) = matrix.toFloatArray().usePinned {
+    com.kgl.opengl.glUniformMatrix3fv(location, 1, transpose, it.addressOf(0))
 }
 
-internal inline fun glUniformMatrix4(location: Int, transpose: Boolean, matrix: FloatArray) = matrix.usePinned {
-    com.kgl.opengl.glUniformMatrix4fv(location, 1, (if (transpose) GL_TRUE else GL_FALSE).convert(), it.addressOf(0))
+internal inline fun glUniform(location: Int, transpose: Boolean, matrix: FloatMatrix4x4) = matrix.toFloatArray().usePinned {
+    com.kgl.opengl.glUniformMatrix4fv(location, 1, transpose, it.addressOf(0))
 }
 
 
 // V
 
 internal inline fun glVertexAttribPointer(index: UInt, size: Int, type: UInt, normalized: Boolean, stride: Int, pointer: Int) {
-    com.kgl.opengl.glVertexAttribPointer(index, size, type.convert(), (if (normalized) GL_TRUE else GL_FALSE).convert(), stride, pointer.toLong().toCPointer<CPointed>())
+    com.kgl.opengl.glVertexAttribPointer(index, size, type.convert(), normalized, stride, pointer.toLong().toCPointer<CPointed>())
 }
