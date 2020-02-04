@@ -243,30 +243,31 @@ class OpenGLShader : Shader {
             rendererId = program
         }
     }
-}
 
-private fun String.toShaderType(): UInt = when (this) {
-    "vertex" -> GL_VERTEX_SHADER
-    "fragment",
-    "pixel" -> GL_FRAGMENT_SHADER
-    else -> {
-        Hazel.coreAssert(false) { "Unknown shader type $this!" }
-        0u
-    }
-}
 
-/**
- * Finds the index of the first occurrence of any character this is not one of the specified [chars] in this char
- * sequence, starting from the specified [startIndex] and optionally ignoring the case.
- *
- * @param ignoreCase `true` to ignore character case when matching a character. By default `false`.
- * @return An index of the first occurrence of matched character not from [chars] or -1 if no match is found.
- */
-private fun CharSequence.indexOfNone(chars: CharArray, startIndex: Int = 0, ignoreCase: Boolean = false): Int {
-    for (index in startIndex.coerceAtLeast(0)..lastIndex) {
-        val charAtIndex = get(index)
-        if (chars.any { !it.equals(charAtIndex, ignoreCase) })
-            return index
+    private fun String.toShaderType(): UInt = when (this) {
+        "vertex" -> GL_VERTEX_SHADER
+        "fragment",
+        "pixel" -> GL_FRAGMENT_SHADER
+        else -> {
+            Hazel.coreAssert(false) { "Unknown shader type $this!" }
+            0u
+        }
     }
-    return -1
+
+    /**
+     * Finds the index of the first occurrence of any character this is not one of the specified [chars] in this char
+     * sequence, starting from the specified [startIndex] and optionally ignoring the case.
+     *
+     * @param ignoreCase `true` to ignore character case when matching a character. By default `false`.
+     * @return An index of the first occurrence of matched character not from [chars] or -1 if no match is found.
+     */
+    private fun CharSequence.indexOfNone(chars: CharArray, startIndex: Int = 0, ignoreCase: Boolean = false): Int {
+        for (index in startIndex.coerceAtLeast(0)..lastIndex) {
+            val charAtIndex = get(index)
+            if (chars.any { !it.equals(charAtIndex, ignoreCase) })
+                return index
+        }
+        return -1
+    }
 }

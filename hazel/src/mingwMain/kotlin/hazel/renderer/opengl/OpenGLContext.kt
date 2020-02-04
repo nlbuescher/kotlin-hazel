@@ -1,40 +1,28 @@
 package hazel.renderer.opengl
 
-import cglfw.glfwMakeContextCurrent
-import cglfw.glfwSwapBuffers
-import cnames.structs.GLFWwindow
-import copengl.GL_RENDERER
-import copengl.GL_VENDOR
-import copengl.GL_VERSION
-import copengl.glGetString
-import copengl.glewInit
+import com.kgl.glfw.Glfw
+import com.kgl.opengl.GL_RENDERER
+import com.kgl.opengl.GL_VENDOR
+import com.kgl.opengl.GL_VERSION
+import com.kgl.opengl.glGetString
 import hazel.core.Hazel
+import hazel.core.Window
 import hazel.core.coreInfo
 import hazel.core.profile
 import hazel.renderer.GraphicsContext
-import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.UByteVar
-import kotlinx.cinterop.reinterpret
-import kotlinx.cinterop.toKString
 
-internal class OpenGLContext(
-    private val windowHandle: CPointer<GLFWwindow>
-) : GraphicsContext {
-
-    private fun CPointer<UByteVar>.toKString() = reinterpret<ByteVar>().toKString()
+internal class OpenGLContext(private val window: Window) : GraphicsContext {
 
     override fun init() {
         Hazel.profile(::init) {
-            glfwMakeContextCurrent(windowHandle)
-            glewInit()
+            Glfw.currentContext = window.internal
 
             Hazel.coreInfo {
                 """
                 OpenGL Info:
-                  Vendor: ${glGetString(GL_VENDOR)?.toKString()}
-                  Renderer: ${glGetString(GL_RENDERER)?.toKString()}
-                  Version: ${glGetString(GL_VERSION)?.toKString()}
+                  Vendor: ${glGetString(GL_VENDOR)}
+                  Renderer: ${glGetString(GL_RENDERER)}
+                  Version: ${glGetString(GL_VERSION)}
                 """.trimIndent()
             }
         }
@@ -42,7 +30,7 @@ internal class OpenGLContext(
 
     override fun swapBuffers() {
         Hazel.profile(::swapBuffers) {
-            glfwSwapBuffers(windowHandle)
+            window.internal.swapBuffers()
         }
     }
 }

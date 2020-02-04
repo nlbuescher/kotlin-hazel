@@ -1,15 +1,18 @@
 package hazel.renderer.opengl
 
-import copengl.GL_LINEAR
-import copengl.GL_NEAREST
-import copengl.GL_RGB
-import copengl.GL_RGB8
-import copengl.GL_RGBA
-import copengl.GL_RGBA8
-import copengl.GL_TEXTURE_2D
-import copengl.GL_TEXTURE_MAG_FILTER
-import copengl.GL_TEXTURE_MIN_FILTER
-import copengl.GL_UNSIGNED_BYTE
+import com.kgl.opengl.GL_LINEAR
+import com.kgl.opengl.GL_NEAREST
+import com.kgl.opengl.GL_RGB
+import com.kgl.opengl.GL_RGB8
+import com.kgl.opengl.GL_RGBA
+import com.kgl.opengl.GL_RGBA8
+import com.kgl.opengl.GL_TEXTURE_2D
+import com.kgl.opengl.GL_TEXTURE_MAG_FILTER
+import com.kgl.opengl.GL_TEXTURE_MIN_FILTER
+import com.kgl.opengl.GL_UNSIGNED_BYTE
+import com.kgl.opengl.glBindTextureUnit
+import com.kgl.opengl.glCreateTexture
+import com.kgl.opengl.glTextureStorage2D
 import cstb_image.sizeOf
 import cstb_image.stbi_image_free
 import cstb_image.stbi_load
@@ -17,15 +20,12 @@ import cstb_image.stbi_set_flip_vertically_on_load
 import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.profile
+import hazel.opengl.glDeleteTextures
+import hazel.opengl.glTextureParameter
+import hazel.opengl.glTextureSubImage2D
 import hazel.renderer.Texture2D
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
-import opengl.glBindTextureUnit
-import opengl.glCreateTexture
-import opengl.glDeleteTextures
-import opengl.glTextureParameter
-import opengl.glTextureStorage2D
-import opengl.glTextureSubImage2D
 import platform.posix.memcpy
 
 class OpenGLTexture2D : Texture2D {
@@ -34,8 +34,8 @@ class OpenGLTexture2D : Texture2D {
     override val width: Int
     override val height: Int
 
-    private val internalFormat: Int
-    private val dataFormat: Int
+    private val internalFormat: UInt
+    private val dataFormat: UInt
 
     private val rendererId: UInt
 
@@ -83,16 +83,16 @@ class OpenGLTexture2D : Texture2D {
 
         width = meta[0]; height = meta[1]
 
-        val (ifmt, dfmt) = when (meta[2]) {
+        val (ifmt: UInt, dfmt: UInt) = when (meta[2]) {
             4 -> GL_RGBA8 to GL_RGBA
             3 -> GL_RGB8 to GL_RGB
-            else -> 0 to 0
+            else -> 0u to 0u
         }
 
         internalFormat = ifmt
         dataFormat = dfmt
 
-        Hazel.coreAssert(internalFormat != 0 && dataFormat != 0) { "Format not supported!" }
+        Hazel.coreAssert(internalFormat != 0u && dataFormat != 0u) { "Format not supported!" }
 
         rendererId = glCreateTexture(GL_TEXTURE_2D)
         glTextureStorage2D(rendererId, 1, internalFormat, width, height)

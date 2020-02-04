@@ -30,7 +30,6 @@ class AppTickEvent : AppEvent()
 class AppUpdateEvent : AppEvent()
 class AppRenderEvent : AppEvent()
 
-@ExperimentalUnsignedTypes
 class WindowResizeEvent(val width: Int, val height: Int) : AppEvent() {
     override fun toString() = "$name: $width, $height"
 }

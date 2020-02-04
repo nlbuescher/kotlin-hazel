@@ -1,34 +1,20 @@
 package hazel.renderer.opengl
 
-import copengl.GL_BOOL
-import copengl.GL_FLOAT
-import copengl.GL_INT
+import com.kgl.opengl.GL_BOOL
+import com.kgl.opengl.GL_FLOAT
+import com.kgl.opengl.GL_INT
+import com.kgl.opengl.glBindVertexArray
+import com.kgl.opengl.glCreateVertexArray
+import com.kgl.opengl.glEnableVertexAttribArray
 import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.profile
+import hazel.opengl.glDeleteVertexArrays
+import hazel.opengl.glVertexAttribPointer
 import hazel.renderer.IndexBuffer
 import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
 import hazel.renderer.VertexBuffer
-import opengl.glBindVertexArray
-import opengl.glCreateVertexArray
-import opengl.glDeleteVertexArrays
-import opengl.glEnableVertexAttribArray
-import opengl.glVertexAttribPointer
-
-private fun ShaderDataType.toOpenGLBaseType() = when (this) {
-    ShaderDataType.Boolean -> GL_BOOL
-    ShaderDataType.Int -> GL_INT
-    ShaderDataType.Int2 -> GL_INT
-    ShaderDataType.Int3 -> GL_INT
-    ShaderDataType.Int4 -> GL_INT
-    ShaderDataType.Float -> GL_FLOAT
-    ShaderDataType.Float2 -> GL_FLOAT
-    ShaderDataType.Float3 -> GL_FLOAT
-    ShaderDataType.Float4 -> GL_FLOAT
-    ShaderDataType.Mat3 -> GL_FLOAT
-    ShaderDataType.Mat4 -> GL_FLOAT
-}
 
 internal class OpenGLVertexArray : VertexArray {
 
@@ -97,5 +83,20 @@ internal class OpenGLVertexArray : VertexArray {
 
             vertexBuffers.add(vertexBuffer)
         }
+    }
+
+
+    private fun ShaderDataType.toOpenGLBaseType(): UInt = when (this) {
+        ShaderDataType.Boolean -> GL_BOOL
+        ShaderDataType.Int -> GL_INT
+        ShaderDataType.Int2 -> GL_INT
+        ShaderDataType.Int3 -> GL_INT
+        ShaderDataType.Int4 -> GL_INT
+        ShaderDataType.Float -> GL_FLOAT
+        ShaderDataType.Float2 -> GL_FLOAT
+        ShaderDataType.Float3 -> GL_FLOAT
+        ShaderDataType.Float4 -> GL_FLOAT
+        ShaderDataType.Mat3 -> GL_FLOAT
+        ShaderDataType.Mat4 -> GL_FLOAT
     }
 }

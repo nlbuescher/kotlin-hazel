@@ -1,10 +1,23 @@
 package hazel.renderer.opengl
 
-import copengl.GL_COMPILE_STATUS
-import copengl.GL_FALSE
-import copengl.GL_FRAGMENT_SHADER
-import copengl.GL_LINK_STATUS
-import copengl.GL_VERTEX_SHADER
+import com.kgl.opengl.GL_COMPILE_STATUS
+import com.kgl.opengl.GL_FALSE
+import com.kgl.opengl.GL_FRAGMENT_SHADER
+import com.kgl.opengl.GL_LINK_STATUS
+import com.kgl.opengl.GL_VERTEX_SHADER
+import com.kgl.opengl.glAttachShader
+import com.kgl.opengl.glCompileShader
+import com.kgl.opengl.glCreateProgram
+import com.kgl.opengl.glCreateShader
+import com.kgl.opengl.glDeleteProgram
+import com.kgl.opengl.glDeleteShader
+import com.kgl.opengl.glDetachShader
+import com.kgl.opengl.glGetProgramInfoLog
+import com.kgl.opengl.glGetShaderInfoLog
+import com.kgl.opengl.glGetUniformLocation
+import com.kgl.opengl.glLinkProgram
+import com.kgl.opengl.glShaderSource
+import com.kgl.opengl.glUseProgram
 import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.coreError
@@ -14,29 +27,14 @@ import hazel.math.FloatMatrix4x4
 import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
+import hazel.opengl.glGetProgramUInt
+import hazel.opengl.glGetShaderUInt
+import hazel.opengl.glUniform
 import hazel.renderer.Shader
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
-import opengl.glAttachShader
-import opengl.glCompileShader
-import opengl.glCreateProgram
-import opengl.glCreateShader
-import opengl.glDeleteProgram
-import opengl.glDeleteShader
-import opengl.glDetachShader
-import opengl.glGetProgramInfoLog
-import opengl.glGetProgramiv
-import opengl.glGetShaderInfoLog
-import opengl.glGetShaderiv
-import opengl.glGetUniformLocation
-import opengl.glLinkProgram
-import opengl.glShaderSource
-import opengl.glUniform
-import opengl.glUniformMatrix3
-import opengl.glUniformMatrix4
-import opengl.glUseProgram
 import platform.posix.SEEK_END
 import platform.posix.SEEK_SET
 import platform.posix.fopen
@@ -151,12 +149,12 @@ class OpenGLShader : Shader {
 
     fun uploadUniform(name: String, matrix: FloatMatrix3x3) {
         val location = glGetUniformLocation(rendererId, name)
-        glUniformMatrix3(location, false, matrix.toFloatArray())
+        glUniform(location, false, matrix)
     }
 
     fun uploadUniform(name: String, matrix: FloatMatrix4x4) {
         val location = glGetUniformLocation(rendererId, name)
-        glUniformMatrix4(location, false, matrix.toFloatArray())
+        glUniform(location, false, matrix)
     }
 
     private fun readFile(filepath: String): String? {
@@ -175,9 +173,9 @@ class OpenGLShader : Shader {
         }
     }
 
-    private fun preProcess(source: String): Map<Int, String> {
+    private fun preProcess(source: String): Map<UInt, String> {
         return Hazel.profile(::preProcess) {
-            val shaderSources = mutableMapOf<Int, String>()
+            val shaderSources = mutableMapOf<UInt, String>()
             val typeToken = "#type"
             var pos = source.indexOf(typeToken)
             while (pos != -1) {
@@ -185,7 +183,7 @@ class OpenGLShader : Shader {
                 Hazel.coreAssert(eol != -1) { "Syntax error" }
                 val begin = pos + typeToken.length + 1
                 val type = source.substring(begin, eol)
-                Hazel.coreAssert(type.toShaderType() != 0) { "Invalid shader type specified" }
+                Hazel.coreAssert(type.toShaderType() != 0u) { "Invalid shader type specified" }
 
                 val nextLinePos = source.indexOfNone(charArrayOf('\r', '\n'), eol)
                 pos = source.indexOf(typeToken, nextLinePos)
@@ -196,7 +194,7 @@ class OpenGLShader : Shader {
         }
     }
 
-    private fun compile(shaderSources: Map<Int, String>) {
+    private fun compile(shaderSources: Map<UInt, String>) {
         Hazel.profile(::compile) {
             val program = glCreateProgram()
 
@@ -209,7 +207,7 @@ class OpenGLShader : Shader {
 
                 glCompileShader(shader)
 
-                if (glGetShaderiv(shader, GL_COMPILE_STATUS) == GL_FALSE) {
+                if (glGetShaderUInt(shader, GL_COMPILE_STATUS) == GL_FALSE) {
                     val infoLog = glGetShaderInfoLog(shader)
 
                     glDeleteShader(shader)
@@ -225,7 +223,7 @@ class OpenGLShader : Shader {
 
             glLinkProgram(program)
 
-            if (glGetProgramiv(program, GL_LINK_STATUS) == GL_FALSE) {
+            if (glGetProgramUInt(program, GL_LINK_STATUS) == GL_FALSE) {
                 rendererId = 0u
                 val infoLog = glGetProgramInfoLog(rendererId)
 
@@ -245,30 +243,31 @@ class OpenGLShader : Shader {
             rendererId = program
         }
     }
-}
 
-private fun String.toShaderType() = when (this) {
-    "vertex" -> GL_VERTEX_SHADER
-    "fragment",
-    "pixel" -> GL_FRAGMENT_SHADER
-    else -> {
-        Hazel.coreAssert(false) { "Unknown shader type $this!" }
-        0
-    }
-}
 
-/**
- * Finds the index of the first occurrence of any character this is not one of the specified [chars] in this char
- * sequence, starting from the specified [startIndex] and optionally ignoring the case.
- *
- * @param ignoreCase `true` to ignore character case when matching a character. By default `false`.
- * @return An index of the first occurrence of matched character not from [chars] or -1 if no match is found.
- */
-private fun CharSequence.indexOfNone(chars: CharArray, startIndex: Int = 0, ignoreCase: Boolean = false): Int {
-    for (index in startIndex.coerceAtLeast(0)..lastIndex) {
-        val charAtIndex = get(index)
-        if (chars.any { !it.equals(charAtIndex, ignoreCase) })
-            return index
+    private fun String.toShaderType(): UInt = when (this) {
+        "vertex" -> GL_VERTEX_SHADER
+        "fragment",
+        "pixel" -> GL_FRAGMENT_SHADER
+        else -> {
+            Hazel.coreAssert(false) { "Unknown shader type $this!" }
+            0u
+        }
     }
-    return -1
+
+    /**
+     * Finds the index of the first occurrence of any character this is not one of the specified [chars] in this char
+     * sequence, starting from the specified [startIndex] and optionally ignoring the case.
+     *
+     * @param ignoreCase `true` to ignore character case when matching a character. By default `false`.
+     * @return An index of the first occurrence of matched character not from [chars] or -1 if no match is found.
+     */
+    private fun CharSequence.indexOfNone(chars: CharArray, startIndex: Int = 0, ignoreCase: Boolean = false): Int {
+        for (index in startIndex.coerceAtLeast(0)..lastIndex) {
+            val charAtIndex = get(index)
+            if (chars.any { !it.equals(charAtIndex, ignoreCase) })
+                return index
+        }
+        return -1
+    }
 }

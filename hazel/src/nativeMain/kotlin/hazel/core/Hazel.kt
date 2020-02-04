@@ -48,7 +48,7 @@ object Hazel {
         fun stop() {
             if (config.isProfileEnabled) {
                 end = clock.elapsedNow().inMicroseconds.toLong()
-                Instrumentor.writeProfile(ProfileResult(name, start, end, getThreadId()))
+                Instrumentor.writeProfile(ProfileResult(name, start, end, hazel.system.getThreadId()))
             }
         }
     }
@@ -87,7 +87,7 @@ internal fun Hazel.coreCritical(message: () -> Any?) = coreLogger.critical(messa
 internal fun Hazel.coreAssert(test: Boolean, message: () -> Any? = { null }) {
     if (config.isAssertsEnabled && !test) {
         coreCritical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
-        breakpoint()
+        hazel.system.breakpoint()
     }
 }
 
@@ -100,7 +100,7 @@ fun Hazel.critical(message: () -> Any?) = clientLogger.critical(message().toStri
 fun Hazel.assert(test: Boolean, message: () -> Any? = { null }) {
     if (config.isAssertsEnabled && !test) {
         critical { "Assertion failed${message()?.let { ": $it" } ?: ""}" }
-        breakpoint()
+        hazel.system.breakpoint()
     }
 }
 

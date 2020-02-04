@@ -16,20 +16,6 @@ import hazel.renderer.ShaderDataType
 import hazel.renderer.VertexArray
 import hazel.renderer.VertexBuffer
 
-private fun ShaderDataType.toOpenGLBaseType() = when (this) {
-    ShaderDataType.Boolean -> GL_BOOL
-    ShaderDataType.Int -> GL_INT
-    ShaderDataType.Int2 -> GL_INT
-    ShaderDataType.Int3 -> GL_INT
-    ShaderDataType.Int4 -> GL_INT
-    ShaderDataType.Float -> GL_FLOAT
-    ShaderDataType.Float2 -> GL_FLOAT
-    ShaderDataType.Float3 -> GL_FLOAT
-    ShaderDataType.Float4 -> GL_FLOAT
-    ShaderDataType.Mat3 -> GL_FLOAT
-    ShaderDataType.Mat4 -> GL_FLOAT
-}
-
 internal class OpenGLVertexArray : VertexArray {
 
     private val rendererId: UInt
@@ -97,5 +83,20 @@ internal class OpenGLVertexArray : VertexArray {
 
             vertexBuffers.add(vertexBuffer)
         }
+    }
+
+
+    private fun ShaderDataType.toOpenGLBaseType() = when (this) {
+        ShaderDataType.Boolean -> GL_BOOL
+        ShaderDataType.Int -> GL_INT
+        ShaderDataType.Int2 -> GL_INT
+        ShaderDataType.Int3 -> GL_INT
+        ShaderDataType.Int4 -> GL_INT
+        ShaderDataType.Float -> GL_FLOAT
+        ShaderDataType.Float2 -> GL_FLOAT
+        ShaderDataType.Float3 -> GL_FLOAT
+        ShaderDataType.Float4 -> GL_FLOAT
+        ShaderDataType.Mat3 -> GL_FLOAT
+        ShaderDataType.Mat4 -> GL_FLOAT
     }
 }
