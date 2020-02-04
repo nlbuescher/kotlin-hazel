@@ -11,10 +11,8 @@ import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.convert
-import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.pin
-import kotlinx.cinterop.placeTo
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.sizeOf
 import kotlinx.cinterop.toCPointer
@@ -63,20 +61,16 @@ internal inline fun glDeleteVertexArrays(vararg arrays: UInt) {
 
 // G
 
-internal inline fun glGetProgramUInt(program: UInt, pname: UInt): UInt {
-    return memScoped {
-        val iv = alloc<IntVar>()
-        com.kgl.opengl.glGetProgramiv(program, pname, iv.ptr)
-        iv.value.convert()
-    }
+internal inline fun glGetProgramUInt(program: UInt, pname: UInt): UInt = memScoped {
+    val iv = alloc<IntVar>()
+    com.kgl.opengl.glGetProgramiv(program, pname, iv.ptr)
+    iv.value.convert()
 }
 
-internal inline fun glGetShaderUInt(shader: UInt, pname: UInt): UInt {
-    return memScoped {
-        val iv = alloc<IntVar>()
-        com.kgl.opengl.glGetShaderiv(shader, pname, iv.ptr)
-        iv.value.convert()
-    }
+internal inline fun glGetShaderUInt(shader: UInt, pname: UInt): UInt = memScoped {
+    val iv = alloc<IntVar>()
+    com.kgl.opengl.glGetShaderiv(shader, pname, iv.ptr)
+    iv.value.convert()
 }
 
 
