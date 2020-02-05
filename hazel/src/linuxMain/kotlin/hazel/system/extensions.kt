@@ -8,9 +8,9 @@ import platform.posix.raise
 import platform.posix.syscall
 
 actual inline fun breakpoint() {
-    raise(SIGTRAP)
+	raise(SIGTRAP)
 }
 
 actual inline fun getThreadId(): UInt {
-    return syscall(__NR_gettid).toUInt()
+	return syscall(__NR_gettid).toUInt()
 }

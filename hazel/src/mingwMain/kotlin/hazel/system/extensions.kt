@@ -6,9 +6,9 @@ import platform.posix.__debugbreak
 import platform.windows.GetCurrentThreadId
 
 actual inline fun breakpoint() {
-    __debugbreak()
+	__debugbreak()
 }
 
 actual inline fun getThreadId(): UInt {
-    return GetCurrentThreadId()
+	return GetCurrentThreadId()
 }

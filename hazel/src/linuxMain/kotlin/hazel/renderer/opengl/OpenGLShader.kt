@@ -44,230 +44,230 @@ import platform.posix.ftell
 
 class OpenGLShader : Shader {
 
-    override val name: String
+	override val name: String
 
-    private var rendererId: UInt = 0u
+	private var rendererId: UInt = 0u
 
-    constructor(filepath: String) {
-        val profiler = Hazel.Profiler("${OpenGLShader::class.qualifiedName}.<init>(kotlin.String)${OpenGLShader::class.qualifiedName}")
-        profiler.start()
+	constructor(filepath: String) {
+		val profiler = Hazel.Profiler("${OpenGLShader::class.qualifiedName}.<init>(kotlin.String)${OpenGLShader::class.qualifiedName}")
+		profiler.start()
 
-        val source = readFile(filepath) ?: ""
-        val shaderSourcesMap = preProcess(source)
-        compile(shaderSourcesMap)
+		val source = readFile(filepath) ?: ""
+		val shaderSourcesMap = preProcess(source)
+		compile(shaderSourcesMap)
 
-        val nameStart = filepath.lastIndexOfAny(charArrayOf('/', '\\')).let { if (it == -1) 0 else it + 1 }
-        val nameEnd = filepath.lastIndexOf('.').let { if (it == -1) filepath.length else it }
-        this.name = filepath.substring(nameStart, nameEnd)
+		val nameStart = filepath.lastIndexOfAny(charArrayOf('/', '\\')).let { if (it == -1) 0 else it + 1 }
+		val nameEnd = filepath.lastIndexOf('.').let { if (it == -1) filepath.length else it }
+		this.name = filepath.substring(nameStart, nameEnd)
 
-        profiler.stop()
-    }
+		profiler.stop()
+	}
 
-    constructor(name: String, vertexSource: String, fragmentSource: String) {
-        val profiler = Hazel.Profiler("${OpenGLShader::class.qualifiedName}.<init>(kotlin.String,kotlin: String)${OpenGLShader::class.qualifiedName}")
-        profiler.start()
+	constructor(name: String, vertexSource: String, fragmentSource: String) {
+		val profiler = Hazel.Profiler("${OpenGLShader::class.qualifiedName}.<init>(kotlin.String,kotlin: String)${OpenGLShader::class.qualifiedName}")
+		profiler.start()
 
-        this.name = name
-        val sources = mapOf(GL_VERTEX_SHADER to vertexSource, GL_FRAGMENT_SHADER to fragmentSource)
-        compile(sources)
+		this.name = name
+		val sources = mapOf(GL_VERTEX_SHADER to vertexSource, GL_FRAGMENT_SHADER to fragmentSource)
+		compile(sources)
 
-        profiler.stop()
-    }
+		profiler.stop()
+	}
 
-    override fun dispose() {
-        Hazel.profile(::dispose) {
-            glDeleteProgram(rendererId)
-        }
-    }
+	override fun dispose() {
+		Hazel.profile(::dispose) {
+			glDeleteProgram(rendererId)
+		}
+	}
 
-    override fun bind() {
-        Hazel.profile(::bind) {
-            glUseProgram(rendererId)
-        }
-    }
+	override fun bind() {
+		Hazel.profile(::bind) {
+			glUseProgram(rendererId)
+		}
+	}
 
-    override fun unbind() {
-        Hazel.profile(::unbind) {
-            glUseProgram(0u)
-        }
-    }
+	override fun unbind() {
+		Hazel.profile(::unbind) {
+			glUseProgram(0u)
+		}
+	}
 
-    override fun set(name: String, int: Int) {
-        Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Int::class.qualifiedName})") {
-            uploadUniform(name, int)
-        }
-    }
+	override fun set(name: String, int: Int) {
+		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Int::class.qualifiedName})") {
+			uploadUniform(name, int)
+		}
+	}
 
-    override fun set(name: String, float: Float) {
-        Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Float::class.qualifiedName})") {
-            uploadUniform(name, float)
-        }
-    }
+	override fun set(name: String, float: Float) {
+		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Float::class.qualifiedName})") {
+			uploadUniform(name, float)
+		}
+	}
 
-    override fun set(name: String, vector: FloatVector3) {
-        Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatVector3::class.qualifiedName})") {
-            uploadUniform(name, vector)
-        }
-    }
+	override fun set(name: String, vector: FloatVector3) {
+		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatVector3::class.qualifiedName})") {
+			uploadUniform(name, vector)
+		}
+	}
 
-    override fun set(name: String, vector: FloatVector4) {
-        Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatVector4::class.qualifiedName})") {
-            uploadUniform(name, vector)
-        }
-    }
+	override fun set(name: String, vector: FloatVector4) {
+		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatVector4::class.qualifiedName})") {
+			uploadUniform(name, vector)
+		}
+	}
 
-    override fun set(name: String, matrix: FloatMatrix4x4) {
-        Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatMatrix4x4::class.qualifiedName})") {
-            uploadUniform(name, matrix)
-        }
-    }
+	override fun set(name: String, matrix: FloatMatrix4x4) {
+		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatMatrix4x4::class.qualifiedName})") {
+			uploadUniform(name, matrix)
+		}
+	}
 
-    fun uploadUniform(name: String, int: Int) {
-        val location = glGetUniformLocation(rendererId, name)
-        glUniform(location, int)
-    }
+	fun uploadUniform(name: String, int: Int) {
+		val location = glGetUniformLocation(rendererId, name)
+		glUniform(location, int)
+	}
 
-    fun uploadUniform(name: String, float: Float) {
-        val location = glGetUniformLocation(rendererId, name)
-        glUniform(location, float)
-    }
+	fun uploadUniform(name: String, float: Float) {
+		val location = glGetUniformLocation(rendererId, name)
+		glUniform(location, float)
+	}
 
-    fun uploadUniform(name: String, vector: FloatVector2) {
-        val location = glGetUniformLocation(rendererId, name)
-        glUniform(location, vector.x, vector.y)
-    }
+	fun uploadUniform(name: String, vector: FloatVector2) {
+		val location = glGetUniformLocation(rendererId, name)
+		glUniform(location, vector.x, vector.y)
+	}
 
-    fun uploadUniform(name: String, vector: FloatVector3) {
-        val location = glGetUniformLocation(rendererId, name)
-        glUniform(location, vector.x, vector.y, vector.z)
-    }
+	fun uploadUniform(name: String, vector: FloatVector3) {
+		val location = glGetUniformLocation(rendererId, name)
+		glUniform(location, vector.x, vector.y, vector.z)
+	}
 
-    fun uploadUniform(name: String, vector: FloatVector4) {
-        val location = glGetUniformLocation(rendererId, name)
-        glUniform(location, vector.x, vector.y, vector.z, vector.w)
-    }
+	fun uploadUniform(name: String, vector: FloatVector4) {
+		val location = glGetUniformLocation(rendererId, name)
+		glUniform(location, vector.x, vector.y, vector.z, vector.w)
+	}
 
-    fun uploadUniform(name: String, matrix: FloatMatrix3x3) {
-        val location = glGetUniformLocation(rendererId, name)
-        glUniform(location, false, matrix)
-    }
+	fun uploadUniform(name: String, matrix: FloatMatrix3x3) {
+		val location = glGetUniformLocation(rendererId, name)
+		glUniform(location, false, matrix)
+	}
 
-    fun uploadUniform(name: String, matrix: FloatMatrix4x4) {
-        val location = glGetUniformLocation(rendererId, name)
-        glUniform(location, false, matrix)
-    }
+	fun uploadUniform(name: String, matrix: FloatMatrix4x4) {
+		val location = glGetUniformLocation(rendererId, name)
+		glUniform(location, false, matrix)
+	}
 
-    private fun readFile(filepath: String): String? {
-        return Hazel.profile(::readFile) {
-            fopen(filepath, "r")?.let { file ->
-                fseek(file, 0, SEEK_END)
-                val size = ftell(file).toInt()
-                fseek(file, 0, SEEK_SET)
-                ByteArray(size).apply {
-                    usePinned { fread(it.addressOf(0), 1, size.convert(), file) }
-                }.toKString()
-            } ?: run {
-                Hazel.coreError { "Could not open file `$filepath`" }
-                null
-            }
-        }
-    }
+	private fun readFile(filepath: String): String? {
+		return Hazel.profile(::readFile) {
+			fopen(filepath, "r")?.let { file ->
+				fseek(file, 0, SEEK_END)
+				val size = ftell(file).toInt()
+				fseek(file, 0, SEEK_SET)
+				ByteArray(size).apply {
+					usePinned { fread(it.addressOf(0), 1, size.convert(), file) }
+				}.toKString()
+			} ?: run {
+				Hazel.coreError { "Could not open file `$filepath`" }
+				null
+			}
+		}
+	}
 
-    private fun preProcess(source: String): Map<UInt, String> {
-        return Hazel.profile(::preProcess) {
-            val shaderSources = mutableMapOf<UInt, String>()
-            val typeToken = "#type"
-            var pos = source.indexOf(typeToken)
-            while (pos != -1) {
-                val eol = source.indexOfAny(charArrayOf('\r', '\n'), pos)
-                Hazel.coreAssert(eol != -1) { "Syntax error" }
-                val begin = pos + typeToken.length + 1
-                val type = source.substring(begin, eol)
-                Hazel.coreAssert(type.toShaderType() != 0u) { "Invalid shader type specified" }
+	private fun preProcess(source: String): Map<UInt, String> {
+		return Hazel.profile(::preProcess) {
+			val shaderSources = mutableMapOf<UInt, String>()
+			val typeToken = "#type"
+			var pos = source.indexOf(typeToken)
+			while (pos != -1) {
+				val eol = source.indexOfAny(charArrayOf('\r', '\n'), pos)
+				Hazel.coreAssert(eol != -1) { "Syntax error" }
+				val begin = pos + typeToken.length + 1
+				val type = source.substring(begin, eol)
+				Hazel.coreAssert(type.toShaderType() != 0u) { "Invalid shader type specified" }
 
-                val nextLinePos = source.indexOfNone(charArrayOf('\r', '\n'), eol)
-                pos = source.indexOf(typeToken, nextLinePos)
-                shaderSources[type.toShaderType()] = source.substring(nextLinePos, if (pos == -1) source.lastIndex else pos)
-            }
+				val nextLinePos = source.indexOfNone(charArrayOf('\r', '\n'), eol)
+				pos = source.indexOf(typeToken, nextLinePos)
+				shaderSources[type.toShaderType()] = source.substring(nextLinePos, if (pos == -1) source.lastIndex else pos)
+			}
 
-            shaderSources
-        }
-    }
+			shaderSources
+		}
+	}
 
-    private fun compile(shaderSources: Map<UInt, String>) {
-        Hazel.profile(::compile) {
-            val program = glCreateProgram()
+	private fun compile(shaderSources: Map<UInt, String>) {
+		Hazel.profile(::compile) {
+			val program = glCreateProgram()
 
-            val glShaderIds = MutableList(shaderSources.size) { 0u }
+			val glShaderIds = MutableList(shaderSources.size) { 0u }
 
-            for ((type, source) in shaderSources) {
-                val shader = glCreateShader(type)
+			for ((type, source) in shaderSources) {
+				val shader = glCreateShader(type)
 
-                glShaderSource(shader, source)
+				glShaderSource(shader, source)
 
-                glCompileShader(shader)
+				glCompileShader(shader)
 
-                if (glGetShaderUInt(shader, GL_COMPILE_STATUS) == GL_FALSE) {
-                    val infoLog = glGetShaderInfoLog(shader)
+				if (glGetShaderUInt(shader, GL_COMPILE_STATUS) == GL_FALSE) {
+					val infoLog = glGetShaderInfoLog(shader)
 
-                    glDeleteShader(shader)
+					glDeleteShader(shader)
 
-                    Hazel.coreAssert(false) { "Shader failed to compile!" }
-                    Hazel.coreError { infoLog }
-                    break
-                }
+					Hazel.coreAssert(false) { "Shader failed to compile!" }
+					Hazel.coreError { infoLog }
+					break
+				}
 
-                glAttachShader(program, shader)
-                glShaderIds.add(shader)
-            }
+				glAttachShader(program, shader)
+				glShaderIds.add(shader)
+			}
 
-            glLinkProgram(program)
+			glLinkProgram(program)
 
-            if (glGetProgramUInt(program, GL_LINK_STATUS) == GL_FALSE) {
-                rendererId = 0u
-                val infoLog = glGetProgramInfoLog(rendererId)
+			if (glGetProgramUInt(program, GL_LINK_STATUS) == GL_FALSE) {
+				rendererId = 0u
+				val infoLog = glGetProgramInfoLog(rendererId)
 
-                glDeleteProgram(program)
+				glDeleteProgram(program)
 
-                for (id in glShaderIds)
-                    glDeleteShader(id)
+				for (id in glShaderIds)
+					glDeleteShader(id)
 
-                Hazel.coreAssert(false) { "Shaders failed to link!" }
-                Hazel.coreError { infoLog }
-                return@profile
-            }
+				Hazel.coreAssert(false) { "Shaders failed to link!" }
+				Hazel.coreError { infoLog }
+				return@profile
+			}
 
-            for (id in glShaderIds)
-                glDetachShader(program, id)
+			for (id in glShaderIds)
+				glDetachShader(program, id)
 
-            rendererId = program
-        }
-    }
+			rendererId = program
+		}
+	}
 
 
-    private fun String.toShaderType(): UInt = when (this) {
-        "vertex" -> GL_VERTEX_SHADER
-        "fragment",
-        "pixel" -> GL_FRAGMENT_SHADER
-        else -> {
-            Hazel.coreAssert(false) { "Unknown shader type $this!" }
-            0u
-        }
-    }
+	private fun String.toShaderType(): UInt = when (this) {
+		"vertex" -> GL_VERTEX_SHADER
+		"fragment",
+		"pixel" -> GL_FRAGMENT_SHADER
+		else -> {
+			Hazel.coreAssert(false) { "Unknown shader type $this!" }
+			0u
+		}
+	}
 
-    /**
-     * Finds the index of the first occurrence of any character this is not one of the specified [chars] in this char
-     * sequence, starting from the specified [startIndex] and optionally ignoring the case.
-     *
-     * @param ignoreCase `true` to ignore character case when matching a character. By default `false`.
-     * @return An index of the first occurrence of matched character not from [chars] or -1 if no match is found.
-     */
-    private fun CharSequence.indexOfNone(chars: CharArray, startIndex: Int = 0, ignoreCase: Boolean = false): Int {
-        for (index in startIndex.coerceAtLeast(0)..lastIndex) {
-            val charAtIndex = get(index)
-            if (chars.any { !it.equals(charAtIndex, ignoreCase) })
-                return index
-        }
-        return -1
-    }
+	/**
+	 * Finds the index of the first occurrence of any character this is not one of the specified [chars] in this char
+	 * sequence, starting from the specified [startIndex] and optionally ignoring the case.
+	 *
+	 * @param ignoreCase `true` to ignore character case when matching a character. By default `false`.
+	 * @return An index of the first occurrence of matched character not from [chars] or -1 if no match is found.
+	 */
+	private fun CharSequence.indexOfNone(chars: CharArray, startIndex: Int = 0, ignoreCase: Boolean = false): Int {
+		for (index in startIndex.coerceAtLeast(0)..lastIndex) {
+			val charAtIndex = get(index)
+			if (chars.any { !it.equals(charAtIndex, ignoreCase) })
+				return index
+		}
+		return -1
+	}
 }

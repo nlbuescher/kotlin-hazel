@@ -1,0 +1,17 @@
+package = cstb
+headers = stb_image.h
+
+---
+
+#include <malloc.h>
+
+static inline long sizeOf(void* a)
+{
+	#if defined(_WIN32)
+	return _msize(a);
+	#elif defined(__APPLE__)
+	return malloc_size(a);
+	#else
+	return malloc_usable_size(a);
+	#endif
+}

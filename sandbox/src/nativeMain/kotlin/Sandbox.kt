@@ -21,27 +21,27 @@ import hazel.renderer.indexBufferOf
 import hazel.renderer.vertexBufferOf
 
 class ExampleLayer : Layer("ExampleLayer") {
-    private val cameraController = OrthographicCameraController(1280f / 720f, true)
+	private val cameraController = OrthographicCameraController(1280f / 720f, true)
 
-    private val shaderLibrary = ShaderLibrary()
+	private val shaderLibrary = ShaderLibrary()
 
-    private val triangleShader: Shader
-    private val triangleVertexArray = VertexArray()
+	private val triangleShader: Shader
+	private val triangleVertexArray = VertexArray()
 
-    init {
-        val vertexBuffer = vertexBufferOf(
-            -0.5f, -0.5f, 0f, 1f, 0f, 1f, 1f,
-            +0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
-            +0.0f, +0.5f, 0f, 1f, 1f, 0f, 1f
-        )
-        vertexBuffer.layout = BufferLayout(
-            BufferElement(ShaderDataType.Float3, "a_Position"),
-            BufferElement(ShaderDataType.Float4, "a_Color")
-        )
-        triangleVertexArray.addVertexBuffer(vertexBuffer)
-        triangleVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u)
+	init {
+		val vertexBuffer = vertexBufferOf(
+			-0.5f, -0.5f, 0f, 1f, 0f, 1f, 1f,
+			+0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
+			+0.0f, +0.5f, 0f, 1f, 1f, 0f, 1f
+		)
+		vertexBuffer.layout = BufferLayout(
+			BufferElement(ShaderDataType.Float3, "a_Position"),
+			BufferElement(ShaderDataType.Float4, "a_Color")
+		)
+		triangleVertexArray.addVertexBuffer(vertexBuffer)
+		triangleVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u)
 
-        val triangleVertexSource = """
+		val triangleVertexSource = """
             #version 330 core
             
             layout(location = 0) in vec3 a_Position;
@@ -60,7 +60,7 @@ class ExampleLayer : Layer("ExampleLayer") {
             }
         """.trimIndent()
 
-        val triangleFragmentSource = """
+		val triangleFragmentSource = """
             #version 330 core
             
             layout(location = 0) out vec4 color;
@@ -74,30 +74,30 @@ class ExampleLayer : Layer("ExampleLayer") {
             }
         """.trimIndent()
 
-        triangleShader = Shader("VertexColor", triangleVertexSource, triangleFragmentSource)
-    }
+		triangleShader = Shader("VertexColor", triangleVertexSource, triangleFragmentSource)
+	}
 
-    private val flatColorShader: Shader
-    private val texture: Texture2D
-    private val chernoLogoTexture: Texture2D
-    private val squareVertexArray = VertexArray()
-    private val squareColor = FloatVector3(0f, 0f, 1f)
+	private val flatColorShader: Shader
+	private val texture: Texture2D
+	private val chernoLogoTexture: Texture2D
+	private val squareVertexArray = VertexArray()
+	private val squareColor = FloatVector3(0f, 0f, 1f)
 
-    init {
-        val squareVertexBuffer = vertexBufferOf(
-            -0.5f, -0.5f, 0f, 0f, 0f,
-            +0.5f, -0.5f, 0f, 1f, 0f,
-            +0.5f, +0.5f, 0f, 1f, 1f,
-            -0.5f, +0.5f, 0f, 0f, 1f
-        )
-        squareVertexBuffer.layout = BufferLayout(
-            BufferElement(ShaderDataType.Float3, "a_Position"),
-            BufferElement(ShaderDataType.Float2, "a_TextureCoordinate")
-        )
-        squareVertexArray.addVertexBuffer(squareVertexBuffer)
-        squareVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u, 2u, 3u, 0u)
+	init {
+		val squareVertexBuffer = vertexBufferOf(
+			-0.5f, -0.5f, 0f, 0f, 0f,
+			+0.5f, -0.5f, 0f, 1f, 0f,
+			+0.5f, +0.5f, 0f, 1f, 1f,
+			-0.5f, +0.5f, 0f, 0f, 1f
+		)
+		squareVertexBuffer.layout = BufferLayout(
+			BufferElement(ShaderDataType.Float3, "a_Position"),
+			BufferElement(ShaderDataType.Float2, "a_TextureCoordinate")
+		)
+		squareVertexArray.addVertexBuffer(squareVertexBuffer)
+		squareVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u, 2u, 3u, 0u)
 
-        val flatColorVertexSource = """
+		val flatColorVertexSource = """
             #version 330 core
             
             layout(location = 0) in vec3 a_Position;
@@ -113,7 +113,7 @@ class ExampleLayer : Layer("ExampleLayer") {
             }
         """.trimIndent()
 
-        val flatColorFragmentSource = """
+		val flatColorFragmentSource = """
             #version 330 core
             
             layout(location = 0) out vec4 color;
@@ -127,83 +127,83 @@ class ExampleLayer : Layer("ExampleLayer") {
             }
         """.trimIndent()
 
-        flatColorShader = Shader("FlatColor", flatColorVertexSource, flatColorFragmentSource)
+		flatColorShader = Shader("FlatColor", flatColorVertexSource, flatColorFragmentSource)
 
-        val textureShader = shaderLibrary.load("assets/shaders/Texture.glsl")
+		val textureShader = shaderLibrary.load("assets/shaders/Texture.glsl")
 
-        texture = Texture2D("assets/textures/Checkerboard.png")
-        chernoLogoTexture = Texture2D("assets/textures/ChernoLogo.png")
+		texture = Texture2D("assets/textures/Checkerboard.png")
+		chernoLogoTexture = Texture2D("assets/textures/ChernoLogo.png")
 
-        textureShader.bind()
-        textureShader["u_Texture"] = 0
-    }
+		textureShader.bind()
+		textureShader["u_Texture"] = 0
+	}
 
-    override fun dispose() {
-        squareVertexArray.dispose()
-        chernoLogoTexture.dispose()
-        texture.dispose()
-        flatColorShader.dispose()
-        triangleVertexArray.dispose()
-        triangleShader.dispose()
-        shaderLibrary.dispose()
-    }
+	override fun dispose() {
+		squareVertexArray.dispose()
+		chernoLogoTexture.dispose()
+		texture.dispose()
+		flatColorShader.dispose()
+		triangleVertexArray.dispose()
+		triangleShader.dispose()
+		shaderLibrary.dispose()
+	}
 
-    override fun onUpdate(timeStep: TimeStep) {
-        // Update
-        cameraController.onUpdate(timeStep)
+	override fun onUpdate(timeStep: TimeStep) {
+		// Update
+		cameraController.onUpdate(timeStep)
 
-        // Render
-        RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
-        RenderCommand.clear()
+		// Render
+		RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
+		RenderCommand.clear()
 
-        Renderer.scene(cameraController.camera) {
-            val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f))
+		Renderer.scene(cameraController.camera) {
+			val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f))
 
-            flatColorShader.bind()
-            flatColorShader["u_Color"] = squareColor
+			flatColorShader.bind()
+			flatColorShader["u_Color"] = squareColor
 
-            for (y in 0 until 20) {
-                for (x in 0 until 20) {
-                    val position = FloatVector3(x * 0.11f, y * 0.11f, 0f)
-                    val transform = FloatMatrix4x4(1f).translate(position) * scale
+			for (y in 0 until 20) {
+				for (x in 0 until 20) {
+					val position = FloatVector3(x * 0.11f, y * 0.11f, 0f)
+					val transform = FloatMatrix4x4(1f).translate(position) * scale
 
-                    submit(flatColorShader, squareVertexArray, transform)
-                }
-            }
+					submit(flatColorShader, squareVertexArray, transform)
+				}
+			}
 
-            val textureShader = shaderLibrary["Texture"]
+			val textureShader = shaderLibrary["Texture"]
 
-            // square
-            texture.bind()
-            submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
-            chernoLogoTexture.bind()
-            submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
+			// square
+			texture.bind()
+			submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
+			chernoLogoTexture.bind()
+			submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
 
-            // triangle
-            //submit(shader, vertexArray)
-        }
-    }
+			// triangle
+			//submit(shader, vertexArray)
+		}
+	}
 
-    override fun onImGuiRender() {
-        with(ImGui) {
-            begin("Settings")
-            colorEdit3("Square Color", squareColor.asFloatArray())
-            end()
-        }
-    }
+	override fun onImGuiRender() {
+		with(ImGui) {
+			begin("Settings")
+			colorEdit3("Square Color", squareColor.asFloatArray())
+			end()
+		}
+	}
 
-    override fun onEvent(event: Event) {
-        cameraController.onEvent(event)
-    }
+	override fun onEvent(event: Event) {
+		cameraController.onEvent(event)
+	}
 }
 
 class Sandbox : Application() {
-    init {
-        //addLayer(ExampleLayer())
-        addLayer(Sandbox2D())
-    }
+	init {
+		//addLayer(ExampleLayer())
+		addLayer(Sandbox2D())
+	}
 }
 
 fun main() {
-    Hazel.run(::Sandbox)
+	Hazel.run(::Sandbox)
 }

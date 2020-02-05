@@ -6,22 +6,22 @@ private var _api: RenderAPI.API = RenderAPI.API.OpenGL
 
 interface RenderAPI {
 
-    enum class API {
-        None, OpenGL
-    }
+	enum class API {
+		None, OpenGL
+	}
 
-    fun init()
+	fun init()
 
-    fun setViewport(x: Int, y: Int, width: Int, height: Int)
-    fun setClearColor(color: FloatVector4)
-    fun clear()
+	fun setViewport(x: Int, y: Int, width: Int, height: Int)
+	fun setClearColor(color: FloatVector4)
+	fun clear()
 
-    fun drawIndexed(vertexArray: VertexArray)
+	fun drawIndexed(vertexArray: VertexArray)
 
 
-    companion object {
-        var api: API
-            get() = _api
-            set(new) = run { _api = new }
-    }
+	companion object {
+		var api: API
+			get() = _api
+			set(new) = run { _api = new }
+	}
 }

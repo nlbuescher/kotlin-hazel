@@ -4,110 +4,110 @@ import hazel.core.TimeStepUnit.SECONDS
 import hazel.renderer.Renderer
 
 abstract class Application : Disposable {
-    val window: Window
+	val window: Window
 
-    private var isRunning: Boolean = true
-    private var isMinimized: Boolean = false
+	private var isRunning: Boolean = true
+	private var isMinimized: Boolean = false
 
-    private val layerStack: LayerStack
-    private val imGuiLayer: ImGuiLayer
+	private val layerStack: LayerStack
+	private val imGuiLayer: ImGuiLayer
 
-    private var lastFrameTime: Float = 0f
+	private var lastFrameTime: Float = 0f
 
-    init {
-        val profiler = Hazel.Profiler("hazel.core.Application.<init>()")
-        profiler.start()
+	init {
+		val profiler = Hazel.Profiler("hazel.core.Application.<init>()")
+		profiler.start()
 
-        window = Window().apply { setEventCallback(::onEvent) }
+		window = Window().apply { setEventCallback(::onEvent) }
 
-        layerStack = LayerStack()
-        imGuiLayer = ImGuiLayer()
+		layerStack = LayerStack()
+		imGuiLayer = ImGuiLayer()
 
-        Renderer.init()
+		Renderer.init()
 
-        profiler.stop()
-    }
+		profiler.stop()
+	}
 
-    override fun dispose() {
-        Hazel.profile(::dispose) {
-            Renderer.shutdown()
-            window.dispose()
-        }
-    }
+	override fun dispose() {
+		Hazel.profile(::dispose) {
+			Renderer.shutdown()
+			window.dispose()
+		}
+	}
 
-    fun addLayer(layer: Layer) {
-        Hazel.profile(::addLayer) {
-            layerStack.add(layer)
-            layer.onAttach()
-        }
-    }
+	fun addLayer(layer: Layer) {
+		Hazel.profile(::addLayer) {
+			layerStack.add(layer)
+			layer.onAttach()
+		}
+	}
 
-    fun addOverlay(overlay: Overlay) {
-        Hazel.profile(::addOverlay) {
-            layerStack.add(overlay)
-            overlay.onAttach()
-        }
-    }
+	fun addOverlay(overlay: Overlay) {
+		Hazel.profile(::addOverlay) {
+			layerStack.add(overlay)
+			overlay.onAttach()
+		}
+	}
 
-    fun run() {
-        Hazel.profile(::run) {
-            // don't add imGuiLayer to layer stack until run because ImGuiLayer requires Hazel.application to be set
-            addOverlay(imGuiLayer)
+	fun run() {
+		Hazel.profile(::run) {
+			// don't add imGuiLayer to layer stack until run because ImGuiLayer requires Hazel.application to be set
+			addOverlay(imGuiLayer)
 
-            while (isRunning) {
-                Hazel.profile("Run Loop") {
-                    val time = Hazel.getTime()
-                    val timeStep = (time - lastFrameTime).toTimeStep(SECONDS)
-                    lastFrameTime = time
+			while (isRunning) {
+				Hazel.profile("Run Loop") {
+					val time = Hazel.getTime()
+					val timeStep = (time - lastFrameTime).toTimeStep(SECONDS)
+					lastFrameTime = time
 
-                    if (!isMinimized) {
-                        Hazel.profile("LayerStack onUpdate") {
-                            layerStack.forEach { it.onUpdate(timeStep) }
-                        }
+					if (!isMinimized) {
+						Hazel.profile("LayerStack onUpdate") {
+							layerStack.forEach { it.onUpdate(timeStep) }
+						}
 
-                        imGuiLayer.begin()
-                        Hazel.profile("LayerStack onImGuiRender") {
-                            layerStack.forEach { it.onImGuiRender() }
-                        }
-                        imGuiLayer.end()
-                    }
+						imGuiLayer.begin()
+						Hazel.profile("LayerStack onImGuiRender") {
+							layerStack.forEach { it.onImGuiRender() }
+						}
+						imGuiLayer.end()
+					}
 
-                    window.onUpdate()
-                }
-            }
-        }
-    }
+					window.onUpdate()
+				}
+			}
+		}
+	}
 
-    fun onEvent(event: Event) {
-        Hazel.profile(::onEvent) {
-            event.dispatch(::onWindowResize)
-            event.dispatch(::onWindowClose)
+	fun onEvent(event: Event) {
+		Hazel.profile(::onEvent) {
+			event.dispatch(::onWindowResize)
+			event.dispatch(::onWindowClose)
 
-            for (layer in layerStack.reversed()) {
-                layer.onEvent(event)
-                if (event.isHandled) break
-            }
-        }
-    }
+			for (layer in layerStack.reversed()) {
+				layer.onEvent(event)
+				if (event.isHandled) break
+			}
+		}
+	}
 
-    private fun onWindowResize(event: WindowResizeEvent): Boolean {
-        return Hazel.profile(::onWindowResize) {
-            if (event.width == 0 || event.height == 0) {
-                isMinimized = true
-                return@profile true
-            }
+	private fun onWindowResize(event: WindowResizeEvent): Boolean {
+		return Hazel.profile(::onWindowResize) {
+			if (event.width == 0 || event.height == 0) {
+				isMinimized = true
+				return@profile true
+			}
 
-            isMinimized = false
+			isMinimized = false
 
-            Renderer.onWindowResize(event.width, event.height)
+			Renderer.onWindowResize(event.width, event.height)
 
-            return@profile false
-        }
-    }
+			return@profile false
+		}
+	}
 
-    @Suppress("UNUSED_PARAMETER")
-    private fun onWindowClose(event: WindowCloseEvent): Boolean {
-        isRunning = false
-        return true
-    }
+	@Suppress("UNUSED_PARAMETER")
+	private fun onWindowClose(event: WindowCloseEvent): Boolean {
+		isRunning = false
+		return true
+	}
 }
