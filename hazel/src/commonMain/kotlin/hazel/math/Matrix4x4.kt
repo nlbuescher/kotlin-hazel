@@ -27,7 +27,7 @@ sealed class Matrix4x4<T : Number> {
 		return result
 	}
 
-	override fun toString() = "${this[0]}\n${this[1]}\n${this[2]}\n${this[3]}"
+	override fun toString(): String = "${this[0]}\n${this[1]}\n${this[2]}\n${this[3]}"
 
 	abstract fun copy(): Matrix4x4<T>
 
@@ -80,27 +80,32 @@ class FloatMatrix4x4(
 	)
 
 	constructor(scalar: Float) : this(
-		scalar, 0f, 0f, 0f,
-		0f, scalar, 0f, 0f,
-		0f, 0f, scalar, 0f,
-		0f, 0f, 0f, scalar
+		FloatVector4(scalar, 0f, 0f, 0f),
+		FloatVector4(0f, scalar, 0f, 0f),
+		FloatVector4(0f, 0f, scalar, 0f),
+		FloatVector4(0f, 0f, 0f, scalar)
 	)
 
 	constructor() : this(1f)
 
-	override fun get(row: Int) = when (row) {
+	override fun get(row: Int): FloatVector4 = when (row) {
 		0 -> row0; 1 -> row1; 2 -> row2; 3 -> row3
 		else -> throw IndexOutOfBoundsException()
 	}
 
-	override fun set(row: Int, value: Vector4<Float>) = when (row) {
-		0 -> row0 = value as FloatVector4; 1 -> row1 = value as FloatVector4; 2 -> row2 = value as FloatVector4; 3 -> row3 = value as FloatVector4
-		else -> throw IndexOutOfBoundsException()
+	override fun set(row: Int, value: Vector4<Float>) {
+		when (row) {
+			0 -> row0 = value as FloatVector4
+			1 -> row1 = value as FloatVector4
+			2 -> row2 = value as FloatVector4
+			3 -> row3 = value as FloatVector4
+			else -> throw IndexOutOfBoundsException()
+		}
 	}
 
-	override fun copy() = FloatMatrix4x4(this[0].copy(), this[1].copy(), this[2].copy(), this[3].copy())
+	override fun copy(): FloatMatrix4x4 = FloatMatrix4x4(this[0].copy(), this[1].copy(), this[2].copy(), this[3].copy())
 
-	fun toFloatArray() = floatArrayOf(*this[0].asFloatArray(), *this[1].asFloatArray(), *this[2].asFloatArray(), *this[3].asFloatArray())
+	fun toFloatArray(): FloatArray = floatArrayOf(*this[0].asFloatArray(), *this[1].asFloatArray(), *this[2].asFloatArray(), *this[3].asFloatArray())
 
 	// matrix
 
@@ -161,31 +166,86 @@ class FloatMatrix4x4(
 	}
 
 
-	override fun plus(scalar: Float) = FloatMatrix4x4(this[0] + scalar, this[1] + scalar, this[2] + scalar, this[3] + scalar)
-	override fun minus(scalar: Float) = FloatMatrix4x4(this[0] - scalar, this[1] - scalar, this[2] - scalar, this[3] - scalar)
-	override fun times(scalar: Float) = FloatMatrix4x4(this[0] * scalar, this[1] * scalar, this[2] * scalar, this[3] * scalar)
-	override fun div(scalar: Float) = FloatMatrix4x4(this[0] / scalar, this[1] / scalar, this[2] / scalar, this[3] / scalar)
+	override fun plus(scalar: Float): FloatMatrix4x4 {
+		return FloatMatrix4x4(this[0] + scalar, this[1] + scalar, this[2] + scalar, this[3] + scalar)
+	}
 
-	override fun plusAssign(scalar: Float) = run { this[0].plusAssign(scalar); this[1].plusAssign(scalar); this[2].plusAssign(scalar); this[3].plusAssign(scalar) }
-	override fun minusAssign(scalar: Float) = run { this[0].minusAssign(scalar); this[1].minusAssign(scalar); this[2].minusAssign(scalar); this[3].minusAssign(scalar) }
-	override fun timesAssign(scalar: Float) = run { this[0].timesAssign(scalar); this[1].timesAssign(scalar); this[2].timesAssign(scalar); this[3].timesAssign(scalar) }
-	override fun divAssign(scalar: Float) = run { this[0].divAssign(scalar); this[1].divAssign(scalar); this[2].divAssign(scalar); this[3].divAssign(scalar) }
+	override fun minus(scalar: Float): FloatMatrix4x4 {
+		return FloatMatrix4x4(this[0] - scalar, this[1] - scalar, this[2] - scalar, this[3] - scalar)
+	}
+
+	override fun times(scalar: Float): FloatMatrix4x4 {
+		return FloatMatrix4x4(this[0] * scalar, this[1] * scalar, this[2] * scalar, this[3] * scalar)
+	}
+
+	override fun div(scalar: Float): FloatMatrix4x4 {
+		return FloatMatrix4x4(this[0] / scalar, this[1] / scalar, this[2] / scalar, this[3] / scalar)
+	}
 
 
-	override fun plus(other: Matrix4x4<Float>) = FloatMatrix4x4(this[0] + other[0], this[1] + other[1], this[2] + other[2], this[3] + other[3])
-	override fun minus(other: Matrix4x4<Float>) = FloatMatrix4x4(this[0] - other[0], this[1] - other[1], this[2] - other[2], this[3] - other[3])
-	override fun times(other: Matrix4x4<Float>) = FloatMatrix4x4(
+	override fun plusAssign(scalar: Float) {
+		this[0].plusAssign(scalar)
+		this[1].plusAssign(scalar)
+		this[2].plusAssign(scalar)
+		this[3].plusAssign(scalar)
+	}
+
+	override fun minusAssign(scalar: Float) {
+		this[0].minusAssign(scalar)
+		this[1].minusAssign(scalar)
+		this[2].minusAssign(scalar)
+		this[3].minusAssign(scalar)
+	}
+
+	override fun timesAssign(scalar: Float) {
+		this[0].timesAssign(scalar)
+		this[1].timesAssign(scalar)
+		this[2].timesAssign(scalar)
+		this[3].timesAssign(scalar)
+	}
+
+	override fun divAssign(scalar: Float) {
+		this[0].divAssign(scalar)
+		this[1].divAssign(scalar)
+		this[2].divAssign(scalar)
+		this[3].divAssign(scalar)
+	}
+
+
+	override fun plus(other: Matrix4x4<Float>): FloatMatrix4x4 {
+		return FloatMatrix4x4(this[0] + other[0], this[1] + other[1], this[2] + other[2], this[3] + other[3])
+	}
+
+	override fun minus(other: Matrix4x4<Float>): FloatMatrix4x4 {
+		return FloatMatrix4x4(this[0] - other[0], this[1] - other[1], this[2] - other[2], this[3] - other[3])
+	}
+
+	override fun times(other: Matrix4x4<Float>): FloatMatrix4x4 = FloatMatrix4x4(
 		this[0] * other[0][0] + this[1] * other[0][1] + this[2] * other[0][2] + this[3] * other[0][3],
 		this[0] * other[1][0] + this[1] * other[1][1] + this[2] * other[1][2] + this[3] * other[1][3],
 		this[0] * other[2][0] + this[1] * other[2][1] + this[2] * other[2][2] + this[3] * other[2][3],
 		this[0] * other[3][0] + this[1] * other[3][1] + this[2] * other[3][2] + this[3] * other[3][3]
 	)
 
-	override fun div(other: Matrix4x4<Float>) = this * other.inv()
+	override fun div(other: Matrix4x4<Float>): FloatMatrix4x4 {
+		return this * other.inv()
+	}
 
 
-	override fun plusAssign(other: Matrix4x4<Float>) = run { this[0].plusAssign(other[0]); this[1].plusAssign(other[1]); this[2].plusAssign(other[2]); this[3].plusAssign(other[3]) }
-	override fun minusAssign(other: Matrix4x4<Float>) = run { this[0].minusAssign(other[0]); this[1].minusAssign(other[1]); this[2].minusAssign(other[2]); this[3].minusAssign(other[3]) }
+	override fun plusAssign(other: Matrix4x4<Float>) {
+		this[0].plusAssign(other[0])
+		this[1].plusAssign(other[1])
+		this[2].plusAssign(other[2])
+		this[3].plusAssign(other[3])
+	}
+
+	override fun minusAssign(other: Matrix4x4<Float>) {
+		this[0].minusAssign(other[0])
+		this[1].minusAssign(other[1])
+		this[2].minusAssign(other[2])
+		this[3].minusAssign(other[3])
+	}
+
 	override fun timesAssign(other: Matrix4x4<Float>) {
 		val temp00 = this[0][0] * other[0][0] + this[1][0] * other[0][1] + this[2][0] * other[0][2] + this[3][0] * other[0][3]
 		val temp01 = this[0][1] * other[0][0] + this[1][1] * other[0][1] + this[2][1] * other[0][2] + this[3][1] * other[0][3]
@@ -207,16 +267,33 @@ class FloatMatrix4x4(
 		val temp32 = this[0][2] * other[3][0] + this[1][2] * other[3][1] + this[2][2] * other[3][2] + this[3][2] * other[3][3]
 		val temp33 = this[0][3] * other[3][0] + this[1][3] * other[3][1] + this[2][3] * other[3][2] + this[3][3] * other[3][3]
 
-		this[0][0] = temp00; this[0][1] = temp01; this[0][2] = temp02; this[0][3] = temp03
-		this[1][0] = temp10; this[1][1] = temp11; this[1][2] = temp12; this[1][3] = temp13
-		this[2][0] = temp20; this[2][1] = temp21; this[2][2] = temp22; this[2][3] = temp23
-		this[3][0] = temp30; this[3][1] = temp31; this[3][2] = temp32; this[3][3] = temp33
+		this[0][0] = temp00
+		this[0][1] = temp01
+		this[0][2] = temp02
+		this[0][3] = temp03
+
+		this[1][0] = temp10
+		this[1][1] = temp11
+		this[1][2] = temp12
+		this[1][3] = temp13
+
+		this[2][0] = temp20
+		this[2][1] = temp21
+		this[2][2] = temp22
+		this[2][3] = temp23
+
+		this[3][0] = temp30
+		this[3][1] = temp31
+		this[3][2] = temp32
+		this[3][3] = temp33
 	}
 
-	override fun divAssign(other: Matrix4x4<Float>) = this.timesAssign(other.inv())
+	override fun divAssign(other: Matrix4x4<Float>) {
+		this *= (other.inv())
+	}
 
 
-	override fun translate(vector: Vector3<Float>) = copy().also {
+	override fun translate(vector: Vector3<Float>): FloatMatrix4x4 = copy().also {
 		it[3] = this[0] * vector[0] + this[1] * vector[1] + this[2] * vector[2] + this[3]
 	}
 
@@ -249,5 +326,7 @@ class FloatMatrix4x4(
 		)
 	}
 
-	override fun scale(vector: Vector3<Float>) = FloatMatrix4x4(this[0] * vector[0], this[1] * vector[1], this[2] * vector[2], this[3])
+	override fun scale(vector: Vector3<Float>): FloatMatrix4x4 {
+		return FloatMatrix4x4(this[0] * vector[0], this[1] * vector[1], this[2] * vector[2], this[3])
+	}
 }

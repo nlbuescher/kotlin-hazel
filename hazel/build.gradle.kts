@@ -115,6 +115,14 @@ kotlin {
 		}
 	}
 
+	sourceSets {
+		commonMain {
+			dependencies {
+				implementation(kotlin("stdlib-common"))
+			}
+		}
+	}
+
 	sourceSets.all {
 		languageSettings.apply {
 			enableLanguageFeature("MultiPlatformProjects")

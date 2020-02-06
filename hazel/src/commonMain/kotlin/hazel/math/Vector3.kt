@@ -16,9 +16,11 @@ sealed class Vector3<T : Number> {
 		else -> throw IndexOutOfBoundsException()
 	}
 
-	operator fun set(index: Int, value: T) = when (index) {
-		0 -> x = value; 1 -> y = value; 2 -> z = value
-		else -> throw IndexOutOfBoundsException()
+	operator fun set(index: Int, value: T) {
+		when (index) {
+			0 -> x = value; 1 -> y = value; 2 -> z = value
+			else -> throw IndexOutOfBoundsException()
+		}
 	}
 
 	override fun equals(other: Any?): Boolean {
@@ -39,7 +41,7 @@ sealed class Vector3<T : Number> {
 		return result
 	}
 
-	override fun toString() = "[$x, $y, $z]"
+	override fun toString(): String = "[$x, $y, $z]"
 
 	abstract fun copy(): Vector3<T>
 
@@ -104,9 +106,9 @@ class FloatVector3(private val storage: FloatArray) : Vector3<Float>() {
 		get() = x
 		set(value) = run { x = value }
 
-	override fun copy() = FloatVector3(x, y, z)
+	override fun copy(): FloatVector3 = FloatVector3(x, y, z)
 
-	fun asFloatArray() = storage
+	fun asFloatArray(): FloatArray = storage
 
 	// geometric
 
@@ -119,27 +121,76 @@ class FloatVector3(private val storage: FloatArray) : Vector3<Float>() {
 
 	override fun dot(other: Vector3<Float>) = x * other.x + y * other.y + z * other.z
 
-	override fun cross(other: Vector3<Float>) = FloatVector3(this[1] * other[2] - other[1] * this[2], this[2] * other[0] - other[2] * this[0], this[0] * other[1] - other[0] * this[1])
+	override fun cross(other: Vector3<Float>): FloatVector3 {
+		return FloatVector3(this[1] * other[2] - other[1] * this[2], this[2] * other[0] - other[2] * this[0], this[0] * other[1] - other[0] * this[1])
+	}
 
 	// arithmetic
 
-	override fun plus(scalar: Float) = FloatVector3(x + scalar, y + scalar, z + scalar)
-	override fun minus(scalar: Float) = FloatVector3(x - scalar, y - scalar, z - scalar)
-	override fun times(scalar: Float) = FloatVector3(x * scalar, y * scalar, z * scalar)
-	override fun div(scalar: Float) = FloatVector3(x / scalar, y / scalar, z / scalar)
+	override fun plus(scalar: Float): FloatVector3 {
+		return FloatVector3(x + scalar, y + scalar, z + scalar)
+	}
 
-	override fun plusAssign(scalar: Float) = run { x += scalar; y += scalar; z += scalar }
-	override fun minusAssign(scalar: Float) = run { x -= scalar; y -= scalar; z -= scalar }
-	override fun timesAssign(scalar: Float) = run { x *= scalar; y *= scalar; z *= scalar }
-	override fun divAssign(scalar: Float) = run { x /= scalar; y /= scalar; z /= scalar }
+	override fun minus(scalar: Float): FloatVector3 {
+		return FloatVector3(x - scalar, y - scalar, z - scalar)
+	}
 
-	override fun plus(other: Vector3<Float>) = FloatVector3(x + other.x, y + other.y, z + other.z)
-	override fun minus(other: Vector3<Float>) = FloatVector3(x - other.x, y - other.y, z - other.z)
-	override fun times(other: Vector3<Float>) = FloatVector3(x * other.x, y * other.y, z * other.z)
-	override fun div(other: Vector3<Float>) = FloatVector3(x / other.x, y / other.y, z / other.z)
+	override fun times(scalar: Float): FloatVector3 {
+		return FloatVector3(x * scalar, y * scalar, z * scalar)
+	}
 
-	override fun plusAssign(other: Vector3<Float>) = run { x += other.x; y += other.y; z += other.z }
-	override fun minusAssign(other: Vector3<Float>) = run { x -= other.x; y -= other.y; z -= other.z }
-	override fun timesAssign(other: Vector3<Float>) = run { x *= other.x; y *= other.y; z *= other.z }
-	override fun divAssign(other: Vector3<Float>) = run { x /= other.x; y /= other.y; z /= other.z }
+	override fun div(scalar: Float): FloatVector3 {
+		return FloatVector3(x / scalar, y / scalar, z / scalar)
+	}
+
+
+	override fun plusAssign(scalar: Float) {
+		x += scalar; y += scalar; z += scalar
+	}
+
+	override fun minusAssign(scalar: Float) {
+		x -= scalar; y -= scalar; z -= scalar
+	}
+
+	override fun timesAssign(scalar: Float) {
+		x *= scalar; y *= scalar; z *= scalar
+	}
+
+	override fun divAssign(scalar: Float) {
+		x /= scalar; y /= scalar; z /= scalar
+	}
+
+
+	override fun plus(other: Vector3<Float>): FloatVector3 {
+		return FloatVector3(x + other.x, y + other.y, z + other.z)
+	}
+
+	override fun minus(other: Vector3<Float>): FloatVector3 {
+		return FloatVector3(x - other.x, y - other.y, z - other.z)
+	}
+
+	override fun times(other: Vector3<Float>): FloatVector3 {
+		return FloatVector3(x * other.x, y * other.y, z * other.z)
+	}
+
+	override fun div(other: Vector3<Float>): FloatVector3 {
+		return FloatVector3(x / other.x, y / other.y, z / other.z)
+	}
+
+
+	override fun plusAssign(other: Vector3<Float>) {
+		x += other.x; y += other.y; z += other.z
+	}
+
+	override fun minusAssign(other: Vector3<Float>) {
+		x -= other.x; y -= other.y; z -= other.z
+	}
+
+	override fun timesAssign(other: Vector3<Float>) {
+		x *= other.x; y *= other.y; z *= other.z
+	}
+
+	override fun divAssign(other: Vector3<Float>) {
+		x /= other.x; y /= other.y; z /= other.z
+	}
 }
