@@ -15,6 +15,7 @@ val os: OperatingSystem = OperatingSystem.current()
 kotlin {
 	when {
 		os.isLinux -> linuxX64("linux")
+		os.isMacOsX -> macosX64("macos")
 		os.isWindows -> mingwX64("mingw")
 	}
 

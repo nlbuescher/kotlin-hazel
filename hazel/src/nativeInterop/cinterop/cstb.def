@@ -1,9 +1,18 @@
 package = cstb
 headers = stb_image.h
 
+depends = posix
+
 ---
 
-#include <malloc.h>
+#if defined(__APPLE__)
+#include <pthread.h>
+
+static inline int pthread_threadid(pthread_t thread, uint64_t* id)
+{
+	return pthread_threadid_np(thread, id);
+}
+#endif
 
 static inline long sizeOf(void* a)
 {

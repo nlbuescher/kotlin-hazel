@@ -56,7 +56,7 @@ val compileStb by tasks.registering(Exec::class) {
 	)
 	environment(
 		"PATH" to "$llvmBinFolder;${System.getenv("PATH")}",
-		"CPATH" to "/Applications/Xcode.app/Contents/Developer/Platforms/MaxOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
+		"CPATH" to "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
 	)
 	inputs.file(cppFile)
 	outputs.file(objFile)
@@ -81,6 +81,7 @@ val kglVersion = "0.1.9-dev-6"
 kotlin {
 	when {
 		os.isLinux -> linuxX64("linux")
+		os.isMacOsX -> macosX64("macos")
 		os.isWindows -> mingwX64("mingw")
 	}
 

@@ -2,6 +2,7 @@ package hazel.core
 
 import com.kgl.glfw.Action
 import com.kgl.glfw.Glfw
+import com.kgl.glfw.OpenGLProfile
 import hazel.renderer.GraphicsContext
 import hazel.renderer.opengl.OpenGLContext
 import kotlin.native.concurrent.ensureNeverFrozen
@@ -109,7 +110,12 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 				}
 
 				val internal = Hazel.profile("Glfw create window") {
-					GlfwWindow(width, height, title) {}
+					GlfwWindow(width, height, title) {
+						contextVersionMajor = 3
+						contextVersionMinor = 2
+						openGLForwardCompat = true
+						openGLProfile = OpenGLProfile.Core
+					}
 				}
 				Window(internal)
 			}
