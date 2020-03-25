@@ -1,10 +1,10 @@
 package hazel.renderer.opengl
 
 import com.kgl.opengl.*
-import cstb.sizeOf
 import cstb.stbi_image_free
 import cstb.stbi_load
 import cstb.stbi_set_flip_vertically_on_load
+import hazel.cinterop.sizeOf
 import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.profile

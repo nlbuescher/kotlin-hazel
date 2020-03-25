@@ -1,5 +1,4 @@
-package = cstb
-headers = stb_image.h
+package = hazel.cinterop
 
 depends = posix
 

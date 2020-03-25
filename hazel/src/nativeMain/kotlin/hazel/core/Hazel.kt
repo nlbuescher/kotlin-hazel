@@ -7,7 +7,7 @@ import hazel.debug.ProfileResult
 import kotlin.native.concurrent.ensureNeverFrozen
 import kotlin.native.internal.KFunctionImpl
 import kotlin.reflect.KFunction
-import kotlin.time.MonoClock
+import kotlin.time.TimeSource
 
 private var _config = Hazel.Config()
 
@@ -20,7 +20,7 @@ private var _application: Application? = null
 private val coreLogger = Logger("HAZEL")
 private val clientLogger = Logger("APP")
 
-private val clock = MonoClock.markNow()
+private val clock = TimeSource.Monotonic.markNow()
 
 object Hazel {
 	class Config {
