@@ -6,6 +6,7 @@ depends = posix
 
 #if defined(__APPLE__)
 #include <pthread.h>
+#include <stdint.h>
 
 static inline int pthread_threadid(pthread_t thread, uint64_t* id)
 {
@@ -15,11 +16,11 @@ static inline int pthread_threadid(pthread_t thread, uint64_t* id)
 
 static inline long sizeOf(void* a)
 {
-	#if defined(_WIN32)
+#if defined(_WIN32)
 	return _msize(a);
-	#elif defined(__APPLE__)
+#elif defined(__APPLE__)
 	return malloc_size(a);
-	#else
+#else
 	return malloc_usable_size(a);
-	#endif
+#endif
 }

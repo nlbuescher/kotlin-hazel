@@ -68,12 +68,12 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 			ImGui.render()
 			openGL3.renderDrawData(ImGui.getDrawData())
 
-//        if (io.ConfigFlags and ImGuiConfigFlags_ViewportsEnable.convert() != 0) {
-//            val backupCurrentContext = glfwGetCurrentContext()
-//            igUpdatePlatformWindows()
-//            igRenderPlatformWindowsDefault(null, null)
-//            glfwMakeContextCurrent(backupCurrentContext)
-//        }
+			//if (io.ConfigFlags and ImGuiConfigFlags_ViewportsEnable.convert() != 0) {
+			//	val backupCurrentContext = glfwGetCurrentContext()
+			//	igUpdatePlatformWindows()
+			//	igRenderPlatformWindowsDefault(null, null)
+			//	glfwMakeContextCurrent(backupCurrentContext)
+			//}
 		}
 	}
 }

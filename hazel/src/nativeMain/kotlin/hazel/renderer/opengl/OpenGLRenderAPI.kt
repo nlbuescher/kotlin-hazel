@@ -1,19 +1,6 @@
 package hazel.renderer.opengl
 
-import com.kgl.opengl.GL_BLEND
-import com.kgl.opengl.GL_COLOR_BUFFER_BIT
-import com.kgl.opengl.GL_DEPTH_BUFFER_BIT
-import com.kgl.opengl.GL_DEPTH_TEST
-import com.kgl.opengl.GL_ONE_MINUS_SRC_ALPHA
-import com.kgl.opengl.GL_SRC_ALPHA
-import com.kgl.opengl.GL_TRIANGLES
-import com.kgl.opengl.GL_UNSIGNED_INT
-import com.kgl.opengl.glBlendFunc
-import com.kgl.opengl.glClear
-import com.kgl.opengl.glClearColor
-import com.kgl.opengl.glDrawElements
-import com.kgl.opengl.glEnable
-import com.kgl.opengl.glViewport
+import com.kgl.opengl.*
 import hazel.math.FloatVector4
 import hazel.renderer.RenderAPI
 import hazel.renderer.VertexArray

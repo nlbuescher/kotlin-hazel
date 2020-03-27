@@ -1,15 +1,9 @@
 package hazel.renderer.opengl
 
-import com.kgl.opengl.GL_BOOL
-import com.kgl.opengl.GL_FLOAT
-import com.kgl.opengl.GL_INT
-import com.kgl.opengl.glBindVertexArray
-import com.kgl.opengl.glCreateVertexArray
-import com.kgl.opengl.glEnableVertexAttribArray
+import com.kgl.opengl.*
 import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.profile
-import hazel.opengl.glDeleteVertexArrays
 import hazel.opengl.glVertexAttribPointer
 import hazel.renderer.IndexBuffer
 import hazel.renderer.ShaderDataType
@@ -37,7 +31,7 @@ internal class OpenGLVertexArray : VertexArray {
 		val profiler = Hazel.Profiler(::OpenGLVertexArray)
 		profiler.start()
 
-		rendererId = glCreateVertexArray()
+		rendererId = glGenVertexArray()
 
 		profiler.stop()
 	}
@@ -46,7 +40,7 @@ internal class OpenGLVertexArray : VertexArray {
 		Hazel.profile(::dispose) {
 			vertexBuffers.forEach { it.dispose() }
 			indexBuffer.dispose()
-			glDeleteVertexArrays(rendererId)
+			glDeleteVertexArray(rendererId)
 		}
 	}
 
@@ -86,7 +80,7 @@ internal class OpenGLVertexArray : VertexArray {
 	}
 
 
-	private fun ShaderDataType.toOpenGLBaseType(): UInt = when (this) {
+	private fun ShaderDataType.toOpenGLBaseType() = when (this) {
 		ShaderDataType.Boolean -> GL_BOOL
 		ShaderDataType.Int -> GL_INT
 		ShaderDataType.Int2 -> GL_INT

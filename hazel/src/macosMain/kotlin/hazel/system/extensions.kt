@@ -2,7 +2,7 @@
 
 package hazel.system
 
-import cstb.pthread_threadid
+import hazel.cinterop.pthread_threadid
 import kotlinx.cinterop.*
 import platform.posix.SIGTRAP
 import platform.posix.raise

@@ -1,32 +1,11 @@
 package hazel.renderer.opengl
 
-import com.kgl.opengl.GL_COMPILE_STATUS
-import com.kgl.opengl.GL_FALSE
-import com.kgl.opengl.GL_FRAGMENT_SHADER
-import com.kgl.opengl.GL_LINK_STATUS
-import com.kgl.opengl.GL_VERTEX_SHADER
-import com.kgl.opengl.glAttachShader
-import com.kgl.opengl.glCompileShader
-import com.kgl.opengl.glCreateProgram
-import com.kgl.opengl.glCreateShader
-import com.kgl.opengl.glDeleteProgram
-import com.kgl.opengl.glDeleteShader
-import com.kgl.opengl.glDetachShader
-import com.kgl.opengl.glGetProgramInfoLog
-import com.kgl.opengl.glGetShaderInfoLog
-import com.kgl.opengl.glGetUniformLocation
-import com.kgl.opengl.glLinkProgram
-import com.kgl.opengl.glShaderSource
-import com.kgl.opengl.glUseProgram
+import com.kgl.opengl.*
 import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.coreError
 import hazel.core.profile
-import hazel.math.FloatMatrix3x3
-import hazel.math.FloatMatrix4x4
-import hazel.math.FloatVector2
-import hazel.math.FloatVector3
-import hazel.math.FloatVector4
+import hazel.math.*
 import hazel.opengl.glGetProgramUInt
 import hazel.opengl.glGetShaderUInt
 import hazel.opengl.glUniform
@@ -35,12 +14,7 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
-import platform.posix.SEEK_END
-import platform.posix.SEEK_SET
-import platform.posix.fopen
-import platform.posix.fread
-import platform.posix.fseek
-import platform.posix.ftell
+import platform.posix.*
 
 class OpenGLShader : Shader {
 
@@ -164,7 +138,7 @@ class OpenGLShader : Shader {
 				val size = ftell(file).toInt()
 				fseek(file, 0, SEEK_SET)
 				ByteArray(size).apply {
-					usePinned { fread(it.addressOf(0), 1, size.convert(), file) }
+					usePinned { fread(it.addressOf(0), 1.convert(), size.convert(), file) }
 				}.toKString()
 			} ?: run {
 				Hazel.coreError { "Could not open file `$filepath`" }

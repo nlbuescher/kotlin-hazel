@@ -1,9 +1,5 @@
 import com.imgui.ImGui
-import hazel.core.Event
-import hazel.core.Hazel
-import hazel.core.Layer
-import hazel.core.TimeStep
-import hazel.core.profile
+import hazel.core.*
 import hazel.math.FloatVector2
 import hazel.math.FloatVector3
 import hazel.math.FloatVector4
