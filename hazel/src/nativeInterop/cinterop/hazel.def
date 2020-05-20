@@ -4,6 +4,7 @@ depends = posix
 
 ---
 
+// obsolete in master (posix platform lib there defines _DARWIN_C_SOURCE, which enables this function)
 #if defined(__APPLE__)
 #include <pthread.h>
 #include <stdint.h>

@@ -12,7 +12,7 @@ data class ProfileResult(
 	val name: String,
 	val start: Long,
 	val end: Long,
-	val threadId: UInt
+	val threadId: ULong
 )
 
 data class InstrumentationSession(val name: String)

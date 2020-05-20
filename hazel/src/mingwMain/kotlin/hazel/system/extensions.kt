@@ -9,6 +9,4 @@ actual inline fun breakpoint() {
 	__debugbreak()
 }
 
-actual inline fun getThreadId(): UInt {
-	return GetCurrentThreadId()
-}
+actual inline fun getThreadId(): ULong = GetCurrentThreadId().toULong()

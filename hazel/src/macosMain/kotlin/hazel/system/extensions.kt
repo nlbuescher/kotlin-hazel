@@ -11,8 +11,8 @@ actual inline fun breakpoint() {
 	raise(SIGTRAP)
 }
 
-actual inline fun getThreadId(): UInt = memScoped {
+actual inline fun getThreadId(): ULong = memScoped {
 	val ret = alloc<ULongVar>()
 	pthread_threadid(null, ret.ptr)
-	return ret.value.toUInt()
+	return ret.value
 }
