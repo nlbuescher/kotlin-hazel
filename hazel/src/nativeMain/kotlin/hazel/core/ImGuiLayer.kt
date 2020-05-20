@@ -36,8 +36,8 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 				//}
 
 				// Setup Platform / Renderer Bindings
-				glfw = ImGuiGLFW(Hazel.application.window.internal, true)
-				openGL3 = ImguiOpenGL3("#version 410")
+				glfw = ImGuiGLFW(Hazel.application.window.internal, false)
+				openGL3 = ImguiOpenGL3("#version 330")
 			}
 		}
 	}

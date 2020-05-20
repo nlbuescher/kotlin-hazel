@@ -40,7 +40,6 @@ kotlin {
 					implementation("com.kgl:kgl-glfw:$kglVersion")
 					implementation("com.kgl:kgl-glfw-static:$kglVersion")
 					implementation("com.kgl:kgl-opengl:$kglVersion")
-					implementation("com.kgl:kgl-stb:$kglVersion")
 				}
 			}
 		}
@@ -60,7 +59,6 @@ kotlin {
 			enableLanguageFeature("InlineClasses")
 			useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
 			useExperimentalAnnotation("kotlin.time.ExperimentalTime")
-			useExperimentalAnnotation("kotlinx.io.core.ExperimentalIoApi")
 		}
 	}
 }

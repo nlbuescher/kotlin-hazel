@@ -79,6 +79,7 @@ abstract class Application : Disposable {
 	}
 
 	fun onEvent(event: Event) {
+		Hazel.coreDebug { event }
 		Hazel.profile(::onEvent) {
 			event.dispatch(::onWindowResize)
 			event.dispatch(::onWindowClose)
