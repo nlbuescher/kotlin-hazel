@@ -1,7 +1,7 @@
 package hazel.renderer.opengl
 
 import com.kgl.opengl.*
-import hazel.math.FloatVector4
+import hazel.math.Vec4
 import hazel.renderer.RenderAPI
 import hazel.renderer.VertexArray
 
@@ -18,8 +18,8 @@ class OpenGLRenderAPI : RenderAPI {
 		glViewport(x, y, width, height)
 	}
 
-	override fun setClearColor(color: FloatVector4) {
-		glClearColor(color.r, color.g, color.b, color.a)
+	override fun setClearColor(color: Vec4) {
+		glClearColor(color.x, color.y, color.z, color.w)
 	}
 
 	override fun clear() {

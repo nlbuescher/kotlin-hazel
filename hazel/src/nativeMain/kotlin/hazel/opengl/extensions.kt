@@ -3,8 +3,9 @@
 package hazel.opengl
 
 import com.kgl.opengl.GL_UNSIGNED_BYTE
-import hazel.math.FloatMatrix3x3
-import hazel.math.FloatMatrix4x4
+import hazel.math.Mat4
+import hazel.math.MutableMat4
+import hazel.math.toFloatArray
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.IntVar
@@ -113,14 +114,8 @@ internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float, f4
 	com.kgl.opengl.glUniform4f(location, f1, f2, f3, f4)
 }
 
-internal inline fun glUniform(location: Int, transpose: Boolean, matrix: FloatMatrix3x3) {
-	matrix.toFloatArray().usePinned {
-		com.kgl.opengl.glUniformMatrix3fv(location, 1, transpose, it.addressOf(0))
-	}
-}
-
-internal inline fun glUniform(location: Int, transpose: Boolean, matrix: FloatMatrix4x4) {
-	matrix.toFloatArray().usePinned {
+internal inline fun glUniform(location: Int, transpose: Boolean, matrix: Mat4) {
+	(matrix as MutableMat4).asFloatArray().usePinned {
 		com.kgl.opengl.glUniformMatrix4fv(location, 1, transpose, it.addressOf(0))
 	}
 }

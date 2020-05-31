@@ -1,24 +1,7 @@
 import com.imgui.ImGui
-import hazel.core.Application
-import hazel.core.Event
-import hazel.core.Hazel
-import hazel.core.Layer
-import hazel.core.TimeStep
-import hazel.math.FloatMatrix4x4
-import hazel.math.FloatVector3
-import hazel.math.FloatVector4
-import hazel.renderer.BufferElement
-import hazel.renderer.BufferLayout
-import hazel.renderer.OrthographicCameraController
-import hazel.renderer.RenderCommand
-import hazel.renderer.Renderer
-import hazel.renderer.Shader
-import hazel.renderer.ShaderDataType
-import hazel.renderer.ShaderLibrary
-import hazel.renderer.Texture2D
-import hazel.renderer.VertexArray
-import hazel.renderer.indexBufferOf
-import hazel.renderer.vertexBufferOf
+import hazel.core.*
+import hazel.math.*
+import hazel.renderer.*
 
 class ExampleLayer : Layer("ExampleLayer") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, true)
@@ -81,7 +64,7 @@ class ExampleLayer : Layer("ExampleLayer") {
 	private val texture: Texture2D
 	private val chernoLogoTexture: Texture2D
 	private val squareVertexArray = VertexArray()
-	private val squareColor = FloatVector3(0f, 0f, 1f)
+	private val squareColor = MutableVec3(0f, 0f, 1f)
 
 	init {
 		val squareVertexBuffer = vertexBufferOf(
@@ -153,20 +136,22 @@ class ExampleLayer : Layer("ExampleLayer") {
 		cameraController.onUpdate(timeStep)
 
 		// Render
-		RenderCommand.setClearColor(FloatVector4(0.1f, 0.1f, 0.1f, 1f))
+		RenderCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1f))
 		RenderCommand.clear()
 
 		Renderer.scene(cameraController.camera) {
-			val scale = FloatMatrix4x4(1f).scale(FloatVector3(0.1f))
+			val scale = Mat4.IDENTITY.scaled(Vec3(0.1f))
 
 			flatColorShader.bind()
 			flatColorShader["u_Color"] = squareColor
 
 			for (y in 0 until 20) {
 				for (x in 0 until 20) {
-					val position = FloatVector3(x * 0.11f, y * 0.11f, 0f)
-					val transform = FloatMatrix4x4(1f).translate(position) * scale
-
+					val position = Vec3(x * 0.11f, y * 0.11f, 0f)
+					val transform = Mat4.IDENTITY.toMutableMat4().apply {
+						translate(position)
+						this *= scale
+					}
 					submit(flatColorShader, squareVertexArray, transform)
 				}
 			}
@@ -175,9 +160,9 @@ class ExampleLayer : Layer("ExampleLayer") {
 
 			// square
 			texture.bind()
-			submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
+			submit(textureShader, squareVertexArray, Mat4.IDENTITY.scaled(Vec3(1.5f)))
 			chernoLogoTexture.bind()
-			submit(textureShader, squareVertexArray, FloatMatrix4x4(1f).scale(FloatVector3(1.5f)))
+			submit(textureShader, squareVertexArray, Mat4.IDENTITY.scaled(Vec3(1.5f)))
 
 			// triangle
 			//submit(shader, vertexArray)

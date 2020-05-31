@@ -3,9 +3,9 @@ package hazel.renderer
 import hazel.core.Disposable
 import hazel.core.Hazel
 import hazel.core.coreAssert
-import hazel.math.FloatMatrix4x4
-import hazel.math.FloatVector3
-import hazel.math.FloatVector4
+import hazel.math.Mat4
+import hazel.math.Vec3
+import hazel.math.Vec4
 import hazel.renderer.opengl.OpenGLShader
 
 interface Shader : Disposable {
@@ -16,9 +16,9 @@ interface Shader : Disposable {
 
 	operator fun set(name: String, int: Int)
 	operator fun set(name: String, float: Float)
-	operator fun set(name: String, vector: FloatVector3)
-	operator fun set(name: String, vector: FloatVector4)
-	operator fun set(name: String, matrix: FloatMatrix4x4)
+	operator fun set(name: String, vector: Vec3)
+	operator fun set(name: String, vector: Vec4)
+	operator fun set(name: String, matrix: Mat4)
 }
 
 fun Shader(filepath: String): Shader = when (Renderer.api) {

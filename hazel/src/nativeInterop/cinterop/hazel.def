@@ -17,7 +17,7 @@ static inline int pthread_threadid(pthread_t thread, uint64_t* id)
 }
 #endif
 
-#include <malloc.h>
+#include <stdlib.h>
 static inline size_t sizeOf(void* a)
 {
 #if defined(_WIN32)

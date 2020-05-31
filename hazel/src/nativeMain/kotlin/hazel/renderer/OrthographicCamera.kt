@@ -2,19 +2,20 @@ package hazel.renderer
 
 import hazel.core.Hazel
 import hazel.core.profile
-import hazel.math.FloatMatrix4x4
-import hazel.math.FloatVector3
+import hazel.math.Mat4
+import hazel.math.Vec3
 import hazel.math.orthographicProjectionOf
+import hazel.math.toMutableMat4
 
 class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
-	var projectionMatrix: FloatMatrix4x4
+	var projectionMatrix: Mat4
 		private set
-	var viewMatrix: FloatMatrix4x4
+	var viewMatrix: Mat4
 		private set
-	var viewProjectionMatrix: FloatMatrix4x4
+	var viewProjectionMatrix: Mat4
 		private set
 
-	var position = FloatVector3()
+	var position = Vec3()
 		set(value) = run { field = value; recalculateViewMatrix() }
 	var rotation: Float = 0f
 		set(value) = run { field = value; recalculateViewMatrix() }
@@ -24,7 +25,7 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 		profiler.start()
 
 		projectionMatrix = orthographicProjectionOf(left, right, bottom, top, -1f, 1f)
-		viewMatrix = FloatMatrix4x4(1f)
+		viewMatrix = Mat4.IDENTITY
 		viewProjectionMatrix = projectionMatrix * viewMatrix
 
 		profiler.stop()
@@ -39,9 +40,12 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 
 	private fun recalculateViewMatrix() {
 		Hazel.profile(::recalculateViewMatrix) {
-			val transform = FloatMatrix4x4(1f).translate(position).rotate(rotation, FloatVector3(0f, 0f, 1f))
+			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+				translate(position)
+				rotate(rotation, Vec3.FORWARD)
+			}
 
-			viewMatrix = transform.inv()
+			viewMatrix = transform.inverse
 			viewProjectionMatrix = projectionMatrix * viewMatrix
 		}
 	}

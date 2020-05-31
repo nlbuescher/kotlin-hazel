@@ -2,10 +2,7 @@ package hazel.renderer
 
 import hazel.core.Hazel
 import hazel.core.profile
-import hazel.math.FloatMatrix4x4
-import hazel.math.FloatVector2
-import hazel.math.FloatVector3
-import hazel.math.FloatVector4
+import hazel.math.*
 
 private lateinit var quadVertexArray: VertexArray
 private lateinit var textureShader: Shader
@@ -64,19 +61,20 @@ object Renderer2D {
 		endScene()
 	}
 
-	fun drawQuad(position: FloatVector2, size: FloatVector2, color: FloatVector4) {
-		drawQuad(FloatVector3(position.x, position.y, 0f), size, color)
+	fun drawQuad(position: Vec2, size: Vec2, color: Vec4) {
+		drawQuad(Vec3(position.x, position.y, 0f), size, color)
 	}
 
-	fun drawQuad(position: FloatVector3, size: FloatVector2, color: FloatVector4) {
-		Hazel.profile("${this::class.qualifiedName}.drawQuad(${FloatVector3::class.qualifiedName},${FloatVector2::class.qualifiedName},${FloatVector4::class.qualifiedName}") {
+	fun drawQuad(position: Vec3, size: Vec2, color: Vec4) {
+		Hazel.profile("${this::class.qualifiedName}.drawQuad(${Vec3::class.qualifiedName},${Vec2::class.qualifiedName},${Vec4::class.qualifiedName}") {
 			textureShader["u_Color"] = color
 			textureShader["u_TilingFactor"] = 1f
 			whiteTexture.bind()
 
-			val transform = FloatMatrix4x4(1f)
-				.translate(position)
-				.scale(FloatVector3(size.x, size.y, 1f))
+			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+				translate(position)
+				scale(Vec3(size.x, size.y, 1f))
+			}
 			textureShader["u_Transform"] = transform
 
 			quadVertexArray.bind()
@@ -84,19 +82,20 @@ object Renderer2D {
 		}
 	}
 
-	fun drawQuad(position: FloatVector2, size: FloatVector2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: FloatVector4 = FloatVector4(1f)) {
-		drawQuad(FloatVector3(position.x, position.y, 0f), size, texture, tilingFactor, tintColor)
+	fun drawQuad(position: Vec2, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
+		drawQuad(Vec3(position.x, position.y, 0f), size, texture, tilingFactor, tintColor)
 	}
 
-	fun drawQuad(position: FloatVector3, size: FloatVector2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: FloatVector4 = FloatVector4(1f)) {
-		Hazel.profile("${this::class.qualifiedName}.drawQuad(${FloatVector3::class.qualifiedName},${FloatVector2::class.qualifiedName},${Texture2D::class.qualifiedName}") {
+	fun drawQuad(position: Vec3, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
+		Hazel.profile("${this::class.qualifiedName}.drawQuad(${Vec3::class.qualifiedName},${Vec2::class.qualifiedName},${Texture2D::class.qualifiedName}") {
 			textureShader["u_Color"] = tintColor
 			textureShader["u_TilingFactor"] = tilingFactor
 			texture.bind()
 
-			val transform = FloatMatrix4x4(1f)
-				.translate(position)
-				.scale(FloatVector3(size.x, size.y, 1f))
+			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+				translate(position)
+				scale(Vec3(size.x, size.y, 1f))
+			}
 			textureShader["u_Transform"] = transform
 
 			quadVertexArray.bind()
@@ -104,20 +103,21 @@ object Renderer2D {
 		}
 	}
 
-	fun drawRotatedQuad(position: FloatVector2, size: FloatVector2, rotation: Float, color: FloatVector4) {
-		drawRotatedQuad(FloatVector3(position.x, position.y, 0f), size, rotation, color)
+	fun drawRotatedQuad(position: Vec2, size: Vec2, rotation: Float, color: Vec4) {
+		drawRotatedQuad(Vec3(position.x, position.y, 0f), size, rotation, color)
 	}
 
-	fun drawRotatedQuad(position: FloatVector3, size: FloatVector2, rotation: Float, color: FloatVector4) {
-		Hazel.profile("${this::class.qualifiedName}.drawRotatedQuad(${FloatVector3::class.qualifiedName},${FloatVector2::class.qualifiedName},${FloatVector4::class.qualifiedName}") {
+	fun drawRotatedQuad(position: Vec3, size: Vec2, rotation: Float, color: Vec4) {
+		Hazel.profile("${this::class.qualifiedName}.drawRotatedQuad(${Vec3::class.qualifiedName},${Vec2::class.qualifiedName},${Vec4::class.qualifiedName}") {
 			textureShader["u_Color"] = color
 			textureShader["u_TilingFactor"] = 1f
 			whiteTexture.bind()
 
-			val transform = FloatMatrix4x4(1f)
-				.translate(position)
-				.rotate(rotation, FloatVector3(0f, 0f, 1f))
-				.scale(FloatVector3(size.x, size.y, 1f))
+			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+				translate(position)
+				rotate(rotation, Vec3(0f, 0f, 1f))
+				scale(Vec3(size.x, size.y, 1f))
+			}
 			textureShader["u_Transform"] = transform
 
 			quadVertexArray.bind()
@@ -125,20 +125,21 @@ object Renderer2D {
 		}
 	}
 
-	fun drawRotatedQuad(position: FloatVector2, size: FloatVector2, rotation: Float, texture: Texture2D, tilingFactor: Float = 1f, tintColor: FloatVector4 = FloatVector4(1f)) {
-		drawRotatedQuad(FloatVector3(position.x, position.y, 0f), size, rotation, texture, tilingFactor, tintColor)
+	fun drawRotatedQuad(position: Vec2, size: Vec2, rotation: Float, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
+		drawRotatedQuad(Vec3(position.x, position.y, 0f), size, rotation, texture, tilingFactor, tintColor)
 	}
 
-	fun drawRotatedQuad(position: FloatVector3, size: FloatVector2, rotation: Float, texture: Texture2D, tilingFactor: Float = 1f, tintColor: FloatVector4 = FloatVector4(1f)) {
-		Hazel.profile("${this::class.qualifiedName}.drawRotatedQuad(${FloatVector3::class.qualifiedName},${FloatVector2::class.qualifiedName},${Texture2D::class.qualifiedName}") {
+	fun drawRotatedQuad(position: Vec3, size: Vec2, rotation: Float, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
+		Hazel.profile("${this::class.qualifiedName}.drawRotatedQuad(${Vec3::class.qualifiedName},${Vec2::class.qualifiedName},${Texture2D::class.qualifiedName}") {
 			textureShader["u_Color"] = tintColor
 			textureShader["u_TilingFactor"] = tilingFactor
 			texture.bind()
 
-			val transform = FloatMatrix4x4(1f)
-				.translate(position)
-				.rotate(rotation, FloatVector3(0f, 0f, 1f))
-				.scale(FloatVector3(size.x, size.y, 1f))
+			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+				translate(position)
+				rotate(rotation, Vec3(0f, 0f, 1f))
+				scale(Vec3(size.x, size.y, 1f))
+			}
 			textureShader["u_Transform"] = transform
 
 			quadVertexArray.bind()

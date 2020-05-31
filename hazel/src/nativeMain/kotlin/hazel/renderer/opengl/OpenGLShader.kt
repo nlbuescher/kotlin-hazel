@@ -5,7 +5,10 @@ import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.coreError
 import hazel.core.profile
-import hazel.math.*
+import hazel.math.Mat4
+import hazel.math.Vec2
+import hazel.math.Vec3
+import hazel.math.Vec4
 import hazel.opengl.glGetProgramUInt
 import hazel.opengl.glGetShaderUInt
 import hazel.opengl.glUniform
@@ -78,20 +81,20 @@ class OpenGLShader : Shader {
 		}
 	}
 
-	override fun set(name: String, vector: FloatVector3) {
-		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatVector3::class.qualifiedName})") {
+	override fun set(name: String, vector: Vec3) {
+		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Vec3::class.qualifiedName})") {
 			uploadUniform(name, vector)
 		}
 	}
 
-	override fun set(name: String, vector: FloatVector4) {
-		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatVector4::class.qualifiedName})") {
+	override fun set(name: String, vector: Vec4) {
+		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Vec4::class.qualifiedName})") {
 			uploadUniform(name, vector)
 		}
 	}
 
-	override fun set(name: String, matrix: FloatMatrix4x4) {
-		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${FloatMatrix4x4::class.qualifiedName})") {
+	override fun set(name: String, matrix: Mat4) {
+		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Mat4::class.qualifiedName})") {
 			uploadUniform(name, matrix)
 		}
 	}
@@ -106,27 +109,22 @@ class OpenGLShader : Shader {
 		glUniform(location, float)
 	}
 
-	fun uploadUniform(name: String, vector: FloatVector2) {
+	fun uploadUniform(name: String, vector: Vec2) {
 		val location = glGetUniformLocation(rendererId, name)
 		glUniform(location, vector.x, vector.y)
 	}
 
-	fun uploadUniform(name: String, vector: FloatVector3) {
+	fun uploadUniform(name: String, vector: Vec3) {
 		val location = glGetUniformLocation(rendererId, name)
 		glUniform(location, vector.x, vector.y, vector.z)
 	}
 
-	fun uploadUniform(name: String, vector: FloatVector4) {
+	fun uploadUniform(name: String, vector: Vec4) {
 		val location = glGetUniformLocation(rendererId, name)
 		glUniform(location, vector.x, vector.y, vector.z, vector.w)
 	}
 
-	fun uploadUniform(name: String, matrix: FloatMatrix3x3) {
-		val location = glGetUniformLocation(rendererId, name)
-		glUniform(location, false, matrix)
-	}
-
-	fun uploadUniform(name: String, matrix: FloatMatrix4x4) {
+	fun uploadUniform(name: String, matrix: Mat4) {
 		val location = glGetUniformLocation(rendererId, name)
 		glUniform(location, false, matrix)
 	}

@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_VARIABLE")
-
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
@@ -33,13 +31,12 @@ kotlin {
 				resources.srcDir("src/nativeMain/resources")
 
 				dependencies {
-					implementation("com.kotlin-imgui:imgui:$imguiVersion")
-					implementation("com.kotlin-imgui:imgui-glfw:$imguiVersion")
-					implementation("com.kotlin-imgui:imgui-opengl:$imguiVersion")
-
-					implementation("com.kgl:kgl-glfw:$kglVersion")
-					implementation("com.kgl:kgl-glfw-static:$kglVersion")
-					implementation("com.kgl:kgl-opengl:$kglVersion")
+					listOf("", "-glfw", "-opengl").forEach {
+						implementation("com.kotlin-imgui:imgui$it:$imguiVersion")
+					}
+					listOf("-glfw", "-glfw-static", "-opengl").forEach {
+						implementation("com.kgl:kgl$it:$kglVersion")
+					}
 				}
 			}
 		}

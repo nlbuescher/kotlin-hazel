@@ -1,6 +1,6 @@
 package hazel.renderer
 
-import hazel.math.FloatVector4
+import hazel.math.Vec4
 import hazel.renderer.opengl.OpenGLRenderAPI
 
 private var renderAPI: RenderAPI = OpenGLRenderAPI()
@@ -16,7 +16,7 @@ object RenderCommand {
 		renderAPI.setViewport(x, y, width, height)
 	}
 
-	fun setClearColor(color: FloatVector4) {
+	fun setClearColor(color: Vec4) {
 		renderAPI.setClearColor(color)
 	}
 

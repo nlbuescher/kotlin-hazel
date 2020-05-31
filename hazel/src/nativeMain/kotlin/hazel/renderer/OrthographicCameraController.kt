@@ -1,7 +1,7 @@
 package hazel.renderer
 
 import hazel.core.*
-import hazel.math.FloatVector3
+import hazel.math.MutableVec3
 import hazel.math.degrees
 
 class OrthographicCameraController(
@@ -10,7 +10,7 @@ class OrthographicCameraController(
 ) {
 	private var zoomLevel: Float = 1f
 	val camera = OrthographicCamera(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
-	private val cameraPosition = FloatVector3()
+	private val cameraPosition = MutableVec3()
 	private var cameraRotation: Float = 0f
 	private val cameraTranslationSpeed: Float = 5f
 	private val cameraRotationSpeed: Float = 180f.degrees
