@@ -112,10 +112,10 @@ class ExampleLayer : Layer("ExampleLayer") {
 
 		flatColorShader = Shader("FlatColor", flatColorVertexSource, flatColorFragmentSource)
 
-		val textureShader = shaderLibrary.load("assets/shaders/Texture.glsl")
+		val textureShader = shaderLibrary.load("assets/shaders/texture.glsl")
 
-		texture = Texture2D("assets/textures/Checkerboard.png")
-		chernoLogoTexture = Texture2D("assets/textures/ChernoLogo.png")
+		texture = Texture2D("assets/textures/checkerboard.png")
+		chernoLogoTexture = Texture2D("assets/textures/cherno_logo.png")
 
 		textureShader.bind()
 		textureShader["u_Texture"] = 0

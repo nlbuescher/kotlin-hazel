@@ -15,7 +15,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 
 	override fun onAttach() {
-		checkerBoardTexture = Texture2D("assets/textures/Checkerboard.png")
+		checkerBoardTexture = Texture2D("assets/textures/checkerboard.png")
 	}
 
 	override fun onDetach() {}
