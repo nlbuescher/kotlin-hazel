@@ -31,7 +31,7 @@ object Renderer2D {
 			whiteTexture = Texture2D(1, 1)
 			whiteTexture.setData(ubyteArrayOf(0xFFu, 0xFFu, 0xFFu, 0xFFu).asByteArray())
 
-			textureShader = Shader("assets/shaders/Texture.glsl")
+			textureShader = Shader("assets/shaders/texture.glsl")
 			textureShader.bind()
 			textureShader["u_Texture"] = 0
 		}
