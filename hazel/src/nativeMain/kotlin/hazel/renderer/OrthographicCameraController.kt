@@ -17,7 +17,7 @@ class OrthographicCameraController(
 
 
 	fun onUpdate(timeStep: TimeStep) {
-		Hazel.profile(::onUpdate) {
+		Hazel.profile("OrthographicCameraController.onUpdate(TimeStep)") {
 			if (Input.isKeyPressed(Key.A))
 				cameraPosition.x -= cameraTranslationSpeed * timeStep.inSeconds
 			else if (Input.isKeyPressed(Key.D))
@@ -41,7 +41,7 @@ class OrthographicCameraController(
 	}
 
 	fun onEvent(event: Event) {
-		Hazel.profile(::onEvent) {
+		Hazel.profile("OrthographicCameraController.onEvent(Event)") {
 			with(event) {
 				dispatch(::onMouseScrolledEvent)
 				dispatch(::onWindowResizeEvent)
@@ -50,7 +50,7 @@ class OrthographicCameraController(
 	}
 
 	private fun onMouseScrolledEvent(event: MouseScrolledEvent): Boolean {
-		Hazel.profile(::onMouseScrolledEvent) {
+		Hazel.profile("OrthographicCameraController.onMouseScrolledEvent(MouseScrolledEvent): Boolean") {
 			zoomLevel -= event.yOffset * 0.25f
 			zoomLevel = zoomLevel.coerceAtLeast(0.25f)
 			camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
@@ -59,7 +59,7 @@ class OrthographicCameraController(
 	}
 
 	private fun onWindowResizeEvent(event: WindowResizeEvent): Boolean {
-		Hazel.profile(::onWindowResizeEvent) {
+		Hazel.profile("OrthographicCameraController.onWindowResizeEvent(WindowResizeEvent): Boolean") {
 			aspectRatio = event.width.toFloat() / event.height.toFloat()
 			camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
 		}

@@ -15,7 +15,7 @@ abstract class Application : Disposable {
 	private var lastFrameTime: Float = 0f
 
 	init {
-		val profiler = Hazel.Profiler("hazel.core.Application.<init>()")
+		val profiler = Hazel.Profiler("Application(): Application")
 		profiler.start()
 
 		window = Window().apply { setEventCallback(::onEvent) }
@@ -29,28 +29,28 @@ abstract class Application : Disposable {
 	}
 
 	override fun dispose() {
-		Hazel.profile(::dispose) {
+		Hazel.profile("Application.dispose()") {
 			Renderer.shutdown()
 			window.dispose()
 		}
 	}
 
 	fun addLayer(layer: Layer) {
-		Hazel.profile(::addLayer) {
+		Hazel.profile("Application.addLayer(Layer)") {
 			layerStack.add(layer)
 			layer.onAttach()
 		}
 	}
 
 	fun addOverlay(overlay: Overlay) {
-		Hazel.profile(::addOverlay) {
+		Hazel.profile("Application.addOverlay(Overlay)") {
 			layerStack.add(overlay)
 			overlay.onAttach()
 		}
 	}
 
 	fun run() {
-		Hazel.profile(::run) {
+		Hazel.profile("Application.run()") {
 			// don't add imGuiLayer to layer stack until run because ImGuiLayer requires Hazel.application to be set
 			addOverlay(imGuiLayer)
 
@@ -79,7 +79,7 @@ abstract class Application : Disposable {
 	}
 
 	fun onEvent(event: Event) {
-		Hazel.profile(::onEvent) {
+		Hazel.profile("Application.onEvent(Event)") {
 			event.dispatch(::onWindowResize)
 			event.dispatch(::onWindowClose)
 
@@ -91,7 +91,7 @@ abstract class Application : Disposable {
 	}
 
 	private fun onWindowResize(event: WindowResizeEvent): Boolean {
-		return Hazel.profile(::onWindowResize) {
+		return Hazel.profile("Application.onWindowResize(WindowResizeEvent): Boolean") {
 			if (event.width == 0 || event.height == 0) {
 				isMinimized = true
 				return@profile true

@@ -11,7 +11,7 @@ private lateinit var whiteTexture: Texture2D
 object Renderer2D {
 
 	fun init() {
-		Hazel.profile(::init) {
+		Hazel.profile("Renderer2D.init()") {
 			quadVertexArray = VertexArray()
 
 			val squareVertexBuffer = vertexBufferOf(
@@ -38,21 +38,20 @@ object Renderer2D {
 	}
 
 	fun shutdown() {
-		Hazel.profile(::shutdown) {
+		Hazel.profile("Renderer2D.shutdown()") {
 			quadVertexArray.dispose()
 		}
 	}
 
 	private fun beginScene(camera: OrthographicCamera) {
-		Hazel.profile(::beginScene) {
+		Hazel.profile("Renderer2D.beginScene(OrthographicCamera)") {
 			textureShader.bind()
 			textureShader["u_ViewProjection"] = camera.viewProjectionMatrix
 		}
 	}
 
 	private fun endScene() {
-		Hazel.profile(::endScene) {
-		}
+		Hazel.profile("Renderer2D.endScene()") {}
 	}
 
 	fun scene(camera: OrthographicCamera, block: Renderer2D.() -> Unit) {
@@ -66,7 +65,7 @@ object Renderer2D {
 	}
 
 	fun drawQuad(position: Vec3, size: Vec2, color: Vec4) {
-		Hazel.profile("${this::class.qualifiedName}.drawQuad(${Vec3::class.qualifiedName},${Vec2::class.qualifiedName},${Vec4::class.qualifiedName}") {
+		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Vec4)") {
 			textureShader["u_Color"] = color
 			textureShader["u_TilingFactor"] = 1f
 			whiteTexture.bind()
@@ -87,7 +86,7 @@ object Renderer2D {
 	}
 
 	fun drawQuad(position: Vec3, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
-		Hazel.profile("${this::class.qualifiedName}.drawQuad(${Vec3::class.qualifiedName},${Vec2::class.qualifiedName},${Texture2D::class.qualifiedName}") {
+		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Texture2D, Float, Vec4)") {
 			textureShader["u_Color"] = tintColor
 			textureShader["u_TilingFactor"] = tilingFactor
 			texture.bind()
@@ -108,7 +107,7 @@ object Renderer2D {
 	}
 
 	fun drawRotatedQuad(position: Vec3, size: Vec2, rotation: Float, color: Vec4) {
-		Hazel.profile("${this::class.qualifiedName}.drawRotatedQuad(${Vec3::class.qualifiedName},${Vec2::class.qualifiedName},${Vec4::class.qualifiedName}") {
+		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Vec4)") {
 			textureShader["u_Color"] = color
 			textureShader["u_TilingFactor"] = 1f
 			whiteTexture.bind()
@@ -130,7 +129,7 @@ object Renderer2D {
 	}
 
 	fun drawRotatedQuad(position: Vec3, size: Vec2, rotation: Float, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
-		Hazel.profile("${this::class.qualifiedName}.drawRotatedQuad(${Vec3::class.qualifiedName},${Vec2::class.qualifiedName},${Texture2D::class.qualifiedName}") {
+		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Texture2D, Float, Vec4)") {
 			textureShader["u_Color"] = tintColor
 			textureShader["u_TilingFactor"] = tilingFactor
 			texture.bind()

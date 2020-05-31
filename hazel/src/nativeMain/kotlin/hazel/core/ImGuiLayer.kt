@@ -13,7 +13,7 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 	lateinit var openGL3: ImguiOpenGL3
 
 	override fun onAttach() {
-		Hazel.profile(::onAttach) {
+		Hazel.profile("onAttach") {
 			with(ImGui) {
 				createContext()
 				val io = getIO().ptr.pointed
@@ -43,7 +43,7 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 	}
 
 	override fun onDetach() {
-		Hazel.profile(::onDetach) {
+		Hazel.profile("onDetach") {
 			openGL3.close()
 			glfw.close()
 			ImGui.destroyContext()
@@ -51,7 +51,7 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 	}
 
 	fun begin() {
-		Hazel.profile(::begin) {
+		Hazel.profile("begin") {
 			openGL3.newFrame()
 			glfw.newFrame()
 			ImGui.newFrame()
@@ -59,7 +59,7 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 	}
 
 	fun end() {
-		Hazel.profile(::end) {
+		Hazel.profile("end") {
 			val io = ImGui.getIO().ptr.pointed
 			val (windowX, windowY) = Hazel.application.window.size
 			io.DisplaySize.apply { x = windowX.toFloat(); y = windowY.toFloat() }

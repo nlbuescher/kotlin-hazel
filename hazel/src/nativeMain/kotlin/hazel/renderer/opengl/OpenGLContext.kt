@@ -12,9 +12,8 @@ import hazel.core.profile
 import hazel.renderer.GraphicsContext
 
 internal class OpenGLContext(private val window: Window) : GraphicsContext {
-
 	override fun init() {
-		Hazel.profile(::init) {
+		Hazel.profile("OpenGLContext.init()") {
 			Glfw.currentContext = window.internal
 
 			Hazel.coreInfo {
@@ -29,7 +28,7 @@ internal class OpenGLContext(private val window: Window) : GraphicsContext {
 	}
 
 	override fun swapBuffers() {
-		Hazel.profile(::swapBuffers) {
+		Hazel.profile("OpenGLContext.swapBuffers()") {
 			window.internal.swapBuffers()
 		}
 	}

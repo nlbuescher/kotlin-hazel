@@ -14,7 +14,7 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 
 	var isVSync: Boolean = false // dummy value should be overridden in init
 		set(value) {
-			Hazel.profile("${this::class.qualifiedName}.${::isVSync.name}.set(${Boolean::class.qualifiedName})") {
+			Hazel.profile("Window.isVSync.set(Boolean)") {
 				Glfw.setSwapInterval(if (value) 1 else 0)
 			}
 			field = value
@@ -69,7 +69,7 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 	}
 
 	override fun dispose() {
-		Hazel.profile(::dispose) {
+		Hazel.profile("Window.dispose()") {
 			internal.close()
 		}
 	}
@@ -91,7 +91,7 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 
 
 	fun onUpdate() {
-		Hazel.profile(::onUpdate) {
+		Hazel.profile("Window.onUpdate()") {
 			Glfw.pollEvents()
 			context.swapBuffers()
 		}
@@ -100,8 +100,8 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 
 	companion object {
 		operator fun invoke(width: Int = 1280, height: Int = 720, title: String = "Hazel Engine"): Window {
-			return Hazel.profile(::Window) {
-				Hazel.profile(Glfw::init) {
+			return Hazel.profile("Window(Int, Int, String): Window") {
+				Hazel.profile("Glfw.init()") {
 					Glfw.init()
 				}
 

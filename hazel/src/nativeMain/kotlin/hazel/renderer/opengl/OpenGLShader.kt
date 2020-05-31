@@ -26,7 +26,7 @@ class OpenGLShader : Shader {
 	private var rendererId: UInt = 0u
 
 	constructor(filepath: String) {
-		val profiler = Hazel.Profiler("${OpenGLShader::class.qualifiedName}.<init>(kotlin.String)${OpenGLShader::class.qualifiedName}")
+		val profiler = Hazel.Profiler("OpenGLShader(String): OpenGLShader")
 		profiler.start()
 
 		val source = readFile(filepath) ?: ""
@@ -41,7 +41,7 @@ class OpenGLShader : Shader {
 	}
 
 	constructor(name: String, vertexSource: String, fragmentSource: String) {
-		val profiler = Hazel.Profiler("${OpenGLShader::class.qualifiedName}.<init>(kotlin.String,kotlin: String)${OpenGLShader::class.qualifiedName}")
+		val profiler = Hazel.Profiler("OpenGLShader(String, String, String): OpenGLShader")
 		profiler.start()
 
 		this.name = name
@@ -52,49 +52,49 @@ class OpenGLShader : Shader {
 	}
 
 	override fun dispose() {
-		Hazel.profile(::dispose) {
+		Hazel.profile("OpenGLShader.dispose()") {
 			glDeleteProgram(rendererId)
 		}
 	}
 
 	override fun bind() {
-		Hazel.profile(::bind) {
+		Hazel.profile("OpenGLShader.bind()") {
 			glUseProgram(rendererId)
 		}
 	}
 
 	override fun unbind() {
-		Hazel.profile(::unbind) {
+		Hazel.profile("OpenGLShader.unbind()") {
 			glUseProgram(0u)
 		}
 	}
 
 	override fun set(name: String, int: Int) {
-		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Int::class.qualifiedName})") {
+		Hazel.profile("OpenGLShader.set(String, Int)") {
 			uploadUniform(name, int)
 		}
 	}
 
 	override fun set(name: String, float: Float) {
-		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Float::class.qualifiedName})") {
+		Hazel.profile("OpenGLShader.set(String, Float)") {
 			uploadUniform(name, float)
 		}
 	}
 
 	override fun set(name: String, vector: Vec3) {
-		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Vec3::class.qualifiedName})") {
+		Hazel.profile("OpenGLShader.set(String, Vec3)") {
 			uploadUniform(name, vector)
 		}
 	}
 
 	override fun set(name: String, vector: Vec4) {
-		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Vec4::class.qualifiedName})") {
+		Hazel.profile("OpenGLShader.set(String, Vec4)") {
 			uploadUniform(name, vector)
 		}
 	}
 
 	override fun set(name: String, matrix: Mat4) {
-		Hazel.profile("${this::class.qualifiedName}.set(${String::class.qualifiedName},${Mat4::class.qualifiedName})") {
+		Hazel.profile("OpenGLShader.set(String, Mat4)") {
 			uploadUniform(name, matrix)
 		}
 	}
@@ -130,7 +130,7 @@ class OpenGLShader : Shader {
 	}
 
 	private fun readFile(filepath: String): String? {
-		return Hazel.profile(::readFile) {
+		return Hazel.profile("OpenGLShader.readFile(String): String?") {
 			fopen(filepath, "r")?.let { file ->
 				fseek(file, 0, SEEK_END)
 				val size = ftell(file).toInt()
@@ -146,7 +146,7 @@ class OpenGLShader : Shader {
 	}
 
 	private fun preProcess(source: String): Map<UInt, String> {
-		return Hazel.profile(::preProcess) {
+		return Hazel.profile("OpenGLShader.preProcess(String): Map<UInt, String>") {
 			val shaderSources = mutableMapOf<UInt, String>()
 			val typeToken = "#type"
 			var pos = source.indexOf(typeToken)
@@ -167,7 +167,7 @@ class OpenGLShader : Shader {
 	}
 
 	private fun compile(shaderSources: Map<UInt, String>) {
-		Hazel.profile(::compile) {
+		Hazel.profile("OpenGLShader.compile(Map<UInt, String>)") {
 			val program = glCreateProgram()
 
 			val glShaderIds = MutableList(shaderSources.size) { 0u }

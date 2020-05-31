@@ -29,7 +29,7 @@ class OpenGLTexture2D : Texture2D {
 	private val rendererId: UInt
 
 	constructor(width: Int, height: Int) {
-		val profiler = Hazel.Profiler("${this::class.qualifiedName}.<init>(${Int::class.qualifiedName},${Int::class.qualifiedName})${this::class.qualifiedName}")
+		val profiler = Hazel.Profiler("OpenGLTexture2D(Int, Int)")
 		profiler.start()
 
 		this.path = null
@@ -49,7 +49,7 @@ class OpenGLTexture2D : Texture2D {
 	}
 
 	constructor(path: String) {
-		val profiler = Hazel.Profiler("${this::class.qualifiedName}.<init>(${String::class.qualifiedName})${this::class.qualifiedName}")
+		val profiler = Hazel.Profiler("OpenGLTexture2D(String): OpenGLTexture2D")
 		profiler.start()
 
 		this.path = path
@@ -58,7 +58,7 @@ class OpenGLTexture2D : Texture2D {
 		val data: ByteArray? = meta.usePinned { pinned ->
 			stbi_set_flip_vertically_on_load(1)
 
-			Hazel.profile("stbi_load - ${this::class.qualifiedName}.<init>(${String::class.qualifiedName})${this::class.qualifiedName}") {
+			Hazel.profile("stbi_load(String, ...): ByteArray") {
 				stbi_load(path, pinned.addressOf(0), pinned.addressOf(1), pinned.addressOf(2), 0)?.let { pointer ->
 					val size = sizeOf(pointer).toInt()
 					ByteArray(size).apply {
@@ -95,13 +95,13 @@ class OpenGLTexture2D : Texture2D {
 	}
 
 	override fun dispose() {
-		Hazel.profile(::dispose) {
+		Hazel.profile("OpenGLTexture2D.dispose()") {
 			glDeleteTextures(rendererId)
 		}
 	}
 
 	override fun setData(data: ByteArray) {
-		Hazel.profile(::setData) {
+		Hazel.profile("OpenGLTexture2D.setData(ByteArray)") {
 			val bpp = if (dataFormat == GL_RGBA) 4 else 3
 			Hazel.coreAssert(data.size == width * height * bpp) { "Data must be entire texture" }
 			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, data)
@@ -109,7 +109,7 @@ class OpenGLTexture2D : Texture2D {
 	}
 
 	override fun bind(slot: UInt) {
-		Hazel.profile(::bind) {
+		Hazel.profile("OpenGLTexture2D.bind(UInt)") {
 			glActiveTexture(GL_TEXTURE0 + slot)
 			glBindTexture(GL_TEXTURE_2D, rendererId)
 		}

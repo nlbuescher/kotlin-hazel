@@ -30,7 +30,7 @@ object Instrumentor {
 	}
 
 	private fun beginSession(name: String, filepath: String) {
-		if (Hazel.config.isProfileEnabled) {
+		if (Hazel.Config.enableProfiling) {
 			file = fopen(filepath, "w")
 			writeHeader()
 			currentSession = InstrumentationSession(name)
@@ -38,7 +38,7 @@ object Instrumentor {
 	}
 
 	private fun endSession() {
-		if (Hazel.config.isProfileEnabled) {
+		if (Hazel.Config.enableProfiling) {
 			writeFooter()
 			fclose(file)
 			currentSession = null

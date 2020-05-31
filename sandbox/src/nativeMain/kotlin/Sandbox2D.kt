@@ -18,10 +18,12 @@ class Sandbox2D : Layer("Sandbox2D") {
 		checkerBoardTexture = Texture2D("assets/textures/checkerboard.png")
 	}
 
-	override fun onDetach() {}
+	override fun onDetach() {
+		Hazel.profile("Sandbox2D.onDetach()") {}
+	}
 
 	override fun onUpdate(timeStep: TimeStep) {
-		Hazel.profile(::onUpdate) {
+		Hazel.profile("Sandbox2D.onUpdate(TimeStep)") {
 			// update
 			cameraController.onUpdate(timeStep)
 

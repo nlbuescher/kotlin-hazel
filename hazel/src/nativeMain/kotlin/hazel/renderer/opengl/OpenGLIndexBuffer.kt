@@ -13,7 +13,7 @@ class OpenGLIndexBuffer(indices: UIntArray) : IndexBuffer {
 	private val rendererId: UInt
 
 	init {
-		val profiler = Hazel.Profiler(::OpenGLIndexBuffer)
+		val profiler = Hazel.Profiler("OpenGLIndexBuffer(UIntArray): OpenGLIndexBuffer")
 		profiler.start()
 
 		rendererId = glGenBuffer()
@@ -24,19 +24,19 @@ class OpenGLIndexBuffer(indices: UIntArray) : IndexBuffer {
 	}
 
 	override fun dispose() {
-		Hazel.profile(::dispose) {
+		Hazel.profile("OpenGLIndexBuffer.dispose()") {
 			glDeleteBuffer(rendererId)
 		}
 	}
 
 	override fun bind() {
-		Hazel.profile(::bind) {
+		Hazel.profile("OpenGLIndexBuffer.bind()") {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId)
 		}
 	}
 
 	override fun unbind() {
-		Hazel.profile(::unbind) {
+		Hazel.profile("OpenGLIndexBuffer.unbind()") {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0u)
 		}
 	}

@@ -21,7 +21,7 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 		set(value) = run { field = value; recalculateViewMatrix() }
 
 	init {
-		val profiler = Hazel.Profiler(::OrthographicCamera)
+		val profiler = Hazel.Profiler("OrthographicCamera(Float, Float, Float, Float): OrthographicCamera")
 		profiler.start()
 
 		projectionMatrix = orthographicProjectionOf(left, right, bottom, top, -1f, 1f)
@@ -32,14 +32,14 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 	}
 
 	fun setProjection(left: Float, right: Float, bottom: Float, top: Float) {
-		Hazel.profile(::setProjection) {
+		Hazel.profile("OrthographicCamera.setProjection(Float, Float, Float, Float)") {
 			projectionMatrix = orthographicProjectionOf(left, right, bottom, top, -1f, 1f)
 			viewProjectionMatrix = projectionMatrix * viewMatrix
 		}
 	}
 
 	private fun recalculateViewMatrix() {
-		Hazel.profile(::recalculateViewMatrix) {
+		Hazel.profile("OrthographicCamera.recalculateViewMatrix()") {
 			val transform = Mat4.IDENTITY.toMutableMat4().apply {
 				translate(position)
 				rotate(rotation, Vec3.FORWARD)

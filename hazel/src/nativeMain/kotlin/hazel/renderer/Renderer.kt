@@ -16,14 +16,16 @@ object Renderer {
 		set(new) = run { RenderAPI.api = new }
 
 	fun init() {
-		Hazel.profile(::init) {
+		Hazel.profile("Renderer.init()") {
 			RenderCommand.init()
 			Renderer2D.init()
 		}
 	}
 
 	fun shutdown() {
-		Renderer2D.shutdown()
+		Hazel.profile("Renderer.shutdown()") {
+			Renderer2D.shutdown()
+		}
 	}
 
 	fun onWindowResize(width: Int, height: Int) {

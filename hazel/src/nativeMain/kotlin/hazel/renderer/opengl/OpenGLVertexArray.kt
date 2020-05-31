@@ -20,7 +20,7 @@ internal class OpenGLVertexArray : VertexArray {
 	override var indexBuffer: IndexBuffer
 		get() = _indexBuffer
 		set(value) {
-			Hazel.profile(::indexBuffer::set) {
+			Hazel.profile("OpenGLVertexArray.indexBuffer.set(IndexBuffer)") {
 				glBindVertexArray(rendererId)
 				value.bind()
 				_indexBuffer = value
@@ -28,7 +28,7 @@ internal class OpenGLVertexArray : VertexArray {
 		}
 
 	init {
-		val profiler = Hazel.Profiler(::OpenGLVertexArray)
+		val profiler = Hazel.Profiler("OpenGLVertexArray(): OpenGLVertexBuffer")
 		profiler.start()
 
 		rendererId = glGenVertexArray()
@@ -37,7 +37,7 @@ internal class OpenGLVertexArray : VertexArray {
 	}
 
 	override fun dispose() {
-		Hazel.profile(::dispose) {
+		Hazel.profile("OpenGLVertexArray.dispose()") {
 			vertexBuffers.forEach { it.dispose() }
 			indexBuffer.dispose()
 			glDeleteVertexArray(rendererId)
@@ -45,19 +45,19 @@ internal class OpenGLVertexArray : VertexArray {
 	}
 
 	override fun bind() {
-		Hazel.profile(::bind) {
+		Hazel.profile("OpenGLVertexArray.bind()") {
 			glBindVertexArray(rendererId)
 		}
 	}
 
 	override fun unbind() {
-		Hazel.profile(::unbind) {
+		Hazel.profile("OpenGLVertexArray.unbind()") {
 			glBindVertexArray(0u)
 		}
 	}
 
 	override fun addVertexBuffer(vertexBuffer: VertexBuffer) {
-		Hazel.profile(::addVertexBuffer) {
+		Hazel.profile("OpenGLVertexArray.addVertexBuffer(VertexBuffer)") {
 			Hazel.coreAssert(vertexBuffer.layout.elements.isNotEmpty()) { "Vertex buffer has no layout!" }
 
 			glBindVertexArray(rendererId)
