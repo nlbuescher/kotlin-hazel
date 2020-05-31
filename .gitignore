@@ -16,6 +16,7 @@ build
 .idea/*.iml
 
 # Other files that a gradle project generates
+.idea/compiler.xml
 .idea/jarRepositories.xml
 .idea/misc.xml
 

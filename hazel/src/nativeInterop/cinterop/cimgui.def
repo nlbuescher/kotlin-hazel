@@ -1,8 +1,0 @@
-package = cimgui
-
-headers = cimgui.h cimgui_impl.h
-
-compilerOpts = -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS -I../cimgui
-
-linkerOpts.linux = -lGL -lGLEW -lglfw
-linkerOpts.mingw = -lopengl32 -lglew32 -lglfw3

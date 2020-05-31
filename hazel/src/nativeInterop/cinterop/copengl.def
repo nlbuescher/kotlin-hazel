@@ -1,9 +1,0 @@
-package = copengl
-headers = GL/glew.h GL/gl.h
-
-compilerOpts.linux = -I/usr/include
-compilerOpts.osx = -I/usr/local/include
-compilerOpts.mingw = -IC:/msys64/mingw64/include
-
-linkerOpts.linux = -L/usr/lib -lGL -lGLEW
-linkerOpts.mingw = -LC:/msys64/mingw64/lib -lopengl32 -lglew32

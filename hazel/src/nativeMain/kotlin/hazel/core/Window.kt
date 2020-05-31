@@ -1,172 +1,124 @@
 package hazel.core
 
-import cglfw.GLFW_PRESS
-import cglfw.GLFW_RELEASE
-import cglfw.GLFW_REPEAT
-import cglfw.GLFW_TRUE
-import cglfw.glfwCreateWindow
-import cglfw.glfwDefaultWindowHints
-import cglfw.glfwDestroyWindow
-import cglfw.glfwGetWindowSize
-import cglfw.glfwGetWindowUserPointer
-import cglfw.glfwInit
-import cglfw.glfwPollEvents
-import cglfw.glfwSetCharCallback
-import cglfw.glfwSetCursorPosCallback
-import cglfw.glfwSetErrorCallback
-import cglfw.glfwSetKeyCallback
-import cglfw.glfwSetMouseButtonCallback
-import cglfw.glfwSetScrollCallback
-import cglfw.glfwSetWindowCloseCallback
-import cglfw.glfwSetWindowSize
-import cglfw.glfwSetWindowSizeCallback
-import cglfw.glfwSetWindowUserPointer
-import cglfw.glfwSwapInterval
-import cglfw.glfwTerminate
-import cnames.structs.GLFWwindow
+import com.kgl.glfw.Action
+import com.kgl.glfw.Glfw
+import com.kgl.glfw.OpenGLProfile
 import hazel.renderer.GraphicsContext
 import hazel.renderer.opengl.OpenGLContext
-import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.IntVar
-import kotlinx.cinterop.StableRef
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.asStableRef
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
-import kotlinx.cinterop.staticCFunction
-import kotlinx.cinterop.toKString
-import kotlinx.cinterop.value
 import kotlin.native.concurrent.ensureNeverFrozen
+import com.kgl.glfw.Window as GlfwWindow
 
-class Window @PublishedApi internal constructor(val ptr: CPointer<GLFWwindow>) : Disposable {
+class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disposable {
 
-    private val context: GraphicsContext
+	private val context: GraphicsContext
 
-    var isVSync: Boolean = false
-        set(value) {
-            Hazel.profile("${this::class.qualifiedName}.${::isVSync.name}.set(${Boolean::class.qualifiedName})") {
-                glfwSwapInterval(if (value) 1 else 0)
-            }
-            field = value
-        }
+	var isVSync: Boolean = false // dummy value should be overridden in init
+		set(value) {
+			Hazel.profile("${this::class.qualifiedName}.${::isVSync.name}.set(${Boolean::class.qualifiedName})") {
+				Glfw.setSwapInterval(if (value) 1 else 0)
+			}
+			field = value
+		}
 
-    init {
-        ensureNeverFrozen()
+	init {
+		ensureNeverFrozen()
 
-        context = OpenGLContext(ptr).also { it.init() }
+		context = OpenGLContext(this).also { it.init() }
 
-        isVSync = true
+		isVSync = true
 
-        glfwSetWindowUserPointer(ptr, StableRef.create(this).asCPointer())
+		// set GLFW callbacks
+		with(internal) {
+			setSizeCallback { _, width, height ->
+				val event = WindowResizeEvent(width, height)
+				eventCallback?.invoke(event)
+			}
 
-        // set GLFW callbacks
-        glfwSetWindowSizeCallback(ptr, staticCFunction { window, width, height ->
-            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            val event = WindowResizeEvent(width, height)
-            context.eventCallback?.invoke(event)
-        })
+			setCloseCallback {
+				val event = WindowCloseEvent()
+				eventCallback?.invoke(event)
+			}
 
-        glfwSetWindowCloseCallback(ptr, staticCFunction { window ->
-            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            val event = WindowCloseEvent()
-            context.eventCallback?.invoke(event)
-        })
+			setKeyCallback { _, key, _ /*scanCode*/, action, _ /*mods*/ ->
+				when (action) {
+					Action.Release -> eventCallback?.invoke(KeyReleasedEvent(Key.fromGlfw(key)))
+					Action.Press -> eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 0))
+					Action.Repeat -> eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 1))
+				}
+			}
 
-        glfwSetKeyCallback(ptr, staticCFunction { window, key, _ /*scanCode*/, action, _ /*mods*/ ->
-            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            when (action) {
-                GLFW_RELEASE -> context.eventCallback?.invoke(KeyReleasedEvent(Key.fromGlfw(key)))
-                GLFW_PRESS -> context.eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 0))
-                GLFW_REPEAT -> context.eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 1))
-            }
-        })
+			setCharCallback { _, char ->
+				eventCallback?.invoke(KeyTypedEvent(Key(char.toInt())))
+			}
 
-        glfwSetCharCallback(ptr, staticCFunction { window, character ->
-            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            context.eventCallback?.invoke(KeyTypedEvent(Key.fromGlfw(character.toInt())))
-        })
+			setMouseButtonCallback { _, button, action, _ /*mods*/ ->
+				when (action) {
+					Action.Release -> eventCallback?.invoke(MouseButtonReleasedEvent(MouseButton.fromGlfw(button)))
+					else -> eventCallback?.invoke(MouseButtonPressedEvent(MouseButton.fromGlfw(button)))
+				}
+			}
 
-        glfwSetMouseButtonCallback(ptr, staticCFunction { window, button, action, _ /*mods*/ ->
-            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            when (action) {
-                GLFW_RELEASE -> context.eventCallback?.invoke(MouseButtonReleasedEvent(MouseButton.fromGlfw(button)))
-                GLFW_PRESS -> context.eventCallback?.invoke(MouseButtonPressedEvent(MouseButton.fromGlfw(button)))
-            }
-        })
+			setScrollCallback { _, xOffset, yOffset ->
+				eventCallback?.invoke(MouseScrolledEvent(xOffset.toFloat(), yOffset.toFloat()))
+			}
 
-        glfwSetScrollCallback(ptr, staticCFunction { window, xOffset, yOffset ->
-            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            val event = MouseScrolledEvent(xOffset.toFloat(), yOffset.toFloat())
-            context.eventCallback?.invoke(event)
-        })
+			setCursorPosCallback { _, x, y ->
+				eventCallback?.invoke(MouseMovedEvent(x.toFloat(), y.toFloat()))
+			}
+		}
+	}
 
-        glfwSetCursorPosCallback(ptr, staticCFunction { window, x, y ->
-            val context = glfwGetWindowUserPointer(window)!!.asStableRef<Window>().get()
-            val event = MouseMovedEvent(x.toFloat(), y.toFloat())
-            context.eventCallback?.invoke(event)
-        })
-    }
-
-    override fun dispose() {
-        Hazel.profile(::dispose) {
-            glfwGetWindowUserPointer(ptr)!!.asStableRef<Window>().dispose()
-            glfwDestroyWindow(ptr)
-            glfwTerminate()
-        }
-    }
+	override fun dispose() {
+		Hazel.profile(::dispose) {
+			internal.close()
+		}
+	}
 
 
-    var position: Pair<Int, Int>
-        get() = memScoped {
-            val x = alloc<IntVar>()
-            val y = alloc<IntVar>()
-            glfwGetWindowSize(ptr, x.ptr, y.ptr)
-            x.value to y.value
-        }
-        set(value) = glfwSetWindowSize(ptr, value.first, value.second)
+	var position: Pair<Int, Int>
+		get() = internal.position
+		set(value) = run { internal.position = value }
 
-    var size: Pair<Int, Int>
-        get() = memScoped {
-            val width = alloc<IntVar>()
-            val height = alloc<IntVar>()
-            glfwGetWindowSize(ptr, width.ptr, height.ptr)
-            width.value to height.value
-        }
-        set(value) = glfwSetWindowSize(ptr, value.first, value.second)
+	var size: Pair<Int, Int>
+		get() = internal.size
+		set(value) = run { internal.size = value }
 
 
-    private var eventCallback: ((Event) -> Unit)? = null
-    fun setEventCallback(callback: (Event) -> Unit) {
-        eventCallback = callback
-    }
+	private var eventCallback: ((Event) -> Unit)? = null
+	fun setEventCallback(callback: (Event) -> Unit) {
+		eventCallback = callback
+	}
 
 
-    fun onUpdate() {
-        Hazel.profile(::onUpdate) {
-            glfwPollEvents()
-            context.swapBuffers()
-        }
-    }
+	fun onUpdate() {
+		Hazel.profile(::onUpdate) {
+			Glfw.pollEvents()
+			context.swapBuffers()
+		}
+	}
 
 
-    companion object {
-        operator fun invoke(width: Int = 1280, height: Int = 720, title: String = "Hazel Engine"): Window {
-            return Hazel.profile(::Window) {
-                Hazel.profile("glfwInit") {
-                    Hazel.coreAssert(glfwInit() == GLFW_TRUE) { "Could not initialize GLFW!" }
-                }
+	companion object {
+		operator fun invoke(width: Int = 1280, height: Int = 720, title: String = "Hazel Engine"): Window {
+			return Hazel.profile(::Window) {
+				Hazel.profile(Glfw::init) {
+					Glfw.init()
+				}
 
-                glfwSetErrorCallback(staticCFunction { error, message ->
-                    Hazel.error { "GLFW error ($error): ${message?.toKString()}" }
-                })
+				Glfw.setErrorCallback { error, message ->
+					Hazel.error { "GLFW error ($error): $message" }
+				}
 
-                glfwDefaultWindowHints()
-
-                val ptr = Hazel.profile("glfwCreateWindow") {
-                    glfwCreateWindow(width, height, title, null, null) ?: throw Exception("Could not create window.")
-                }
-                Window(ptr)
-            }
-        }
-    }
+				val internal = Hazel.profile("Glfw create window") {
+					GlfwWindow(width, height, title) {
+						contextVersionMajor = 3
+						contextVersionMinor = 2
+						openGLForwardCompat = true
+						openGLProfile = OpenGLProfile.Core
+					}
+				}
+				Window(internal)
+			}
+		}
+	}
 }
