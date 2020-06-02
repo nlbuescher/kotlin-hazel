@@ -1,11 +1,11 @@
 package hazel.renderer
 
 import hazel.math.Vec4
+import hazel.renderer.opengl.OpenGLRenderAPI
 
 private var _api: RenderAPI.API = RenderAPI.API.OpenGL
 
 interface RenderAPI {
-
 	enum class API {
 		None, OpenGL
 	}
@@ -24,4 +24,10 @@ interface RenderAPI {
 			get() = _api
 			set(new) = run { _api = new }
 	}
+}
+
+@Suppress("FunctionName")
+fun RenderAPI(): RenderAPI = when (Renderer.api) {
+	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
+	RenderAPI.API.OpenGL -> OpenGLRenderAPI()
 }

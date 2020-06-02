@@ -4,8 +4,8 @@ import hazel.core.Hazel
 import hazel.core.profile
 import hazel.math.Mat4
 
-class SceneData {
-	var viewProjectionMatrix = Mat4.IDENTITY
+private class SceneData {
+	var viewProjectionMatrix: Mat4 = Mat4.IDENTITY
 }
 
 private val sceneData = SceneData()
@@ -36,9 +36,7 @@ object Renderer {
 		sceneData.viewProjectionMatrix = camera.viewProjectionMatrix
 	}
 
-	private fun endScene() {
-
-	}
+	private fun endScene() {}
 
 	fun scene(camera: OrthographicCamera, block: Renderer.() -> Unit) {
 		beginScene(camera)

@@ -9,7 +9,6 @@ private lateinit var textureShader: Shader
 private lateinit var whiteTexture: Texture2D
 
 object Renderer2D {
-
 	fun init() {
 		Hazel.profile("Renderer2D.init()") {
 			quadVertexArray = VertexArray()
@@ -24,7 +23,6 @@ object Renderer2D {
 				BufferElement(ShaderDataType.Float3, "a_Position"),
 				BufferElement(ShaderDataType.Float2, "a_TextureCoordinate")
 			)
-
 			quadVertexArray.addVertexBuffer(squareVertexBuffer)
 			quadVertexArray.indexBuffer = indexBufferOf(0u, 1u, 2u, 2u, 3u, 0u)
 
@@ -40,6 +38,8 @@ object Renderer2D {
 	fun shutdown() {
 		Hazel.profile("Renderer2D.shutdown()") {
 			quadVertexArray.dispose()
+			textureShader.dispose()
+			whiteTexture.dispose()
 		}
 	}
 
@@ -70,11 +70,10 @@ object Renderer2D {
 			textureShader["u_TilingFactor"] = 1f
 			whiteTexture.bind()
 
-			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+			textureShader["u_Transform"] = Mat4.IDENTITY.toMutableMat4().apply {
 				translate(position)
 				scale(Vec3(size.x, size.y, 1f))
 			}
-			textureShader["u_Transform"] = transform
 
 			quadVertexArray.bind()
 			RenderCommand.drawIndexed(quadVertexArray)
@@ -91,11 +90,10 @@ object Renderer2D {
 			textureShader["u_TilingFactor"] = tilingFactor
 			texture.bind()
 
-			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+			textureShader["u_Transform"] = Mat4.IDENTITY.toMutableMat4().apply {
 				translate(position)
 				scale(Vec3(size.x, size.y, 1f))
 			}
-			textureShader["u_Transform"] = transform
 
 			quadVertexArray.bind()
 			RenderCommand.drawIndexed(quadVertexArray)
@@ -112,12 +110,11 @@ object Renderer2D {
 			textureShader["u_TilingFactor"] = 1f
 			whiteTexture.bind()
 
-			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+			textureShader["u_Transform"] = Mat4.IDENTITY.toMutableMat4().apply {
 				translate(position)
-				rotate(rotation, Vec3(0f, 0f, 1f))
+				rotate(rotation, Vec3.FORWARD)
 				scale(Vec3(size.x, size.y, 1f))
 			}
-			textureShader["u_Transform"] = transform
 
 			quadVertexArray.bind()
 			RenderCommand.drawIndexed(quadVertexArray)
@@ -134,12 +131,11 @@ object Renderer2D {
 			textureShader["u_TilingFactor"] = tilingFactor
 			texture.bind()
 
-			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+			textureShader["u_Transform"] = Mat4.IDENTITY.toMutableMat4().apply {
 				translate(position)
-				rotate(rotation, Vec3(0f, 0f, 1f))
+				rotate(rotation, Vec3.FORWARD)
 				scale(Vec3(size.x, size.y, 1f))
 			}
-			textureShader["u_Transform"] = transform
 
 			quadVertexArray.bind()
 			RenderCommand.drawIndexed(quadVertexArray)

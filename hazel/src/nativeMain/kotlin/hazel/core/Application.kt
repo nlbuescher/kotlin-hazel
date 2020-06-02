@@ -1,6 +1,10 @@
 package hazel.core
 
 import hazel.core.TimeStepUnit.SECONDS
+import hazel.events.Event
+import hazel.events.WindowCloseEvent
+import hazel.events.WindowResizeEvent
+import hazel.imgui.ImGuiLayer
 import hazel.renderer.Renderer
 
 abstract class Application : Disposable {
@@ -9,7 +13,7 @@ abstract class Application : Disposable {
 	private var isRunning: Boolean = true
 	private var isMinimized: Boolean = false
 
-	private val layerStack: LayerStack
+	private val layerStack: LayerStack = LayerStack()
 	private val imGuiLayer: ImGuiLayer
 
 	private var lastFrameTime: Float = 0f
@@ -20,10 +24,9 @@ abstract class Application : Disposable {
 
 		window = Window().apply { setEventCallback(::onEvent) }
 
-		layerStack = LayerStack()
-		imGuiLayer = ImGuiLayer()
-
 		Renderer.init()
+
+		imGuiLayer = ImGuiLayer()
 
 		profiler.stop()
 	}
@@ -61,12 +64,12 @@ abstract class Application : Disposable {
 					lastFrameTime = time
 
 					if (!isMinimized) {
-						Hazel.profile("LayerStack onUpdate") {
+						Hazel.profile("LayerStack.onUpdate(TimeStep)") {
 							layerStack.forEach { it.onUpdate(timeStep) }
 						}
 
 						imGuiLayer.begin()
-						Hazel.profile("LayerStack onImGuiRender") {
+						Hazel.profile("LayerStack.onImGuiRender()") {
 							layerStack.forEach { it.onImGuiRender() }
 						}
 						imGuiLayer.end()
@@ -98,7 +101,6 @@ abstract class Application : Disposable {
 			}
 
 			isMinimized = false
-
 			Renderer.onWindowResize(event.width, event.height)
 
 			return@profile false

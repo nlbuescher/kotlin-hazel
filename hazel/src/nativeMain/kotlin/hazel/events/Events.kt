@@ -1,5 +1,7 @@
-package hazel.core
+package hazel.events
 
+import hazel.core.Key
+import hazel.core.MouseButton
 import kotlin.reflect.KClass
 
 sealed class Event {

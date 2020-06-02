@@ -11,7 +11,6 @@ import hazel.renderer.VertexArray
 import hazel.renderer.VertexBuffer
 
 internal class OpenGLVertexArray : VertexArray {
-
 	private val rendererId: UInt
 
 	override val vertexBuffers = mutableListOf<VertexBuffer>()
@@ -58,7 +57,7 @@ internal class OpenGLVertexArray : VertexArray {
 
 	override fun addVertexBuffer(vertexBuffer: VertexBuffer) {
 		Hazel.profile("OpenGLVertexArray.addVertexBuffer(VertexBuffer)") {
-			Hazel.coreAssert(vertexBuffer.layout.elements.isNotEmpty()) { "Vertex buffer has no layout!" }
+			Hazel.coreAssert(vertexBuffer.layout.elements.isNotEmpty(), "Vertex buffer has no layout!")
 
 			glBindVertexArray(rendererId)
 			vertexBuffer.bind()

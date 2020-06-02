@@ -1,11 +1,6 @@
 package hazel.core
 
-import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.allocArray
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
-import kotlinx.cinterop.toKString
+import kotlinx.cinterop.*
 import platform.posix.localtime
 import platform.posix.strftime
 import platform.posix.time
@@ -17,7 +12,7 @@ internal class Logger(private val name: String) {
 			val t = alloc<time_tVar>()
 			val str = allocArray<ByteVar>(10)
 			time(t.ptr)
-			strftime(str, 10, "%H:%M:%S", localtime(t.ptr))
+			strftime(str, 10.convert(), "%H:%M:%S", localtime(t.ptr))
 			str.toKString()
 		}
 

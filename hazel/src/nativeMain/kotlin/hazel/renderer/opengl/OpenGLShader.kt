@@ -20,10 +20,9 @@ import kotlinx.cinterop.usePinned
 import platform.posix.*
 
 class OpenGLShader : Shader {
+	private var rendererId: UInt = 0u
 
 	override val name: String
-
-	private var rendererId: UInt = 0u
 
 	constructor(filepath: String) {
 		val profiler = Hazel.Profiler("OpenGLShader(String): OpenGLShader")
@@ -45,7 +44,10 @@ class OpenGLShader : Shader {
 		profiler.start()
 
 		this.name = name
-		val sources = mapOf(GL_VERTEX_SHADER to vertexSource, GL_FRAGMENT_SHADER to fragmentSource)
+		val sources = mapOf(
+			GL_VERTEX_SHADER to vertexSource,
+			GL_FRAGMENT_SHADER to fragmentSource
+		)
 		compile(sources)
 
 		profiler.stop()
@@ -139,7 +141,7 @@ class OpenGLShader : Shader {
 					usePinned { fread(it.addressOf(0), 1.convert(), size.convert(), file) }
 				}.toKString()
 			} ?: run {
-				Hazel.coreError { "Could not open file `$filepath`" }
+				Hazel.coreError("Could not open file `$filepath`")
 				null
 			}
 		}
@@ -152,10 +154,10 @@ class OpenGLShader : Shader {
 			var pos = source.indexOf(typeToken)
 			while (pos != -1) {
 				val eol = source.indexOfAny(charArrayOf('\r', '\n'), pos)
-				Hazel.coreAssert(eol != -1) { "Syntax error" }
+				Hazel.coreAssert(eol != -1, "Syntax error")
 				val begin = pos + typeToken.length + 1
 				val type = source.substring(begin, eol)
-				Hazel.coreAssert(type.toShaderType() != 0u) { "Invalid shader type specified" }
+				Hazel.coreAssert(type.toShaderType() != 0u, "Invalid shader type specified")
 
 				val nextLinePos = source.indexOfNone(charArrayOf('\r', '\n'), eol)
 				pos = source.indexOf(typeToken, nextLinePos)
@@ -184,8 +186,8 @@ class OpenGLShader : Shader {
 
 					glDeleteShader(shader)
 
-					Hazel.coreAssert(false) { "Shader failed to compile!" }
-					Hazel.coreError { infoLog }
+					Hazel.coreError(infoLog)
+					Hazel.coreAssert(false, "Shader failed to compile!")
 					break
 				}
 
@@ -204,8 +206,8 @@ class OpenGLShader : Shader {
 				for (id in glShaderIds)
 					glDeleteShader(id)
 
-				Hazel.coreAssert(false) { "Shaders failed to link!" }
-				Hazel.coreError { infoLog }
+				Hazel.coreError(infoLog)
+				Hazel.coreAssert(false, "Shaders failed to link!")
 				return@profile
 			}
 
@@ -222,7 +224,7 @@ class OpenGLShader : Shader {
 		"fragment",
 		"pixel" -> GL_FRAGMENT_SHADER
 		else -> {
-			Hazel.coreAssert(false) { "Unknown shader type $this!" }
+			Hazel.coreAssert(false, "Unknown shader type $this!")
 			0u
 		}
 	}

@@ -6,17 +6,28 @@ import com.kgl.glfw.MouseButton as GlfwMouseButton
 
 object Input {
 	fun isKeyPressed(key: Key): Boolean {
-		val state = Hazel.application.window.internal.getKey(key.toGlfw())
+		val window = Hazel.application.window.nativeWindow
+		val state = window.getKey(key.toGlfw())
 		return state == Action.Press || state == Action.Repeat
 	}
 
 	fun isMouseButtonPressed(button: MouseButton): Boolean {
-		val state = Hazel.application.window.internal.getMouseButton(button.toGlfw())
+		val window = Hazel.application.window.nativeWindow
+		val state = window.getMouseButton(button.toGlfw())
 		return state == Action.Press
 	}
 
-	val mousePosition: Pair<Double, Double>
-		get() = Hazel.application.window.internal.cursorPosition
+	val mousePosition: Pair<Float, Float>
+		get() {
+			val (x, y) = Hazel.application.window.nativeWindow.cursorPosition
+			return x.toFloat() to y.toFloat()
+		}
+
+	val mouseX: Float
+		get() = mousePosition.first
+
+	val mouseY: Float
+		get() = mousePosition.second
 }
 
 inline class Key(val value: Int) {
@@ -26,23 +37,23 @@ inline class Key(val value: Int) {
 
 		// Printable keys
 		val SPACE = Key(32)
-		val APOSTROPHE = Key(39)  // '
-		val COMMA = Key(44)  // ,
-		val MINUS = Key(45)  // -
-		val PERIOD = Key(46)  // .
-		val SLASH = Key(47)  // /
-		val _0 = Key(48)
-		val _1 = Key(49)
-		val _2 = Key(50)
-		val _3 = Key(51)
-		val _4 = Key(52)
-		val _5 = Key(53)
-		val _6 = Key(54)
-		val _7 = Key(55)
-		val _8 = Key(56)
-		val _9 = Key(57)
-		val SEMICOLON = Key(59)  // ;
-		val EQUAL = Key(61)  // =
+		val APOSTROPHE = Key(39) // '
+		val COMMA = Key(44) // ,
+		val MINUS = Key(45) // -
+		val PERIOD = Key(46) // .
+		val SLASH = Key(47) // /
+		val D0 = Key(48) // 0
+		val D1 = Key(49) // 1
+		val D2 = Key(50) // 2
+		val D3 = Key(51) // 3
+		val D4 = Key(52) // 4
+		val D5 = Key(53) // 5
+		val D6 = Key(54) // 6
+		val D7 = Key(55) // 7
+		val D8 = Key(56) // 8
+		val D9 = Key(57) // 9
+		val SEMICOLON = Key(59) // ;
+		val EQUAL = Key(61) // =
 		val A = Key(65)
 		val B = Key(66)
 		val C = Key(67)
@@ -69,10 +80,10 @@ inline class Key(val value: Int) {
 		val X = Key(88)
 		val Y = Key(89)
 		val Z = Key(90)
-		val LEFT_BRACKET = Key(91)  // [
-		val BACKSLASH = Key(92)  // \
-		val RIGHT_BRACKET = Key(93)  // ]
-		val GRAVE_ACCENT = Key(96)  // `
+		val LEFT_BRACKET = Key(91) // [
+		val BACKSLASH = Key(92) // \
+		val RIGHT_BRACKET = Key(93) // ]
+		val GRAVE_ACCENT = Key(96) // `
 		val WORLD_1 = Key(161) // non-US #1
 		val WORLD_2 = Key(162) // non-US #2
 
@@ -154,164 +165,164 @@ inline class Key(val value: Int) {
 
 private val keyMappings = mapOf(
 	// The unknown key
-	GlfwKey.UNKNOWN to Key.UNKNOWN,
+	Key.UNKNOWN to GlfwKey.UNKNOWN,
 
 	// Printable keys
-	GlfwKey.SPACE to Key.SPACE,
-	GlfwKey.APOSTROPHE to Key.APOSTROPHE,
-	GlfwKey.COMMA to Key.COMMA,
-	GlfwKey.MINUS to Key.MINUS,
-	GlfwKey.PERIOD to Key.PERIOD,
-	GlfwKey.SLASH to Key.SLASH,
-	GlfwKey._0 to Key._0,
-	GlfwKey._1 to Key._1,
-	GlfwKey._2 to Key._2,
-	GlfwKey._3 to Key._3,
-	GlfwKey._4 to Key._4,
-	GlfwKey._5 to Key._5,
-	GlfwKey._6 to Key._6,
-	GlfwKey._7 to Key._7,
-	GlfwKey._8 to Key._8,
-	GlfwKey._9 to Key._9,
-	GlfwKey.SEMICOLON to Key.SEMICOLON,
-	GlfwKey.EQUAL to Key.EQUAL,
-	GlfwKey.A to Key.A,
-	GlfwKey.B to Key.B,
-	GlfwKey.C to Key.C,
-	GlfwKey.D to Key.D,
-	GlfwKey.E to Key.E,
-	GlfwKey.F to Key.F,
-	GlfwKey.G to Key.G,
-	GlfwKey.H to Key.H,
-	GlfwKey.I to Key.I,
-	GlfwKey.J to Key.J,
-	GlfwKey.K to Key.K,
-	GlfwKey.L to Key.L,
-	GlfwKey.M to Key.M,
-	GlfwKey.N to Key.N,
-	GlfwKey.O to Key.O,
-	GlfwKey.P to Key.P,
-	GlfwKey.Q to Key.Q,
-	GlfwKey.R to Key.R,
-	GlfwKey.S to Key.S,
-	GlfwKey.T to Key.T,
-	GlfwKey.U to Key.U,
-	GlfwKey.V to Key.V,
-	GlfwKey.W to Key.W,
-	GlfwKey.X to Key.X,
-	GlfwKey.Y to Key.Y,
-	GlfwKey.Z to Key.Z,
-	GlfwKey.LEFT_BRACKET to Key.LEFT_BRACKET,
-	GlfwKey.BACKSLASH to Key.BACKSLASH,
-	GlfwKey.RIGHT_BRACKET to Key.RIGHT_BRACKET,
-	GlfwKey.GRAVE_ACCENT to Key.GRAVE_ACCENT,
-	GlfwKey.WORLD_1 to Key.WORLD_1,
-	GlfwKey.WORLD_2 to Key.WORLD_2,
+	Key.SPACE to GlfwKey.SPACE,
+	Key.APOSTROPHE to GlfwKey.APOSTROPHE,
+	Key.COMMA to GlfwKey.COMMA,
+	Key.MINUS to GlfwKey.MINUS,
+	Key.PERIOD to GlfwKey.PERIOD,
+	Key.SLASH to GlfwKey.SLASH,
+	Key.D0 to GlfwKey._0,
+	Key.D1 to GlfwKey._1,
+	Key.D2 to GlfwKey._2,
+	Key.D3 to GlfwKey._3,
+	Key.D4 to GlfwKey._4,
+	Key.D5 to GlfwKey._5,
+	Key.D6 to GlfwKey._6,
+	Key.D7 to GlfwKey._7,
+	Key.D8 to GlfwKey._8,
+	Key.D9 to GlfwKey._9,
+	Key.SEMICOLON to GlfwKey.SEMICOLON,
+	Key.EQUAL to GlfwKey.EQUAL,
+	Key.A to GlfwKey.A,
+	Key.B to GlfwKey.B,
+	Key.C to GlfwKey.C,
+	Key.D to GlfwKey.D,
+	Key.E to GlfwKey.E,
+	Key.F to GlfwKey.F,
+	Key.G to GlfwKey.G,
+	Key.H to GlfwKey.H,
+	Key.I to GlfwKey.I,
+	Key.J to GlfwKey.J,
+	Key.K to GlfwKey.K,
+	Key.L to GlfwKey.L,
+	Key.M to GlfwKey.M,
+	Key.N to GlfwKey.N,
+	Key.O to GlfwKey.O,
+	Key.P to GlfwKey.P,
+	Key.Q to GlfwKey.Q,
+	Key.R to GlfwKey.R,
+	Key.S to GlfwKey.S,
+	Key.T to GlfwKey.T,
+	Key.U to GlfwKey.U,
+	Key.V to GlfwKey.V,
+	Key.W to GlfwKey.W,
+	Key.X to GlfwKey.X,
+	Key.Y to GlfwKey.Y,
+	Key.Z to GlfwKey.Z,
+	Key.LEFT_BRACKET to GlfwKey.LEFT_BRACKET,
+	Key.BACKSLASH to GlfwKey.BACKSLASH,
+	Key.RIGHT_BRACKET to GlfwKey.RIGHT_BRACKET,
+	Key.GRAVE_ACCENT to GlfwKey.GRAVE_ACCENT,
+	Key.WORLD_1 to GlfwKey.WORLD_1,
+	Key.WORLD_2 to GlfwKey.WORLD_2,
 
 	// Function keys
-	GlfwKey.ESCAPE to Key.ESCAPE,
-	GlfwKey.ENTER to Key.ENTER,
-	GlfwKey.TAB to Key.TAB,
-	GlfwKey.BACKSPACE to Key.BACKSPACE,
-	GlfwKey.INSERT to Key.INSERT,
-	GlfwKey.DELETE to Key.DELETE,
-	GlfwKey.RIGHT to Key.RIGHT,
-	GlfwKey.LEFT to Key.LEFT,
-	GlfwKey.DOWN to Key.DOWN,
-	GlfwKey.UP to Key.UP,
-	GlfwKey.PAGE_UP to Key.PAGE_UP,
-	GlfwKey.PAGE_DOWN to Key.PAGE_DOWN,
-	GlfwKey.HOME to Key.HOME,
-	GlfwKey.END to Key.END,
-	GlfwKey.CAPS_LOCK to Key.CAPS_LOCK,
-	GlfwKey.SCROLL_LOCK to Key.SCROLL_LOCK,
-	GlfwKey.NUM_LOCK to Key.NUM_LOCK,
-	GlfwKey.PRINT_SCREEN to Key.PRINT_SCREEN,
-	GlfwKey.PAUSE to Key.PAUSE,
-	GlfwKey.F1 to Key.F1,
-	GlfwKey.F2 to Key.F2,
-	GlfwKey.F3 to Key.F3,
-	GlfwKey.F4 to Key.F4,
-	GlfwKey.F5 to Key.F5,
-	GlfwKey.F6 to Key.F6,
-	GlfwKey.F7 to Key.F7,
-	GlfwKey.F8 to Key.F8,
-	GlfwKey.F9 to Key.F9,
-	GlfwKey.F10 to Key.F10,
-	GlfwKey.F11 to Key.F11,
-	GlfwKey.F12 to Key.F12,
-	GlfwKey.F13 to Key.F13,
-	GlfwKey.F14 to Key.F14,
-	GlfwKey.F15 to Key.F15,
-	GlfwKey.F16 to Key.F16,
-	GlfwKey.F17 to Key.F17,
-	GlfwKey.F18 to Key.F18,
-	GlfwKey.F19 to Key.F19,
-	GlfwKey.F20 to Key.F20,
-	GlfwKey.F21 to Key.F21,
-	GlfwKey.F22 to Key.F22,
-	GlfwKey.F23 to Key.F23,
-	GlfwKey.F24 to Key.F24,
-	GlfwKey.F25 to Key.F25,
-	GlfwKey.KP_0 to Key.KP_0,
-	GlfwKey.KP_1 to Key.KP_1,
-	GlfwKey.KP_2 to Key.KP_2,
-	GlfwKey.KP_3 to Key.KP_3,
-	GlfwKey.KP_4 to Key.KP_4,
-	GlfwKey.KP_5 to Key.KP_5,
-	GlfwKey.KP_6 to Key.KP_6,
-	GlfwKey.KP_7 to Key.KP_7,
-	GlfwKey.KP_8 to Key.KP_8,
-	GlfwKey.KP_9 to Key.KP_9,
-	GlfwKey.KP_DECIMAL to Key.KP_DECIMAL,
-	GlfwKey.KP_DIVIDE to Key.KP_DIVIDE,
-	GlfwKey.KP_MULTIPLY to Key.KP_MULTIPLY,
-	GlfwKey.KP_SUBTRACT to Key.KP_SUBTRACT,
-	GlfwKey.KP_ADD to Key.KP_ADD,
-	GlfwKey.KP_ENTER to Key.KP_ENTER,
-	GlfwKey.KP_EQUAL to Key.KP_EQUAL,
-	GlfwKey.LEFT_SHIFT to Key.LEFT_SHIFT,
-	GlfwKey.LEFT_CONTROL to Key.LEFT_CONTROL,
-	GlfwKey.LEFT_ALT to Key.LEFT_ALT,
-	GlfwKey.LEFT_SUPER to Key.LEFT_SUPER,
-	GlfwKey.RIGHT_SHIFT to Key.RIGHT_SHIFT,
-	GlfwKey.RIGHT_CONTROL to Key.RIGHT_CONTROL,
-	GlfwKey.RIGHT_ALT to Key.RIGHT_ALT,
-	GlfwKey.RIGHT_SUPER to Key.RIGHT_SUPER,
-	GlfwKey.MENU to Key.MENU
+	Key.ESCAPE to GlfwKey.ESCAPE,
+	Key.ENTER to GlfwKey.ENTER,
+	Key.TAB to GlfwKey.TAB,
+	Key.BACKSPACE to GlfwKey.BACKSPACE,
+	Key.INSERT to GlfwKey.INSERT,
+	Key.DELETE to GlfwKey.DELETE,
+	Key.RIGHT to GlfwKey.RIGHT,
+	Key.LEFT to GlfwKey.LEFT,
+	Key.DOWN to GlfwKey.DOWN,
+	Key.UP to GlfwKey.UP,
+	Key.PAGE_UP to GlfwKey.PAGE_UP,
+	Key.PAGE_DOWN to GlfwKey.PAGE_DOWN,
+	Key.HOME to GlfwKey.HOME,
+	Key.END to GlfwKey.END,
+	Key.CAPS_LOCK to GlfwKey.CAPS_LOCK,
+	Key.SCROLL_LOCK to GlfwKey.SCROLL_LOCK,
+	Key.NUM_LOCK to GlfwKey.NUM_LOCK,
+	Key.PRINT_SCREEN to GlfwKey.PRINT_SCREEN,
+	Key.PAUSE to GlfwKey.PAUSE,
+	Key.F1 to GlfwKey.F1,
+	Key.F2 to GlfwKey.F2,
+	Key.F3 to GlfwKey.F3,
+	Key.F4 to GlfwKey.F4,
+	Key.F5 to GlfwKey.F5,
+	Key.F6 to GlfwKey.F6,
+	Key.F7 to GlfwKey.F7,
+	Key.F8 to GlfwKey.F8,
+	Key.F9 to GlfwKey.F9,
+	Key.F10 to GlfwKey.F10,
+	Key.F11 to GlfwKey.F11,
+	Key.F12 to GlfwKey.F12,
+	Key.F13 to GlfwKey.F13,
+	Key.F14 to GlfwKey.F14,
+	Key.F15 to GlfwKey.F15,
+	Key.F16 to GlfwKey.F16,
+	Key.F17 to GlfwKey.F17,
+	Key.F18 to GlfwKey.F18,
+	Key.F19 to GlfwKey.F19,
+	Key.F20 to GlfwKey.F20,
+	Key.F21 to GlfwKey.F21,
+	Key.F22 to GlfwKey.F22,
+	Key.F23 to GlfwKey.F23,
+	Key.F24 to GlfwKey.F24,
+	Key.F25 to GlfwKey.F25,
+	Key.KP_0 to GlfwKey.KP_0,
+	Key.KP_1 to GlfwKey.KP_1,
+	Key.KP_2 to GlfwKey.KP_2,
+	Key.KP_3 to GlfwKey.KP_3,
+	Key.KP_4 to GlfwKey.KP_4,
+	Key.KP_5 to GlfwKey.KP_5,
+	Key.KP_6 to GlfwKey.KP_6,
+	Key.KP_7 to GlfwKey.KP_7,
+	Key.KP_8 to GlfwKey.KP_8,
+	Key.KP_9 to GlfwKey.KP_9,
+	Key.KP_DECIMAL to GlfwKey.KP_DECIMAL,
+	Key.KP_DIVIDE to GlfwKey.KP_DIVIDE,
+	Key.KP_MULTIPLY to GlfwKey.KP_MULTIPLY,
+	Key.KP_SUBTRACT to GlfwKey.KP_SUBTRACT,
+	Key.KP_ADD to GlfwKey.KP_ADD,
+	Key.KP_ENTER to GlfwKey.KP_ENTER,
+	Key.KP_EQUAL to GlfwKey.KP_EQUAL,
+	Key.LEFT_SHIFT to GlfwKey.LEFT_SHIFT,
+	Key.LEFT_CONTROL to GlfwKey.LEFT_CONTROL,
+	Key.LEFT_ALT to GlfwKey.LEFT_ALT,
+	Key.LEFT_SUPER to GlfwKey.LEFT_SUPER,
+	Key.RIGHT_SHIFT to GlfwKey.RIGHT_SHIFT,
+	Key.RIGHT_CONTROL to GlfwKey.RIGHT_CONTROL,
+	Key.RIGHT_ALT to GlfwKey.RIGHT_ALT,
+	Key.RIGHT_SUPER to GlfwKey.RIGHT_SUPER,
+	Key.MENU to GlfwKey.MENU
 )
 
-fun Key.toGlfw(): GlfwKey = keyMappings.entries.find { it.value == this }?.key ?: GlfwKey.UNKNOWN
-fun Key.Companion.fromGlfw(key: GlfwKey): Key = keyMappings[key] ?: UNKNOWN
+fun Key.toGlfw(): GlfwKey = keyMappings.getValue(this)
+fun Key.Companion.fromGlfw(key: GlfwKey): Key = Key(key.value)
 
 inline class MouseButton(val value: Int) {
 	companion object {
-		val BUTTON_1 = MouseButton(0)
-		val BUTTON_2 = MouseButton(1)
-		val BUTTON_3 = MouseButton(2)
-		val BUTTON_4 = MouseButton(3)
-		val BUTTON_5 = MouseButton(4)
-		val BUTTON_6 = MouseButton(5)
-		val BUTTON_7 = MouseButton(6)
-		val BUTTON_8 = MouseButton(7)
-		val BUTTON_LEFT = BUTTON_1
-		val BUTTON_RIGHT = BUTTON_2
-		val BUTTON_MIDDLE = BUTTON_3
+		val BUTTON_0 = MouseButton(0)
+		val BUTTON_1 = MouseButton(1)
+		val BUTTON_2 = MouseButton(2)
+		val BUTTON_3 = MouseButton(3)
+		val BUTTON_4 = MouseButton(4)
+		val BUTTON_5 = MouseButton(5)
+		val BUTTON_6 = MouseButton(6)
+		val BUTTON_7 = MouseButton(7)
+		val BUTTON_LEFT = BUTTON_0
+		val BUTTON_RIGHT = BUTTON_1
+		val BUTTON_MIDDLE = BUTTON_2
 	}
 
 	override fun toString() = "$value"
 }
 
 private val mouseButtonMappings = mapOf(
-	GlfwMouseButton._1 to MouseButton.BUTTON_1,
-	GlfwMouseButton._2 to MouseButton.BUTTON_2,
-	GlfwMouseButton._3 to MouseButton.BUTTON_3,
-	GlfwMouseButton._4 to MouseButton.BUTTON_4,
-	GlfwMouseButton._5 to MouseButton.BUTTON_5,
-	GlfwMouseButton._6 to MouseButton.BUTTON_6,
-	GlfwMouseButton._7 to MouseButton.BUTTON_7,
-	GlfwMouseButton._8 to MouseButton.BUTTON_8
+	MouseButton.BUTTON_0 to GlfwMouseButton._1,
+	MouseButton.BUTTON_1 to GlfwMouseButton._2,
+	MouseButton.BUTTON_2 to GlfwMouseButton._3,
+	MouseButton.BUTTON_3 to GlfwMouseButton._4,
+	MouseButton.BUTTON_4 to GlfwMouseButton._5,
+	MouseButton.BUTTON_5 to GlfwMouseButton._6,
+	MouseButton.BUTTON_6 to GlfwMouseButton._7,
+	MouseButton.BUTTON_7 to GlfwMouseButton._8
 )
 
-fun MouseButton.toGlfw(): GlfwMouseButton = mouseButtonMappings.entries.find { it.value == this }!!.key
-fun MouseButton.Companion.fromGlfw(button: GlfwMouseButton): MouseButton = mouseButtonMappings[button]!!
+fun MouseButton.toGlfw(): GlfwMouseButton = mouseButtonMappings.getValue(this)
+fun MouseButton.Companion.fromGlfw(button: GlfwMouseButton): MouseButton = MouseButton(button.value)

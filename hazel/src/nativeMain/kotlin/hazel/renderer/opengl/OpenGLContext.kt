@@ -14,22 +14,18 @@ import hazel.renderer.GraphicsContext
 internal class OpenGLContext(private val window: Window) : GraphicsContext {
 	override fun init() {
 		Hazel.profile("OpenGLContext.init()") {
-			Glfw.currentContext = window.internal
+			Glfw.currentContext = window.nativeWindow
 
-			Hazel.coreInfo {
-				"""
-                OpenGL Info:
-                  Vendor: ${glGetString(GL_VENDOR)}
-                  Renderer: ${glGetString(GL_RENDERER)}
-                  Version: ${glGetString(GL_VERSION)}
-                """.trimIndent()
-			}
+			Hazel.coreInfo("OpenGL Info:")
+			Hazel.coreInfo("  Vendor: ${glGetString(GL_VENDOR)}")
+			Hazel.coreInfo("  Renderer: ${glGetString(GL_RENDERER)}")
+			Hazel.coreInfo("  Version: ${glGetString(GL_VERSION)}")
 		}
 	}
 
 	override fun swapBuffers() {
 		Hazel.profile("OpenGLContext.swapBuffers()") {
-			window.internal.swapBuffers()
+			window.nativeWindow.swapBuffers()
 		}
 	}
 }

@@ -3,12 +3,15 @@ package hazel.core
 import com.kgl.glfw.Action
 import com.kgl.glfw.Glfw
 import com.kgl.glfw.OpenGLProfile
+import hazel.events.*
 import hazel.renderer.GraphicsContext
 import hazel.renderer.opengl.OpenGLContext
 import kotlin.native.concurrent.ensureNeverFrozen
 import com.kgl.glfw.Window as GlfwWindow
 
-class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disposable {
+private var windowCount: Int = 0
+
+class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : Disposable {
 
 	private val context: GraphicsContext
 
@@ -16,19 +19,19 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 		set(value) {
 			Hazel.profile("Window.isVSync.set(Boolean)") {
 				Glfw.setSwapInterval(if (value) 1 else 0)
+				field = value
 			}
-			field = value
 		}
 
 	init {
 		ensureNeverFrozen()
 
-		context = OpenGLContext(this).also { it.init() }
+		context = GraphicsContext(this).apply { init() }
 
 		isVSync = true
 
 		// set GLFW callbacks
-		with(internal) {
+		with(nativeWindow) {
 			setSizeCallback { _, width, height ->
 				val event = WindowResizeEvent(width, height)
 				eventCallback?.invoke(event)
@@ -39,11 +42,11 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 				eventCallback?.invoke(event)
 			}
 
-			setKeyCallback { _, key, _ /*scanCode*/, action, _ /*mods*/ ->
+			setKeyCallback { _, key, _, action, _ ->
 				when (action) {
-					Action.Release -> eventCallback?.invoke(KeyReleasedEvent(Key.fromGlfw(key)))
 					Action.Press -> eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 0))
 					Action.Repeat -> eventCallback?.invoke(KeyPressedEvent(Key.fromGlfw(key), 1))
+					Action.Release -> eventCallback?.invoke(KeyReleasedEvent(Key.fromGlfw(key)))
 				}
 			}
 
@@ -51,7 +54,7 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 				eventCallback?.invoke(KeyTypedEvent(Key(char.toInt())))
 			}
 
-			setMouseButtonCallback { _, button, action, _ /*mods*/ ->
+			setMouseButtonCallback { _, button, action, _ ->
 				when (action) {
 					Action.Release -> eventCallback?.invoke(MouseButtonReleasedEvent(MouseButton.fromGlfw(button)))
 					else -> eventCallback?.invoke(MouseButtonPressedEvent(MouseButton.fromGlfw(button)))
@@ -70,18 +73,23 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 
 	override fun dispose() {
 		Hazel.profile("Window.dispose()") {
-			internal.close()
+			nativeWindow.close()
+			windowCount -= 1
+
+			if (windowCount == 0) {
+				Glfw.terminate()
+			}
 		}
 	}
 
 
 	var position: Pair<Int, Int>
-		get() = internal.position
-		set(value) = run { internal.position = value }
+		get() = nativeWindow.position
+		set(value) = run { nativeWindow.position = value }
 
 	var size: Pair<Int, Int>
-		get() = internal.size
-		set(value) = run { internal.size = value }
+		get() = nativeWindow.size
+		set(value) = run { nativeWindow.size = value }
 
 
 	private var eventCallback: ((Event) -> Unit)? = null
@@ -101,15 +109,18 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 	companion object {
 		operator fun invoke(width: Int = 1280, height: Int = 720, title: String = "Hazel Engine"): Window {
 			return Hazel.profile("Window(Int, Int, String): Window") {
-				Hazel.profile("Glfw.init()") {
-					Glfw.init()
+				Hazel.coreInfo("Creating window $title ($width, $height)")
+
+				if (windowCount == 0) {
+					Hazel.profile("Glfw.init()") {
+						Hazel.coreAssert(Glfw.init(), "Could not initialize GLFW!")
+						Glfw.setErrorCallback { error, message ->
+							Hazel.error("GLFW error ($error): $message")
+						}
+					}
 				}
 
-				Glfw.setErrorCallback { error, message ->
-					Hazel.error { "GLFW error ($error): $message" }
-				}
-
-				val internal = Hazel.profile("Glfw create window") {
+				val nativeWindow = Hazel.profile("Glfw create window") {
 					GlfwWindow(width, height, title) {
 						contextVersionMajor = 3
 						contextVersionMinor = 2
@@ -117,7 +128,8 @@ class Window @PublishedApi internal constructor(val internal: GlfwWindow) : Disp
 						openGLProfile = OpenGLProfile.Core
 					}
 				}
-				Window(internal)
+				windowCount += 1
+				Window(nativeWindow)
 			}
 		}
 	}

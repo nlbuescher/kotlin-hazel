@@ -1,10 +1,10 @@
 package hazel.renderer.opengl
 
 import com.kgl.opengl.*
+import hazel.cinterop.sizeOf
 import hazel.cinterop.stbi_image_free
 import hazel.cinterop.stbi_load
 import hazel.cinterop.stbi_set_flip_vertically_on_load
-import hazel.cinterop.sizeOf
 import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.profile
@@ -17,6 +17,7 @@ import kotlinx.cinterop.usePinned
 import platform.posix.memcpy
 
 class OpenGLTexture2D : Texture2D {
+	private val rendererId: UInt
 
 	private val path: String?
 
@@ -25,8 +26,6 @@ class OpenGLTexture2D : Texture2D {
 
 	private val internalFormat: UInt
 	private val dataFormat: UInt
-
-	private val rendererId: UInt
 
 	constructor(width: Int, height: Int) {
 		val profiler = Hazel.Profiler("OpenGLTexture2D(Int, Int)")
@@ -68,7 +67,7 @@ class OpenGLTexture2D : Texture2D {
 				}
 			}
 		}
-		Hazel.coreAssert(data != null) { "Failed to load image!" }
+		Hazel.coreAssert(data != null, "Failed to load image!")
 
 		width = meta[0]; height = meta[1]
 
@@ -81,7 +80,7 @@ class OpenGLTexture2D : Texture2D {
 		internalFormat = ifmt
 		dataFormat = dfmt
 
-		Hazel.coreAssert(internalFormat != 0u && dataFormat != 0u) { "Format not supported!" }
+		Hazel.coreAssert(internalFormat != 0u && dataFormat != 0u, "Format not supported!")
 
 		rendererId = glGenTexture()
 		glBindTexture(GL_TEXTURE_2D, rendererId)
@@ -103,7 +102,7 @@ class OpenGLTexture2D : Texture2D {
 	override fun setData(data: ByteArray) {
 		Hazel.profile("OpenGLTexture2D.setData(ByteArray)") {
 			val bpp = if (dataFormat == GL_RGBA) 4 else 3
-			Hazel.coreAssert(data.size == width * height * bpp) { "Data must be entire texture" }
+			Hazel.coreAssert(data.size == width * height * bpp, "Data must be entire texture")
 			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, data)
 		}
 	}

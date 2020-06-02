@@ -54,6 +54,7 @@ kotlin {
 		languageSettings.apply {
 			enableLanguageFeature("MultiPlatformProjects")
 			enableLanguageFeature("InlineClasses")
+			//useExperimentalAnnotation("kotlin.RequiresOptIn")
 			useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
 			useExperimentalAnnotation("kotlin.time.ExperimentalTime")
 		}

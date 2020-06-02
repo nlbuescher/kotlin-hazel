@@ -13,7 +13,11 @@ enum class ShaderDataType(val size: kotlin.Int) {
 	Mat3(36), Mat4(64)
 }
 
-class BufferElement(val type: ShaderDataType, val name: String, val isNormalized: Boolean = false) {
+class BufferElement(
+	val type: ShaderDataType,
+	val name: String,
+	val isNormalized: Boolean = false
+) {
 	val size: Int get() = type.size
 	var offset: Int = 0
 

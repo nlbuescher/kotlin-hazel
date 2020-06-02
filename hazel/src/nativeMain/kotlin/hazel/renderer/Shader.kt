@@ -21,25 +21,28 @@ interface Shader : Disposable {
 	operator fun set(name: String, matrix: Mat4)
 }
 
+@Suppress("FunctionName")
 fun Shader(filepath: String): Shader = when (Renderer.api) {
 	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
 	RenderAPI.API.OpenGL -> OpenGLShader(filepath)
 }
 
+@Suppress("FunctionName")
 fun Shader(name: String, vertexSource: String, fragmentSource: String): Shader = when (Renderer.api) {
 	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
 	RenderAPI.API.OpenGL -> OpenGLShader(name, vertexSource, fragmentSource)
 }
 
+
 class ShaderLibrary : Disposable {
 	private val shaders = mutableMapOf<String, Shader>()
 
-	override fun dispose() = shaders.forEach { (_, it) -> it.dispose() }
+	override fun dispose() = shaders.values.forEach { it.dispose() }
 
 	fun add(shader: Shader) = add(shader.name, shader)
 
 	fun add(name: String, shader: Shader) {
-		Hazel.coreAssert(name !in shaders.keys) { "Shader already exists!" }
+		Hazel.coreAssert(name !in this, "Shader '$name' already exists!")
 		shaders[name] = shader
 	}
 
@@ -48,7 +51,9 @@ class ShaderLibrary : Disposable {
 	fun load(name: String, filepath: String) = Shader(filepath).also { add(name, it) }
 
 	operator fun get(name: String): Shader {
-		Hazel.coreAssert(name in shaders.keys)
+		Hazel.coreAssert(name in this, "Shader '$name' not found!")
 		return shaders[name]!!
 	}
+
+	operator fun contains(name: String): Boolean = name in shaders.keys
 }

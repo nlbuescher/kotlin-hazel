@@ -1,5 +1,6 @@
 import com.imgui.ImGui
 import hazel.core.*
+import hazel.events.Event
 import hazel.math.*
 import hazel.renderer.OrthographicCameraController
 import hazel.renderer.RenderCommand
@@ -15,7 +16,9 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 
 	override fun onAttach() {
-		checkerBoardTexture = Texture2D("assets/textures/checkerboard.png")
+		Hazel.profile("Sandbox2D.onAttach()") {
+			checkerBoardTexture = Texture2D("assets/textures/checkerboard.png")
+		}
 	}
 
 	override fun onDetach() {
@@ -37,17 +40,19 @@ class Sandbox2D : Layer("Sandbox2D") {
 				Renderer2D.scene(cameraController.camera) {
 					drawRotatedQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), 45f.degrees, Vec4(1f, 0f, 0f, 1f))
 					drawQuad(Vec2(0.5f, -0.5f), Vec2(0.5f, 0.75f), Vec4(0f, 1f, 0f, 1f))
-					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(10f, 10f), checkerBoardTexture, 10f, Vec4(1f, 0.9f, 0.9f, 1f))
+					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(10f, 10f), checkerBoardTexture, 10f)
 				}
 			}
 		}
 	}
 
 	override fun onImGuiRender() {
-		with(ImGui) {
-			begin("Settings")
-			colorEdit4("Square Color", squareColor.asFloatArray())
-			end()
+		Hazel.profile("Sandbox2D.onImGuiRender()") {
+			with(ImGui) {
+				begin("Settings")
+				colorEdit4("Square Color", squareColor.asFloatArray())
+				end()
+			}
 		}
 	}
 

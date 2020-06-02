@@ -13,12 +13,14 @@ interface Texture : Disposable {
 
 interface Texture2D : Texture
 
-fun Texture2D(path: String): Texture2D = when (Renderer.api) {
-	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
-	RenderAPI.API.OpenGL -> OpenGLTexture2D(path)
-}
-
+@Suppress("FunctionName")
 fun Texture2D(width: Int, height: Int) = when (Renderer.api) {
 	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
 	RenderAPI.API.OpenGL -> OpenGLTexture2D(width, height)
+}
+
+@Suppress("FunctionName")
+fun Texture2D(path: String): Texture2D = when (Renderer.api) {
+	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
+	RenderAPI.API.OpenGL -> OpenGLTexture2D(path)
 }

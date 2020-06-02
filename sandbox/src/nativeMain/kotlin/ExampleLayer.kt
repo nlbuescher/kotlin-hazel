@@ -1,5 +1,5 @@
 import com.imgui.ImGui
-import hazel.core.Event
+import hazel.events.Event
 import hazel.core.Layer
 import hazel.core.TimeStep
 import hazel.math.*
