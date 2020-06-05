@@ -43,8 +43,9 @@ class OpenGLRenderAPI : RenderAPI {
 		glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 	}
 
-	override fun drawIndexed(vertexArray: VertexArray) {
-		glDrawElements(GL_TRIANGLES, vertexArray.indexBuffer.count, GL_UNSIGNED_INT, null)
+	override fun drawIndexed(vertexArray: VertexArray, indexCount: Int) {
+		val count = if (indexCount == 0) vertexArray.indexBuffer.count else indexCount
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, null)
 		glBindTexture(GL_TEXTURE_2D, 0u)
 	}
 }

@@ -13,12 +13,20 @@ import kotlinx.cinterop.*
 
 // B
 
+internal inline fun glBufferData(target: UInt, byteCount: Int, usage: UInt) {
+	com.kgl.opengl.glBufferData(target, byteCount.toLong(), null, usage)
+}
+
 internal inline fun glBufferData(target: UInt, data: FloatArray, usage: UInt) {
 	com.kgl.opengl.glBufferData(target, data.size * sizeOf<FloatVar>(), data.refTo(0), usage)
 }
 
 internal inline fun glBufferData(target: UInt, data: UIntArray, usage: UInt) {
 	com.kgl.opengl.glBufferData(target, data.size * sizeOf<UIntVar>(), data.refTo(0), usage)
+}
+
+internal inline fun glBufferSubData(target: UInt, offset: Int, size: Int, data: ByteArray) {
+	com.kgl.opengl.glBufferSubData(target, offset.convert(), size.convert(), data.refTo(0))
 }
 
 

@@ -55,10 +55,18 @@ class BufferLayout(vararg elements: BufferElement) {
 }
 
 interface VertexBuffer : Disposable {
+	var layout: BufferLayout
+
 	fun bind()
 	fun unbind()
 
-	var layout: BufferLayout
+	fun setData(data: ByteArray, size: Int = data.size)
+}
+
+@Suppress("FunctionName")
+fun VertexBuffer(byteCount: Int): VertexBuffer = when (Renderer.api) {
+	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
+	RenderAPI.API.OpenGL -> OpenGLVertexBuffer(byteCount)
 }
 
 fun vertexBufferOf(vararg vertices: Float): VertexBuffer = when (Renderer.api) {
@@ -66,10 +74,16 @@ fun vertexBufferOf(vararg vertices: Float): VertexBuffer = when (Renderer.api) {
 	RenderAPI.API.OpenGL -> OpenGLVertexBuffer(vertices)
 }
 
+// currently, hazel only supports 32 bit index buffers
 interface IndexBuffer : Disposable {
 	val count: Int
 	fun bind()
 	fun unbind()
+}
+
+fun IndexBuffer(indices: UIntArray): IndexBuffer = when (Renderer.api) {
+	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
+	RenderAPI.API.OpenGL -> OpenGLIndexBuffer(indices)
 }
 
 fun indexBufferOf(vararg indices: UInt): IndexBuffer = when (Renderer.api) {

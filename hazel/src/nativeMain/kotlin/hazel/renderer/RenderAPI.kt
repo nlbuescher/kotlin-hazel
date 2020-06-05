@@ -16,7 +16,7 @@ interface RenderAPI {
 	fun setClearColor(color: Vec4)
 	fun clear()
 
-	fun drawIndexed(vertexArray: VertexArray)
+	fun drawIndexed(vertexArray: VertexArray, indexCount: Int = 0)
 
 	companion object {
 		var api: API

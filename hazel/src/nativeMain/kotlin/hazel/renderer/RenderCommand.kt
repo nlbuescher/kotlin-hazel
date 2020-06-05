@@ -19,7 +19,7 @@ object RenderCommand {
 		renderAPI.clear()
 	}
 
-	fun drawIndexed(vertexArray: VertexArray) {
-		renderAPI.drawIndexed(vertexArray)
+	fun drawIndexed(vertexArray: VertexArray, indexCount: Int = 0) {
+		renderAPI.drawIndexed(vertexArray, indexCount)
 	}
 }

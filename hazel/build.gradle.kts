@@ -12,8 +12,8 @@ repositories {
 
 val os: OperatingSystem = OperatingSystem.current()
 
-val imguiVersion = "0.1.1"
-val kglVersion = "0.1.9-dev-8"
+val imguiVersion = "0.1.2"
+val kglVersion = "0.1.9-dev-9"
 
 kotlin {
 	when {
@@ -40,6 +40,12 @@ kotlin {
 				}
 			}
 		}
+		compilations["test"].apply {
+			defaultSourceSet {
+				kotlin.srcDir("src/nativeTest/kotlin")
+				resources.srcDir("src/nativeTest/resources")
+			}
+		}
 	}
 
 	sourceSets {
@@ -48,13 +54,19 @@ kotlin {
 				implementation(kotlin("stdlib-common"))
 			}
 		}
+		commonTest {
+			dependencies {
+				implementation(kotlin("test-common"))
+				implementation(kotlin("test-annotations-common"))
+			}
+		}
 	}
 
 	sourceSets.all {
 		languageSettings.apply {
 			enableLanguageFeature("MultiPlatformProjects")
 			enableLanguageFeature("InlineClasses")
-			//useExperimentalAnnotation("kotlin.RequiresOptIn")
+			enableLanguageFeature("NewInference")
 			useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
 			useExperimentalAnnotation("kotlin.time.ExperimentalTime")
 		}

@@ -13,11 +13,13 @@ import hazel.opengl.glGetProgramUInt
 import hazel.opengl.glGetShaderUInt
 import hazel.opengl.glUniform
 import hazel.renderer.Shader
-import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
+import kotlinx.cinterop.refTo
 import kotlinx.cinterop.toKString
-import kotlinx.cinterop.usePinned
 import platform.posix.*
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 class OpenGLShader : Shader {
 	private var rendererId: UInt = 0u

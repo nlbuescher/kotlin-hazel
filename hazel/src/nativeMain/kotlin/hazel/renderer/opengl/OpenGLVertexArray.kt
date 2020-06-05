@@ -4,6 +4,7 @@ import com.kgl.opengl.*
 import hazel.core.Hazel
 import hazel.core.coreAssert
 import hazel.core.profile
+import hazel.opengl.glDeleteVertexArrays
 import hazel.opengl.glVertexAttribPointer
 import hazel.renderer.IndexBuffer
 import hazel.renderer.ShaderDataType
@@ -39,7 +40,7 @@ internal class OpenGLVertexArray : VertexArray {
 		Hazel.profile("OpenGLVertexArray.dispose()") {
 			vertexBuffers.forEach { it.dispose() }
 			indexBuffer.dispose()
-			glDeleteVertexArray(rendererId)
+			glDeleteVertexArrays(rendererId)
 		}
 	}
 

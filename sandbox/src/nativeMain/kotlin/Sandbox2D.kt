@@ -38,9 +38,10 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 			Hazel.profile("Renderer Draw") {
 				Renderer2D.scene(cameraController.camera) {
-					drawRotatedQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), 45f.degrees, Vec4(1f, 0f, 0f, 1f))
+					//drawRotatedQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), 45f.degrees, Vec4(1f, 0f, 0f, 1f))
+					drawQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), Vec4(1f, 0f, 0f, 1f))
 					drawQuad(Vec2(0.5f, -0.5f), Vec2(0.5f, 0.75f), Vec4(0f, 1f, 0f, 1f))
-					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(10f, 10f), checkerBoardTexture, 10f)
+					//drawQuad(Vec3(0f, 0f, -0.1f), Vec2(10f, 10f), checkerBoardTexture, 10f)
 				}
 			}
 		}

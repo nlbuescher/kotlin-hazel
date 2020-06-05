@@ -12,8 +12,7 @@ import hazel.opengl.glDeleteTextures
 import hazel.opengl.glTexImage2D
 import hazel.opengl.glTexParameter
 import hazel.renderer.Texture2D
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.usePinned
+import kotlinx.cinterop.refTo
 import platform.posix.memcpy
 
 class OpenGLTexture2D : Texture2D {

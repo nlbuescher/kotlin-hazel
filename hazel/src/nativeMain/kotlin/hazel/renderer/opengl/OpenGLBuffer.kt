@@ -4,17 +4,30 @@ import com.kgl.opengl.*
 import hazel.core.Hazel
 import hazel.core.profile
 import hazel.opengl.glBufferData
+import hazel.opengl.glBufferSubData
+import hazel.opengl.glDeleteBuffers
 import hazel.renderer.BufferLayout
 import hazel.renderer.IndexBuffer
 import hazel.renderer.VertexBuffer
 
-internal class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
+internal class OpenGLVertexBuffer : VertexBuffer {
 	private val rendererId: UInt
 
 	override var layout = BufferLayout()
 
-	init {
-		val profiler = Hazel.Profiler("OpenGLVertexBuffer(): OpenGLVertexBuffer")
+	constructor(byteCount: Int) {
+		val profiler = Hazel.Profiler("OpenGLVertexBuffer(Int): OpenGLVertexBuffer")
+		profiler.start()
+
+		rendererId = glGenBuffer()
+		glBindBuffer(GL_ARRAY_BUFFER, rendererId)
+		glBufferData(GL_ARRAY_BUFFER, byteCount, GL_DYNAMIC_DRAW)
+
+		profiler.stop()
+	}
+
+	constructor(vertices: FloatArray) {
+		val profiler = Hazel.Profiler("OpenGLVertexBuffer(FloatArray): OpenGLVertexBuffer")
 		profiler.start()
 
 		rendererId = glGenBuffer()
@@ -26,7 +39,7 @@ internal class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
 
 	override fun dispose() {
 		Hazel.profile("OpenGLVertexBuffer.dispose()") {
-			glDeleteBuffer(rendererId)
+			glDeleteBuffers(rendererId)
 		}
 	}
 
@@ -40,6 +53,11 @@ internal class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
 		Hazel.profile("OpenGLVertexBuffer.unbind()") {
 			glBindBuffer(GL_ARRAY_BUFFER, 0u)
 		}
+	}
+
+	override fun setData(data: ByteArray, size: Int) {
+		glBindBuffer(GL_ARRAY_BUFFER, rendererId)
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data)
 	}
 }
 
