@@ -18,11 +18,12 @@ interface RenderAPI {
 
 	fun drawIndexed(vertexArray: VertexArray)
 
-
 	companion object {
 		var api: API
 			get() = _api
-			set(new) = run { _api = new }
+			set(new) {
+				_api = new
+			}
 	}
 }
 

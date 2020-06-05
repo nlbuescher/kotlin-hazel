@@ -138,7 +138,7 @@ class OpenGLShader : Shader {
 				val size = ftell(file).toInt()
 				fseek(file, 0, SEEK_SET)
 				ByteArray(size).apply {
-					usePinned { fread(it.addressOf(0), 1.convert(), size.convert(), file) }
+					fread(refTo(0), 1.convert(), size.convert(), file)
 				}.toKString()
 			} ?: run {
 				Hazel.coreError("Could not open file `$filepath`")

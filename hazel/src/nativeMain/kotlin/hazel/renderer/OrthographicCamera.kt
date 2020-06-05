@@ -16,9 +16,15 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 		private set
 
 	var position: Vec3 = Vec3()
-		set(value) = run { field = value; recalculateViewMatrix() }
+		set(value) {
+			field = value
+			recalculateViewMatrix()
+		}
 	var rotation: Float = 0f
-		set(value) = run { field = value; recalculateViewMatrix() }
+		set(value) {
+			field = value
+			recalculateViewMatrix()
+		}
 
 	init {
 		val profiler = Hazel.Profiler("OrthographicCamera(Float, Float, Float, Float): OrthographicCamera")

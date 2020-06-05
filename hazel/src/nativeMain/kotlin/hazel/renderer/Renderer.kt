@@ -13,7 +13,9 @@ private val sceneData = SceneData()
 object Renderer {
 	var api: RenderAPI.API
 		get() = RenderAPI.api
-		set(new) = run { RenderAPI.api = new }
+		set(new) {
+			RenderAPI.api = new
+		}
 
 	fun init() {
 		Hazel.profile("Renderer.init()") {

@@ -5,14 +5,12 @@ import com.kgl.glfw.Glfw
 import com.kgl.glfw.OpenGLProfile
 import hazel.events.*
 import hazel.renderer.GraphicsContext
-import hazel.renderer.opengl.OpenGLContext
 import kotlin.native.concurrent.ensureNeverFrozen
 import com.kgl.glfw.Window as GlfwWindow
 
 private var windowCount: Int = 0
 
 class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : Disposable {
-
 	private val context: GraphicsContext
 
 	var isVSync: Boolean = false // dummy value should be overridden in init
@@ -85,11 +83,15 @@ class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : 
 
 	var position: Pair<Int, Int>
 		get() = nativeWindow.position
-		set(value) = run { nativeWindow.position = value }
+		set(value) {
+			nativeWindow.position = value
+		}
 
 	var size: Pair<Int, Int>
 		get() = nativeWindow.size
-		set(value) = run { nativeWindow.size = value }
+		set(value) {
+			nativeWindow.size = value
+		}
 
 
 	private var eventCallback: ((Event) -> Unit)? = null

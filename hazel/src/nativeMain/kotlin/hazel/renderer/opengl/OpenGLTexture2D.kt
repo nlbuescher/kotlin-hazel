@@ -53,17 +53,15 @@ class OpenGLTexture2D : Texture2D {
 
 		this.path = path
 
-		val meta = IntArray(3)
-		val data: ByteArray? = meta.usePinned { pinned ->
-			stbi_set_flip_vertically_on_load(1)
+		stbi_set_flip_vertically_on_load(1)
 
-			Hazel.profile("stbi_load(String, ...): ByteArray") {
-				stbi_load(path, pinned.addressOf(0), pinned.addressOf(1), pinned.addressOf(2), 0)?.let { pointer ->
-					val size = sizeOf(pointer).toInt()
-					ByteArray(size).apply {
-						usePinned { memcpy(it.addressOf(0), pointer, size.toULong()) }
-						stbi_image_free(pointer)
-					}
+		val meta = IntArray(3)
+		val data: ByteArray? = Hazel.profile("stbi_load(String, ...): ByteArray") {
+			stbi_load(path, meta.refTo(0), meta.refTo(1), meta.refTo(2), 0)?.let { pointer ->
+				val size = sizeOf(pointer).toInt()
+				ByteArray(size).apply {
+					memcpy(refTo(0), pointer, size.toULong())
+					stbi_image_free(pointer)
 				}
 			}
 		}
