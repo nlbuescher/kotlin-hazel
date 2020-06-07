@@ -174,8 +174,9 @@ class OpenGLShader : Shader {
 		Hazel.profile("OpenGLShader.compile(Map<UInt, String>)") {
 			val program = glCreateProgram()
 
-			val glShaderIds = MutableList(shaderSources.size) { 0u }
+			val glShaderIds = UIntArray(shaderSources.size)
 
+			var i = 0
 			for ((type, source) in shaderSources) {
 				val shader = glCreateShader(type)
 
@@ -194,7 +195,8 @@ class OpenGLShader : Shader {
 				}
 
 				glAttachShader(program, shader)
-				glShaderIds.add(shader)
+				glShaderIds[i] = shader
+				i += 1
 			}
 
 			glLinkProgram(program)
@@ -213,8 +215,7 @@ class OpenGLShader : Shader {
 				return@profile
 			}
 
-			for (id in glShaderIds)
-				glDetachShader(program, id)
+			for (id in glShaderIds) glDetachShader(program, id)
 
 			rendererId = program
 		}

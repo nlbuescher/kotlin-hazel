@@ -14,11 +14,12 @@ class OpenGLRenderAPI : RenderAPI {
 			glEnable(GL_DEBUG_OUTPUT)
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS)
 			glDebugMessageCallback(staticCFunction { _, _, _, severity, _, message, _ ->
+				val errorMessage = message?.toKString() ?: ""
 				when (severity) {
-					GL_DEBUG_SEVERITY_HIGH -> Hazel.coreCritical(message?.toKString() ?: "")
-					GL_DEBUG_SEVERITY_MEDIUM -> Hazel.coreError(message?.toKString() ?: "")
-					GL_DEBUG_SEVERITY_LOW -> Hazel.coreWarn(message?.toKString() ?: "")
-					GL_DEBUG_SEVERITY_NOTIFICATION -> Hazel.coreTrace(message?.toKString() ?: "")
+					GL_DEBUG_SEVERITY_HIGH -> Hazel.coreCritical(errorMessage)
+					GL_DEBUG_SEVERITY_MEDIUM -> Hazel.coreError(errorMessage)
+					GL_DEBUG_SEVERITY_LOW -> Hazel.coreWarn(errorMessage)
+					GL_DEBUG_SEVERITY_NOTIFICATION -> Hazel.coreTrace(errorMessage)
 				}
 			}, null)
 

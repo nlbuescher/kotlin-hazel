@@ -9,7 +9,6 @@ import hazel.core.Overlay
 import hazel.core.application
 import hazel.core.profile
 import kotlinx.cinterop.convert
-import kotlinx.cinterop.get
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.sizeOf
 
