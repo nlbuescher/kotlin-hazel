@@ -95,6 +95,10 @@ internal inline fun glUniform(location: Int, i: Int) {
 	glUniform1i(location, i)
 }
 
+internal inline fun glUniform(location: Int, ints: IntArray) {
+	glUniform1iv(location, ints.size, ints.refTo(0))
+}
+
 internal inline fun glUniform(location: Int, f: Float) {
 	glUniform1f(location, f)
 }

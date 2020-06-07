@@ -70,6 +70,12 @@ class OpenGLShader : Shader {
 		}
 	}
 
+	override fun set(name: String, ints: IntArray) {
+		Hazel.profile("OpenGLShader.set(String, IntArray)") {
+			uploadUniform(name, ints)
+		}
+	}
+
 	override fun set(name: String, float: Float) {
 		Hazel.profile("OpenGLShader.set(String, Float)") {
 			uploadUniform(name, float)
@@ -97,6 +103,11 @@ class OpenGLShader : Shader {
 	fun uploadUniform(name: String, int: Int) {
 		val location = glGetUniformLocation(rendererId, name)
 		glUniform(location, int)
+	}
+
+	fun uploadUniform(name: String, ints: IntArray) {
+		val location = glGetUniformLocation(rendererId, name)
+		glUniform(location, ints)
 	}
 
 	fun uploadUniform(name: String, float: Float) {
@@ -195,7 +206,7 @@ class OpenGLShader : Shader {
 
 			if (glGetProgramUInt(program, GL_LINK_STATUS) == GL_FALSE) {
 				rendererId = 0u
-				val infoLog = glGetProgramInfoLog(rendererId)
+				val infoLog = glGetProgramInfoLog(program)
 
 				glDeleteProgram(program)
 

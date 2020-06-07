@@ -97,10 +97,19 @@ class OpenGLTexture2D : Texture2D {
 		}
 	}
 
-	override fun bind(slot: UInt) {
+	override fun bind(slot: Int) {
 		Hazel.profile("OpenGLTexture2D.bind(UInt)") {
-			glActiveTexture(GL_TEXTURE0 + slot)
+			glActiveTexture(GL_TEXTURE0 + slot.toUInt())
 			glBindTexture(GL_TEXTURE_2D, rendererId)
 		}
+	}
+
+	override fun hashCode(): Int = rendererId.hashCode()
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other !is OpenGLTexture2D) return false
+
+		return rendererId == other.rendererId
 	}
 }

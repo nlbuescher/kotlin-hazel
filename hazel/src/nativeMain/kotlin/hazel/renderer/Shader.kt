@@ -11,6 +11,7 @@ interface Shader : Disposable {
 	fun unbind()
 
 	operator fun set(name: String, int: Int)
+	operator fun set(name: String, ints: IntArray)
 	operator fun set(name: String, float: Float)
 	operator fun set(name: String, vector: Vec3)
 	operator fun set(name: String, vector: Vec4)
