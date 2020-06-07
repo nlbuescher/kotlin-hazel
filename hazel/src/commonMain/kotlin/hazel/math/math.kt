@@ -1,6 +1,6 @@
 package hazel.math
 
-import kotlin.math.PI
+import kotlin.math.*
 
 /** Returns the specified numbers of degrees as radians */
 val Float.degrees: Float get() = (this * PI / 180).toFloat()

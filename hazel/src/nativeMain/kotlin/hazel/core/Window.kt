@@ -1,11 +1,9 @@
 package hazel.core
 
-import com.kgl.glfw.Action
-import com.kgl.glfw.Glfw
-import com.kgl.glfw.OpenGLProfile
+import com.kgl.glfw.*
 import hazel.events.*
-import hazel.renderer.GraphicsContext
-import kotlin.native.concurrent.ensureNeverFrozen
+import hazel.renderer.*
+import kotlin.native.concurrent.*
 import com.kgl.glfw.Window as GlfwWindow
 
 private var windowCount: Int = 0

@@ -1,8 +1,7 @@
 package hazel.events
 
-import hazel.core.Key
-import hazel.core.MouseButton
-import kotlin.reflect.KClass
+import hazel.core.*
+import kotlin.reflect.*
 
 sealed class Event {
 	var isHandled = false

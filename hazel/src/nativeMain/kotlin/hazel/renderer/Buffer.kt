@@ -1,8 +1,7 @@
 package hazel.renderer
 
-import hazel.core.Disposable
-import hazel.renderer.opengl.OpenGLIndexBuffer
-import hazel.renderer.opengl.OpenGLVertexBuffer
+import hazel.core.*
+import hazel.renderer.opengl.*
 
 // TODO build DSL for building BufferLayouts
 

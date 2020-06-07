@@ -1,12 +1,8 @@
 package hazel.renderer
 
-import hazel.core.Disposable
-import hazel.core.Hazel
-import hazel.core.coreAssert
-import hazel.math.Mat4
-import hazel.math.Vec3
-import hazel.math.Vec4
-import hazel.renderer.opengl.OpenGLShader
+import hazel.core.*
+import hazel.math.*
+import hazel.renderer.opengl.*
 
 interface Shader : Disposable {
 	val name: String

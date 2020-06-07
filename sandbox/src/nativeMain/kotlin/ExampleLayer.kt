@@ -1,7 +1,6 @@
-import com.imgui.ImGui
-import hazel.events.Event
-import hazel.core.Layer
-import hazel.core.TimeStep
+import com.imgui.*
+import hazel.core.*
+import hazel.events.*
 import hazel.math.*
 import hazel.renderer.*
 

@@ -1,11 +1,9 @@
 package hazel.core
 
-import hazel.core.TimeStepUnit.SECONDS
-import hazel.events.Event
-import hazel.events.WindowCloseEvent
-import hazel.events.WindowResizeEvent
-import hazel.imgui.ImGuiLayer
-import hazel.renderer.Renderer
+import hazel.core.TimeStepUnit.*
+import hazel.events.*
+import hazel.imgui.*
+import hazel.renderer.*
 
 abstract class Application : Disposable {
 	val window: Window

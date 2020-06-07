@@ -1,14 +1,9 @@
 package hazel.renderer
 
 import hazel.core.*
-import hazel.events.Event
-import hazel.events.MouseScrolledEvent
-import hazel.events.WindowResizeEvent
-import hazel.math.MutableVec3
-import hazel.math.degrees
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
+import hazel.events.*
+import hazel.math.*
+import kotlin.math.*
 
 class OrthographicCameraController(
 	private var aspectRatio: Float,

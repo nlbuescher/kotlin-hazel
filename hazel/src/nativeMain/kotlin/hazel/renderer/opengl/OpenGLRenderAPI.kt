@@ -2,11 +2,9 @@ package hazel.renderer.opengl
 
 import com.kgl.opengl.*
 import hazel.core.*
-import hazel.math.Vec4
-import hazel.renderer.RenderAPI
-import hazel.renderer.VertexArray
-import kotlinx.cinterop.staticCFunction
-import kotlinx.cinterop.toKString
+import hazel.math.*
+import hazel.renderer.*
+import kotlinx.cinterop.*
 
 class OpenGLRenderAPI : RenderAPI {
 	override fun init() {

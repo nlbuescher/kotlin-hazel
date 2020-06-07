@@ -1,15 +1,9 @@
 package hazel.renderer.opengl
 
 import com.kgl.opengl.*
-import hazel.core.Hazel
-import hazel.core.coreAssert
-import hazel.core.profile
-import hazel.opengl.glDeleteVertexArrays
-import hazel.opengl.glVertexAttribPointer
-import hazel.renderer.IndexBuffer
-import hazel.renderer.ShaderDataType
-import hazel.renderer.VertexArray
-import hazel.renderer.VertexBuffer
+import hazel.core.*
+import hazel.opengl.*
+import hazel.renderer.*
 
 internal class OpenGLVertexArray : VertexArray {
 	private val rendererId: UInt

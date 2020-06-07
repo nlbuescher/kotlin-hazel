@@ -1,11 +1,7 @@
 package hazel.renderer
 
-import hazel.core.Hazel
-import hazel.core.profile
-import hazel.math.Mat4
-import hazel.math.Vec3
-import hazel.math.orthographicProjectionOf
-import hazel.math.toMutableMat4
+import hazel.core.*
+import hazel.math.*
 
 class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 	var projectionMatrix: Mat4 = orthographicProjectionOf(left, right, bottom, top, -1f, 1f)

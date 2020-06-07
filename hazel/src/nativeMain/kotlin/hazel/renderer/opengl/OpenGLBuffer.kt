@@ -1,14 +1,9 @@
 package hazel.renderer.opengl
 
 import com.kgl.opengl.*
-import hazel.core.Hazel
-import hazel.core.profile
-import hazel.opengl.glBufferData
-import hazel.opengl.glBufferSubData
-import hazel.opengl.glDeleteBuffers
-import hazel.renderer.BufferLayout
-import hazel.renderer.IndexBuffer
-import hazel.renderer.VertexBuffer
+import hazel.core.*
+import hazel.opengl.*
+import hazel.renderer.*
 
 internal class OpenGLVertexBuffer : VertexBuffer {
 	private val rendererId: UInt

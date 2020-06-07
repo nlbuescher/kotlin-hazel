@@ -1,7 +1,7 @@
 package hazel.renderer
 
-import hazel.core.Disposable
-import hazel.renderer.opengl.OpenGLVertexArray
+import hazel.core.*
+import hazel.renderer.opengl.*
 
 interface VertexArray : Disposable {
 	fun bind()

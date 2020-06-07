@@ -1,16 +1,15 @@
 package hazel.imgui
 
 import cimgui.internal.*
-import com.imgui.ImGui
-import com.imgui.impl.ImGuiGLFW
-import com.imgui.impl.ImguiOpenGL3
-import hazel.core.Hazel
-import hazel.core.Overlay
-import hazel.core.application
-import hazel.core.profile
-import kotlinx.cinterop.convert
-import kotlinx.cinterop.pointed
-import kotlinx.cinterop.sizeOf
+import cimgui.internal.ImDrawVert
+import cimgui.internal.ImGuiIO
+import cimgui.internal.ImGuiStyle
+import cimgui.internal.ImVec2
+import cimgui.internal.ImVec4
+import com.imgui.*
+import com.imgui.impl.*
+import hazel.core.*
+import kotlinx.cinterop.*
 
 open class ImGuiLayer : Overlay("ImGuiLayer") {
 	lateinit var glfw: ImGuiGLFW

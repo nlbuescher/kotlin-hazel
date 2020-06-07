@@ -1,7 +1,7 @@
 package hazel.renderer
 
-import hazel.math.Vec4
-import hazel.renderer.opengl.OpenGLRenderAPI
+import hazel.math.*
+import hazel.renderer.opengl.*
 
 private var _api: RenderAPI.API = RenderAPI.API.OpenGL
 

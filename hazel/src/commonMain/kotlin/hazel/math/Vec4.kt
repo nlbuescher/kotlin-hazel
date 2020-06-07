@@ -1,8 +1,6 @@
 package hazel.math
 
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sqrt
+import kotlin.math.*
 
 sealed class Vec4 {
 	abstract val x: Float

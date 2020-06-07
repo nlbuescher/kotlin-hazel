@@ -1,7 +1,6 @@
 package hazel.math
 
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
 sealed class Mat4 {
 	companion object {
@@ -288,7 +287,13 @@ sealed class Mat4 {
 		return true
 	}
 
-	override fun hashCode(): Int = getRow(3).hashCode() + 31 * (getRow(2).hashCode() + 31 * (getRow(1).hashCode() + 31 * getRow(0).hashCode()))
+	override fun hashCode(): Int {
+		var result = getRow(0).hashCode()
+		result = 31 * result + getRow(1).hashCode()
+		result = 31 * result + getRow(2).hashCode()
+		result = 31 * result + getRow(3).hashCode()
+		return result
+	}
 
 	override fun toString(): String = "${getRow(0)}\n${getRow(1)}\n${getRow(2)}\n${getRow(3)}"
 }
@@ -412,6 +417,7 @@ class MutableMat4 : Mat4 {
 	}
 
 	operator fun timesAssign(other: Mat4) {
+		//@formatter:off
 		val temp00 = this[0, 0] * other[0, 0] + this[1, 0] * other[0, 1] + this[2, 0] * other[0, 2] + this[3, 0] * other[0, 3]
 		val temp01 = this[0, 1] * other[0, 0] + this[1, 1] * other[0, 1] + this[2, 1] * other[0, 2] + this[3, 1] * other[0, 3]
 		val temp02 = this[0, 2] * other[0, 0] + this[1, 2] * other[0, 1] + this[2, 2] * other[0, 2] + this[3, 2] * other[0, 3]
@@ -431,6 +437,7 @@ class MutableMat4 : Mat4 {
 		val temp31 = this[0, 1] * other[3, 0] + this[1, 1] * other[3, 1] + this[2, 1] * other[3, 2] + this[3, 1] * other[3, 3]
 		val temp32 = this[0, 2] * other[3, 0] + this[1, 2] * other[3, 1] + this[2, 2] * other[3, 2] + this[3, 2] * other[3, 3]
 		val temp33 = this[0, 3] * other[3, 0] + this[1, 3] * other[3, 1] + this[2, 3] * other[3, 2] + this[3, 3] * other[3, 3]
+		//@formatter:on
 
 		this[0, 0] = temp00
 		this[0, 1] = temp01

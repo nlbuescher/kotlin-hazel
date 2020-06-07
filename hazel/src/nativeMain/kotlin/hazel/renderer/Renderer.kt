@@ -1,8 +1,7 @@
 package hazel.renderer
 
-import hazel.core.Hazel
-import hazel.core.profile
-import hazel.math.Mat4
+import hazel.core.*
+import hazel.math.*
 
 private class SceneData {
 	var viewProjectionMatrix: Mat4 = Mat4.IDENTITY

@@ -1,21 +1,12 @@
 package hazel.renderer.opengl
 
 import com.kgl.opengl.*
-import hazel.core.Hazel
-import hazel.core.coreAssert
-import hazel.core.coreError
+import hazel.core.*
 import hazel.core.profile
-import hazel.math.Mat4
-import hazel.math.Vec2
-import hazel.math.Vec3
-import hazel.math.Vec4
-import hazel.opengl.glGetProgramUInt
-import hazel.opengl.glGetShaderUInt
-import hazel.opengl.glUniform
-import hazel.renderer.Shader
-import kotlinx.cinterop.convert
-import kotlinx.cinterop.refTo
-import kotlinx.cinterop.toKString
+import hazel.math.*
+import hazel.opengl.*
+import hazel.renderer.*
+import kotlinx.cinterop.*
 import platform.posix.*
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -163,7 +154,8 @@ class OpenGLShader : Shader {
 
 				val nextLinePos = source.indexOfNone(charArrayOf('\r', '\n'), eol)
 				pos = source.indexOf(typeToken, nextLinePos)
-				shaderSources[type.toShaderType()] = source.substring(nextLinePos, if (pos == -1) source.lastIndex else pos)
+				val nextShaderPos = if (pos == -1) source.lastIndex else pos
+				shaderSources[type.toShaderType()] = source.substring(nextLinePos, nextShaderPos)
 			}
 
 			shaderSources

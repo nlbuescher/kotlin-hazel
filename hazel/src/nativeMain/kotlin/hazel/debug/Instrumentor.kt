@@ -1,7 +1,7 @@
 package hazel.debug
 
-import hazel.core.Hazel
-import kotlinx.cinterop.CPointer
+import hazel.core.*
+import kotlinx.cinterop.*
 import platform.posix.*
 
 data class ProfileResult(

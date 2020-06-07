@@ -1,6 +1,6 @@
 package hazel.renderer
 
-import hazel.math.Vec4
+import hazel.math.*
 
 private var renderAPI: RenderAPI = RenderAPI()
 

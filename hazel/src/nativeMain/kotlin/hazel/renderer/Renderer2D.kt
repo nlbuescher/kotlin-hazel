@@ -1,11 +1,9 @@
 package hazel.renderer
 
-import hazel.core.Disposable
-import hazel.core.Hazel
-import hazel.core.profile
+import hazel.core.*
 import hazel.math.*
 import kotlinx.cinterop.*
-import kotlinx.cinterop.internal.CStruct
+import kotlinx.cinterop.internal.*
 
 // Use manually defined CStruct types and CPointers to enable manual memory management for performance
 
@@ -183,7 +181,7 @@ object Renderer2D {
 
 	private fun endScene() {
 		Hazel.profile("Renderer2D.endScene()") {
-			with (data) {
+			with(data) {
 				val byteCount = currentVertex * sizeOf<QuadVertex>().toInt()
 				quadVertexBuffer.setData(quadVertexData.get(), byteCount)
 				flush()
@@ -298,11 +296,25 @@ object Renderer2D {
 		}
 	}
 
-	fun drawRotatedQuad(position: Vec2, size: Vec2, rotation: Float, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
+	fun drawRotatedQuad(
+		position: Vec2,
+		size: Vec2,
+		rotation: Float,
+		texture: Texture2D,
+		tilingFactor: Float = 1f,
+		tintColor: Vec4 = Vec4.ONE
+	) {
 		drawRotatedQuad(Vec3(position.x, position.y, 0f), size, rotation, texture, tilingFactor, tintColor)
 	}
 
-	fun drawRotatedQuad(position: Vec3, size: Vec2, rotation: Float, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
+	fun drawRotatedQuad(
+		position: Vec3,
+		size: Vec2,
+		rotation: Float,
+		texture: Texture2D,
+		tilingFactor: Float = 1f,
+		tintColor: Vec4 = Vec4.ONE
+	) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Texture2D, Float, Vec4)") {
 			with(data) {
 				textureShader["u_Color"] = tintColor

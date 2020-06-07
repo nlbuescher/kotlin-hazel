@@ -2,14 +2,10 @@
 
 package hazel.core
 
-import hazel.debug.Instrumentor
-import hazel.debug.ProfileResult
-import hazel.system.breakpoint
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
-import kotlin.native.concurrent.ensureNeverFrozen
-import kotlin.time.TimeSource
+import hazel.debug.*
+import hazel.system.*
+import kotlin.native.concurrent.*
+import kotlin.time.*
 
 object Hazel {
 	object Config {
@@ -34,7 +30,7 @@ object Hazel {
 		fun stop() {
 			if (Config.enableProfiling) {
 				end = clock.elapsedNow().inMicroseconds.toLong()
-				Instrumentor.writeProfile(ProfileResult(name, start, end, hazel.system.getThreadId()))
+				Instrumentor.writeProfile(ProfileResult(name, start, end, getThreadId()))
 			}
 		}
 	}

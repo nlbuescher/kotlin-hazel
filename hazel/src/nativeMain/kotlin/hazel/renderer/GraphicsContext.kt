@@ -1,7 +1,7 @@
 package hazel.renderer
 
-import hazel.core.Window
-import hazel.renderer.opengl.OpenGLContext
+import hazel.core.*
+import hazel.renderer.opengl.*
 
 interface GraphicsContext {
 	fun init()

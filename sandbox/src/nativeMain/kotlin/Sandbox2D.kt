@@ -1,11 +1,8 @@
-import com.imgui.ImGui
+import com.imgui.*
 import hazel.core.*
-import hazel.events.Event
+import hazel.events.*
 import hazel.math.*
-import hazel.renderer.OrthographicCameraController
-import hazel.renderer.RenderCommand
-import hazel.renderer.Renderer2D
-import hazel.renderer.Texture2D
+import hazel.renderer.*
 
 class Sandbox2D : Layer("Sandbox2D") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, true)

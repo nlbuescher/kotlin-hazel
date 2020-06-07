@@ -1,7 +1,7 @@
 package hazel.renderer
 
-import hazel.core.Disposable
-import hazel.renderer.opengl.OpenGLTexture2D
+import hazel.core.*
+import hazel.renderer.opengl.*
 
 interface Texture : Disposable {
 	val width: Int

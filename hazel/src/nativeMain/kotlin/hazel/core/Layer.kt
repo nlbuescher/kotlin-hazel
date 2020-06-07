@@ -1,6 +1,6 @@
 package hazel.core
 
-import hazel.events.Event
+import hazel.events.*
 
 abstract class Layer(val debugName: String = "Layer") : Disposable {
 	override fun dispose() {}

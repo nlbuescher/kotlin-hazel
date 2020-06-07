@@ -1,5 +1,5 @@
 import org.gradle.internal.os.OperatingSystem
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.*
 
 plugins {
 	kotlin("multiplatform")

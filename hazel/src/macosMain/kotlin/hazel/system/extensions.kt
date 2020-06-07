@@ -2,10 +2,9 @@
 
 package hazel.system
 
-import hazel.cinterop.pthread_threadid
+import hazel.cinterop.*
 import kotlinx.cinterop.*
-import platform.posix.SIGTRAP
-import platform.posix.raise
+import platform.posix.*
 
 actual inline fun breakpoint() {
 	raise(SIGTRAP)

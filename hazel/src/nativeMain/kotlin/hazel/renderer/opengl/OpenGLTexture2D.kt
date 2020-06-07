@@ -1,19 +1,12 @@
 package hazel.renderer.opengl
 
 import com.kgl.opengl.*
-import hazel.cinterop.sizeOf
-import hazel.cinterop.stbi_image_free
-import hazel.cinterop.stbi_load
-import hazel.cinterop.stbi_set_flip_vertically_on_load
-import hazel.core.Hazel
-import hazel.core.coreAssert
-import hazel.core.profile
-import hazel.opengl.glDeleteTextures
-import hazel.opengl.glTexImage2D
-import hazel.opengl.glTexParameter
-import hazel.renderer.Texture2D
-import kotlinx.cinterop.refTo
-import platform.posix.memcpy
+import hazel.cinterop.*
+import hazel.core.*
+import hazel.opengl.*
+import hazel.renderer.*
+import kotlinx.cinterop.*
+import platform.posix.*
 
 class OpenGLTexture2D : Texture2D {
 	private val rendererId: UInt

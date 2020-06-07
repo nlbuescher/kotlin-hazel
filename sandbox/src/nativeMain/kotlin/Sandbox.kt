@@ -1,6 +1,4 @@
-import hazel.core.Application
-import hazel.core.Hazel
-import hazel.core.run
+import hazel.core.*
 
 class Sandbox : Application() {
 	init {
