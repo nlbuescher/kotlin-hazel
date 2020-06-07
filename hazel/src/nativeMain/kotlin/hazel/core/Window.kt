@@ -124,10 +124,14 @@ class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : 
 
 				val nativeWindow = Hazel.profile("Glfw create window") {
 					GlfwWindow(width, height, title) {
-						contextVersionMajor = 3
-						contextVersionMinor = 2
-						openGLForwardCompat = true
-						openGLProfile = OpenGLProfile.Core
+						// enable the most recent version of OpenGL on macOS
+						// (most recent is the default on other platforms)
+						if (Platform.osFamily == OsFamily.MACOSX) {
+							contextVersionMajor = 3
+							contextVersionMinor = 2
+							openGLForwardCompat = true
+							openGLProfile = OpenGLProfile.Core
+						}
 					}
 				}
 				windowCount += 1

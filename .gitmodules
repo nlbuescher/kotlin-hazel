@@ -1,3 +1,0 @@
-[submodule "cimgui"]
-	path = imgui/cimgui
-	url = git@github.com:nlbuescher/cimgui
