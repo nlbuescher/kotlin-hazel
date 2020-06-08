@@ -125,6 +125,13 @@ private class Renderer2DData : Disposable {
 	val textures: Array<Texture2D?> = Array(maxTextures) { null }
 	var currentTexture = 1 // 0 = white texture
 
+	val quadVertexPositions = arrayOf(
+		Vec4(-0.5f, -0.5f, 0f, 1f),
+		Vec4(+0.5f, -0.5f, 0f, 1f),
+		Vec4(+0.5f, +0.5f, 0f, 1f),
+		Vec4(-0.5f, +0.5f, 0f, 1f)
+	)
+
 	override fun dispose() {
 		quadVertexArray.dispose()
 		textureShader.dispose()
@@ -223,64 +230,64 @@ object Renderer2D {
 		}
 	}
 
+	private fun bufferQuad(
+		transform: Mat4,
+		color: Vec4,
+		textureIndex: Float = 0f, // whiteTexture
+		tilingFactor: Float = 1f
+	) {
+		with(data) {
+			quadVertices[currentVertex].also { vertex ->
+				val bottomLeft = transform * quadVertexPositions[0]
+				vertex.position.apply { x = bottomLeft.x; y = bottomLeft.y; z = bottomLeft.z }
+				vertex.color.apply { x = color.x; y = color.y; z = color.z; w = color.w }
+				vertex.textureCoordinate.apply { x = 0f; y = 0f }
+				vertex.textureIndex = textureIndex
+				vertex.tilingFactor = tilingFactor
+			}
+			currentVertex += 1
+			quadVertices[currentVertex].also { vertex ->
+				val bottomRight = transform * quadVertexPositions[1]
+				vertex.position.apply { x = bottomRight.x; y = bottomRight.y; z = bottomRight.z }
+				vertex.color.apply { x = color.x; y = color.y; z = color.z; w = color.w }
+				vertex.textureCoordinate.apply { x = 1f; y = 0f }
+				vertex.textureIndex = textureIndex
+				vertex.tilingFactor = tilingFactor
+			}
+			currentVertex += 1
+			quadVertices[currentVertex].also { vertex ->
+				val topRight = transform * quadVertexPositions[2]
+				vertex.position.apply { x = topRight.x; y = topRight.y; z = topRight.z }
+				vertex.color.apply { x = color.x; y = color.y; z = color.z; w = color.w }
+				vertex.textureCoordinate.apply { x = 1f; y = 1f }
+				vertex.textureIndex = textureIndex
+				vertex.tilingFactor = tilingFactor
+			}
+			currentVertex += 1
+			quadVertices[currentVertex].also { vertex ->
+				val topLeft = transform * quadVertexPositions[3]
+				vertex.position.apply { x = topLeft.x; y = topLeft.y; z = topLeft.z }
+				vertex.color.apply { x = color.x; y = color.y; z = color.z; w = color.w }
+				vertex.textureCoordinate.apply { x = 0f; y = 1f }
+				vertex.textureIndex = textureIndex
+				vertex.tilingFactor = tilingFactor
+			}
+			currentVertex += 1
+			quadIndexCount += 6
+		}
+	}
+
 	fun drawQuad(position: Vec2, size: Vec2, color: Vec4) {
 		drawQuad(Vec3(position.x, position.y, 0f), size, color)
 	}
 
 	fun drawQuad(position: Vec3, size: Vec2, color: Vec4) {
 		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Vec4)") {
-			with(data) {
-				val textureIndex = 0f // white texture
-				val tilingFactor = 1f
-
-				quadVertices[currentVertex].also { vertex ->
-					vertex.position.apply { x = position.x; y = position.y; z = position.z }
-					vertex.color.apply { x = color.x; y = color.y; z = color.z; w = color.w }
-					vertex.textureCoordinate.apply { x = 0f; y = 0f }
-					vertex.textureIndex = textureIndex
-					vertex.tilingFactor = tilingFactor
-				}
-				currentVertex += 1
-				quadVertices[currentVertex].also { vertex ->
-					vertex.position.apply { x = position.x + size.x; y = position.y; z = position.z }
-					vertex.color.apply { x = color.x; y = color.y; z = color.z; w = color.w }
-					vertex.textureCoordinate.apply { x = 1f; y = 0f }
-					vertex.textureIndex = textureIndex
-					vertex.tilingFactor = tilingFactor
-				}
-				currentVertex += 1
-				quadVertices[currentVertex].also { vertex ->
-					vertex.position.apply { x = position.x + size.x; y = position.y + size.y; z = position.z }
-					vertex.color.apply { x = color.x; y = color.y; z = color.z; w = color.w }
-					vertex.textureCoordinate.apply { x = 1f; y = 1f }
-					vertex.textureIndex = textureIndex
-					vertex.tilingFactor = tilingFactor
-				}
-				currentVertex += 1
-				quadVertices[currentVertex].also { vertex ->
-					vertex.position.apply { x = position.x; y = position.y + size.y; z = position.z }
-					vertex.color.apply { x = color.x; y = color.y; z = color.z; w = color.w }
-					vertex.textureCoordinate.apply { x = 0f; y = 1f }
-					vertex.textureIndex = textureIndex
-					vertex.tilingFactor = tilingFactor
-				}
-				currentVertex += 1
-				quadIndexCount += 6
-
-				/*
-				textureShader["u_Color"] = color
-				textureShader["u_TilingFactor"] = 1f
-				whiteTexture.bind()
-
-				textureShader["u_Transform"] = Mat4.IDENTITY.toMutableMat4().apply {
-					translate(position)
-					scale(Vec3(size.x, size.y, 1f))
-				}
-
-				quadVertexArray.bind()
-				RenderCommand.drawIndexed(quadVertexArray)
-				*/
+			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+				translate(position)
+				scale(size.toVec3())
 			}
+			bufferQuad(transform, color)
 		}
 	}
 
@@ -301,54 +308,11 @@ object Renderer2D {
 						currentTexture += 1
 					}
 				}
-
-				quadVertices[currentVertex].also { vertex ->
-					vertex.position.apply { x = position.x; y = position.y; z = position.z }
-					vertex.color.apply { x = tintColor.x; y = tintColor.y; z = tintColor.z; w = tintColor.w }
-					vertex.textureCoordinate.apply { x = 0f; y = 0f }
-					vertex.textureIndex = textureIndex
-					vertex.tilingFactor = tilingFactor
-				}
-				currentVertex += 1
-				quadVertices[currentVertex].also { vertex ->
-					vertex.position.apply { x = position.x + size.x; y = position.y; z = position.z }
-					vertex.color.apply { x = tintColor.x; y = tintColor.y; z = tintColor.z; w = tintColor.w }
-					vertex.textureCoordinate.apply { x = 1f; y = 0f }
-					vertex.textureIndex = textureIndex
-					vertex.tilingFactor = tilingFactor
-				}
-				currentVertex += 1
-				quadVertices[currentVertex].also { vertex ->
-					vertex.position.apply { x = position.x + size.x; y = position.y + size.y; z = position.z }
-					vertex.color.apply { x = tintColor.x; y = tintColor.y; z = tintColor.z; w = tintColor.w }
-					vertex.textureCoordinate.apply { x = 1f; y = 1f }
-					vertex.textureIndex = textureIndex
-					vertex.tilingFactor = tilingFactor
-				}
-				currentVertex += 1
-				quadVertices[currentVertex].also { vertex ->
-					vertex.position.apply { x = position.x; y = position.y + size.y; z = position.z }
-					vertex.color.apply { x = tintColor.x; y = tintColor.y; z = tintColor.z; w = tintColor.w }
-					vertex.textureCoordinate.apply { x = 0f; y = 1f }
-					vertex.textureIndex = textureIndex
-					vertex.tilingFactor = tilingFactor
-				}
-				currentVertex += 1
-				quadIndexCount += 6
-
-				/*
-				textureShader["u_Color"] = tintColor
-				textureShader["u_TilingFactor"] = tilingFactor
-				texture.bind()
-
-				textureShader["u_Transform"] = Mat4.IDENTITY.toMutableMat4().apply {
+				val transform = Mat4.IDENTITY.toMutableMat4().apply {
 					translate(position)
-					scale(Vec3(size.x, size.y, 1f))
+					scale(size.toVec3())
 				}
-
-				quadVertexArray.bind()
-				RenderCommand.drawIndexed(quadVertexArray)
-				*/
+				bufferQuad(transform, tintColor, textureIndex, tilingFactor)
 			}
 		}
 	}
@@ -359,20 +323,12 @@ object Renderer2D {
 
 	fun drawRotatedQuad(position: Vec3, size: Vec2, rotation: Float, color: Vec4) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Vec4)") {
-			with(data) {
-				textureShader["u_Color"] = color
-				textureShader["u_TilingFactor"] = 1f
-				whiteTexture.bind()
-
-				textureShader["u_Transform"] = Mat4.IDENTITY.toMutableMat4().apply {
-					translate(position)
-					rotate(rotation, Vec3.FORWARD)
-					scale(Vec3(size.x, size.y, 1f))
-				}
-
-				quadVertexArray.bind()
-				RenderCommand.drawIndexed(quadVertexArray)
+			val transform = Mat4.IDENTITY.toMutableMat4().apply {
+				translate(position)
+				rotate(rotation, Vec3.FORWARD)
+				scale(size.toVec3())
 			}
+			bufferQuad(transform, color)
 		}
 	}
 
@@ -397,18 +353,22 @@ object Renderer2D {
 	) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Texture2D, Float, Vec4)") {
 			with(data) {
-				textureShader["u_Color"] = tintColor
-				textureShader["u_TilingFactor"] = tilingFactor
-				texture.bind()
-
-				textureShader["u_Transform"] = Mat4.IDENTITY.toMutableMat4().apply {
+				val textureIndex: Float
+				textures.indexOf(texture).let { index ->
+					if (index >= 0) {
+						textureIndex = index.toFloat()
+					} else {
+						textures[currentTexture] = texture
+						textureIndex = currentTexture.toFloat()
+						currentTexture += 1
+					}
+				}
+				val transform = Mat4.IDENTITY.toMutableMat4().apply {
 					translate(position)
 					rotate(rotation, Vec3.FORWARD)
 					scale(Vec3(size.x, size.y, 1f))
 				}
-
-				quadVertexArray.bind()
-				RenderCommand.drawIndexed(quadVertexArray)
+				bufferQuad(transform, tintColor, textureIndex, tilingFactor)
 			}
 		}
 	}

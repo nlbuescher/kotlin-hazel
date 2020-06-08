@@ -20,6 +20,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 		Hazel.profile("Sandbox2D.onDetach()") {}
 	}
 
+	private var rotation = 0f
 	private val squareColor = MutableVec4(0.2f, 0.3f, 0.8f, 1f)
 
 	override fun onUpdate(timeStep: TimeStep) {
@@ -34,12 +35,13 @@ class Sandbox2D : Layer("Sandbox2D") {
 			}
 
 			Hazel.profile("Renderer Draw") {
+				rotation += timeStep.inSeconds * 50f.degrees
 				Renderer2D.scene(cameraController.camera) {
-					//drawRotatedQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), 45f.degrees, Vec4(1f, 0f, 0f, 1f))
+					drawRotatedQuad(Vec2(1f, 0f), Vec2(0.8f, 0.8f), (-30f).degrees, Vec4(0.8f, 0.2f, 0.3f, 1f))
 					drawQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), Vec4(0.8f, 0.2f, 0.3f, 1f))
 					drawQuad(Vec2(0.5f, -0.5f), Vec2(0.5f, 0.75f), squareColor)
-					drawQuad(Vec3(-5f, -5f, -0.1f), Vec2(10f, 10f), checkerBoardTexture, 10f)
-					drawQuad(Vec3(-0.5f, -0.5f, 0.1f), Vec2(1f, 1f), checkerBoardTexture, 20f)
+					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(10f, 10f), checkerBoardTexture, 10f)
+					drawRotatedQuad(Vec3(-2f, 0f, 0.1f), Vec2(1f, 1f), rotation, checkerBoardTexture, 20f)
 				}
 			}
 		}

@@ -225,6 +225,15 @@ sealed class Mat4 {
 
 	operator fun div(other: Mat4): Mat4 = this * other.inverse
 
+
+	operator fun times(vector: Vec4): Vec4 = Vec4(
+		this[0, 0] * vector[0] + this[1, 0] * vector[1] + this[2, 0] * vector[2] + this[3, 0] * vector[3],
+		this[0, 1] * vector[0] + this[1, 1] * vector[1] + this[2, 1] * vector[2] + this[3, 1] * vector[3],
+		this[0, 2] * vector[0] + this[1, 2] * vector[1] + this[2, 2] * vector[2] + this[3, 2] * vector[3],
+		this[0, 3] * vector[0] + this[1, 3] * vector[1] + this[2, 3] * vector[2] + this[3, 3] * vector[3]
+	)
+
+
 	fun transposed(): Mat4 = Mat4(
 		this[0, 0], this[1, 0], this[2, 0], this[3, 0],
 		this[0, 1], this[1, 1], this[2, 1], this[3, 1],

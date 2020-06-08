@@ -172,6 +172,8 @@ fun Vec2.toFloatArray(): FloatArray = floatArrayOf(x, y)
 
 fun Vec2.toVec2(): Vec2 = Vec2(x, y)
 
+fun Vec2.toVec3(): Vec3 = Vec3(x, y, 0f)
+
 fun Vec2.toMutableVec2(): MutableVec2 = MutableVec2(x, y)
 
 /** Returns the unsigned angle in radians between [from] and [to]. */
