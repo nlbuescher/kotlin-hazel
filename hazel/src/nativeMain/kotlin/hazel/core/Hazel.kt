@@ -84,18 +84,18 @@ fun Hazel.assert(test: Boolean, message: String? = null) {
 }
 
 
-private var _application: Application? = null
+private var application: Application? = null
 	set(value) {
 		if (field != null) error("application already set!")
 		field = value
 	}
 val Hazel.application: Application
-	get() = _application ?: kotlin.error("must call Hazel.run first!")
+	get() = hazel.core.application ?: kotlin.error("must call Hazel.run first!")
 
 
 fun Hazel.run(createApplication: () -> Application) {
 	Instrumentor.session("Startup", "startup_profile.json") {
-		_application = createApplication()
+		hazel.core.application = createApplication()
 	}
 
 	coreWarn("Initialized Log!")

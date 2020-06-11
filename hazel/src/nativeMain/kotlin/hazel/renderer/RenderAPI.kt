@@ -3,7 +3,7 @@ package hazel.renderer
 import hazel.math.*
 import hazel.renderer.opengl.*
 
-private var _api: RenderAPI.API = RenderAPI.API.OpenGL
+private var api: RenderAPI.API = RenderAPI.API.OpenGL
 
 interface RenderAPI {
 	enum class API {
@@ -20,9 +20,9 @@ interface RenderAPI {
 
 	companion object {
 		var api: API
-			get() = _api
+			get() = hazel.renderer.api
 			set(new) {
-				_api = new
+				hazel.renderer.api = new
 			}
 	}
 }

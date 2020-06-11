@@ -80,6 +80,7 @@ interface IndexBuffer : Disposable {
 	fun unbind()
 }
 
+@Suppress("FunctionName")
 fun IndexBuffer(indices: UIntArray): IndexBuffer = when (Renderer.api) {
 	RenderAPI.API.None -> TODO("RenderAPI.API.None is currently not supported")
 	RenderAPI.API.OpenGL -> OpenGLIndexBuffer(indices)
