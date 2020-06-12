@@ -29,19 +29,31 @@ class Sandbox2D : Layer("Sandbox2D") {
 			cameraController.onUpdate(timeStep)
 
 			// render
+			Renderer2D.resetStats()
 			Hazel.profile("Renderer Prep") {
 				RenderCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1f))
 				RenderCommand.clear()
 			}
 
+			rotation += timeStep.inSeconds * 50f.degrees
 			Hazel.profile("Renderer Draw") {
-				rotation += timeStep.inSeconds * 50f.degrees
 				Renderer2D.scene(cameraController.camera) {
 					drawRotatedQuad(Vec2(1f, 0f), Vec2(0.8f, 0.8f), (-30f).degrees, Vec4(0.8f, 0.2f, 0.3f, 1f))
 					drawQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), Vec4(0.8f, 0.2f, 0.3f, 1f))
 					drawQuad(Vec2(0.5f, -0.5f), Vec2(0.5f, 0.75f), squareColor)
-					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(10f, 10f), checkerBoardTexture, 10f)
+					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(20f, 20f), checkerBoardTexture, 10f)
 					drawRotatedQuad(Vec3(-2f, 0f, 0.1f), Vec2(1f, 1f), rotation, checkerBoardTexture, 20f)
+
+					var y = -4.75f
+					while (y < 5.25f) {
+						var x = -4.75f
+						while (x < 5.25f) {
+							val color = Vec4((x + 5) / 10, 0.4f, (y + 5) / 10, 0.7f)
+							drawQuad(Vec2(x, y), Vec2(0.45f, 0.45f), color)
+							x += 0.5f
+						}
+						y += 0.5f
+					}
 				}
 			}
 		}
@@ -51,6 +63,17 @@ class Sandbox2D : Layer("Sandbox2D") {
 		Hazel.profile("Sandbox2D.onImGuiRender()") {
 			with(ImGui) {
 				begin("Settings")
+
+				with(Renderer2D.stats) {
+					text("Renderer2D Stats")
+					text("Draw calls: $drawCalls")
+					text("Quad count: $quadCount")
+					text("Vertices  : $vertexCount")
+					text("Indices   : $indexCount")
+				}
+
+				spacing()
+
 				colorEdit4("Square Color", squareColor.asFloatArray())
 				end()
 			}
