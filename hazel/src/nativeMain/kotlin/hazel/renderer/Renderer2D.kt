@@ -103,7 +103,7 @@ class QuadVertex(rawPtr: NativePtr) : CStructVar(rawPtr) {
 }
 
 private class Renderer2DData : Disposable {
-	val maxQuads: Int = 10_000
+	val maxQuads: Int = 20_000
 	val maxVertices: Int = maxQuads * 4
 	val maxIndices: Int = maxQuads * 6
 	val maxTextures: Int = 16
@@ -113,7 +113,7 @@ private class Renderer2DData : Disposable {
 	lateinit var textureShader: Shader
 	lateinit var whiteTexture: Texture2D
 
-	var quadIndexCount: Int = 0
+	var indexCount: Int = 0
 	var currentVertex: Int = 0
 
 	// use a pinned byte array as the backing for quadVertices
@@ -132,6 +132,8 @@ private class Renderer2DData : Disposable {
 		Vec4(-0.5f, +0.5f, 0f, 1f)
 	)
 
+	val stats = Renderer2D.Stats()
+
 	override fun dispose() {
 		quadVertexArray.dispose()
 		textureShader.dispose()
@@ -140,9 +142,19 @@ private class Renderer2DData : Disposable {
 	}
 }
 
+
 private val data = Renderer2DData()
 
 object Renderer2D {
+	class Stats {
+		var drawCalls: Int = 0
+		var quadCount: Int = 0
+		val vertexCount: Int get() = quadCount * 4
+		val indexCount: Int get() = quadCount * 6
+	}
+
+	val stats: Stats get() = data.stats
+
 	fun init() {
 		Hazel.profile("Renderer2D.init()") {
 			with(data) {
@@ -193,19 +205,25 @@ object Renderer2D {
 		}
 	}
 
-	private fun beginScene(camera: OrthographicCamera) {
+	fun resetStats() {
+		data.stats.drawCalls = 0
+		data.stats.quadCount = 0
+	}
+
+	fun beginScene(camera: OrthographicCamera) {
 		Hazel.profile("Renderer2D.beginScene(OrthographicCamera)") {
 			with(data) {
 				textureShader.bind()
 				textureShader["u_ViewProjection"] = camera.viewProjectionMatrix
 
-				quadIndexCount = 0
+				indexCount = 0
 				currentVertex = 0
+				currentTexture = 1
 			}
 		}
 	}
 
-	private fun endScene() {
+	fun endScene() {
 		Hazel.profile("Renderer2D.endScene()") {
 			with(data) {
 				val byteCount = currentVertex * sizeOf<QuadVertex>().toInt()
@@ -215,10 +233,12 @@ object Renderer2D {
 		}
 	}
 
-	fun scene(camera: OrthographicCamera, block: Renderer2D.() -> Unit) {
-		beginScene(camera)
-		this.block()
+	private fun flushAndReset() {
 		endScene()
+
+		data.indexCount = 0
+		data.currentVertex = 0
+		data.currentTexture = 1
 	}
 
 	fun flush() {
@@ -226,7 +246,8 @@ object Renderer2D {
 			for (slot in 0..data.currentTexture) {
 				data.textures[slot]?.bind(slot)
 			}
-			RenderCommand.drawIndexed(data.quadVertexArray, data.quadIndexCount)
+			RenderCommand.drawIndexed(data.quadVertexArray, data.indexCount)
+			data.stats.drawCalls += 1
 		}
 	}
 
@@ -273,7 +294,9 @@ object Renderer2D {
 				vertex.tilingFactor = tilingFactor
 			}
 			currentVertex += 1
-			quadIndexCount += 6
+			indexCount += 6
+
+			stats.quadCount += 1
 		}
 	}
 
@@ -283,6 +306,10 @@ object Renderer2D {
 
 	fun drawQuad(position: Vec3, size: Vec2, color: Vec4) {
 		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Vec4)") {
+			if (data.indexCount >= data.maxIndices) {
+				flushAndReset()
+			}
+
 			val transform = Mat4.IDENTITY.toMutableMat4().apply {
 				translate(position)
 				scale(size.toVec3())
@@ -298,6 +325,10 @@ object Renderer2D {
 	fun drawQuad(position: Vec3, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
 		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Texture2D, Float, Vec4)") {
 			with(data) {
+				if (data.indexCount >= data.maxIndices) {
+					flushAndReset()
+				}
+
 				val textureIndex: Float
 				textures.indexOf(texture).let { index ->
 					if (index >= 0) {
@@ -323,6 +354,10 @@ object Renderer2D {
 
 	fun drawRotatedQuad(position: Vec3, size: Vec2, rotation: Float, color: Vec4) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Vec4)") {
+			if (data.indexCount >= data.maxIndices) {
+				flushAndReset()
+			}
+
 			val transform = Mat4.IDENTITY.toMutableMat4().apply {
 				translate(position)
 				rotate(rotation, Vec3.FORWARD)
@@ -353,6 +388,10 @@ object Renderer2D {
 	) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Texture2D, Float, Vec4)") {
 			with(data) {
+				if (data.indexCount >= data.maxIndices) {
+					flushAndReset()
+				}
+
 				val textureIndex: Float
 				textures.indexOf(texture).let { index ->
 					if (index >= 0) {
