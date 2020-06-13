@@ -210,7 +210,7 @@ object Renderer2D {
 		data.stats.quadCount = 0
 	}
 
-	private fun beginScene(camera: OrthographicCamera) {
+	fun beginScene(camera: OrthographicCamera) {
 		Hazel.profile("Renderer2D.beginScene(OrthographicCamera)") {
 			with(data) {
 				textureShader.bind()
@@ -223,7 +223,7 @@ object Renderer2D {
 		}
 	}
 
-	private fun endScene() {
+	fun endScene() {
 		Hazel.profile("Renderer2D.endScene()") {
 			with(data) {
 				val byteCount = currentVertex * sizeOf<QuadVertex>().toInt()
@@ -239,12 +239,6 @@ object Renderer2D {
 		data.indexCount = 0
 		data.currentVertex = 0
 		data.currentTexture = 1
-	}
-
-	fun scene(camera: OrthographicCamera, block: Renderer2D.() -> Unit) {
-		beginScene(camera)
-		this.block()
-		endScene()
 	}
 
 	fun flush() {

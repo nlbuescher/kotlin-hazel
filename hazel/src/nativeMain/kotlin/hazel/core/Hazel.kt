@@ -37,7 +37,7 @@ object Hazel {
 }
 
 //@OptIn(ExperimentalContracts::class)
-fun <R> Hazel.profile(name: String, block: () -> R): R {
+inline fun <R> Hazel.profile(name: String, block: () -> R): R {
 	//contract {
 	//	callsInPlace(block, InvocationKind.EXACTLY_ONCE)
 	//}

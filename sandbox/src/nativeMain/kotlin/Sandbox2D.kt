@@ -37,7 +37,9 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 			rotation += timeStep.inSeconds * 50f.degrees
 			Hazel.profile("Renderer Draw") {
-				Renderer2D.scene(cameraController.camera) {
+				with(Renderer2D) {
+					beginScene(cameraController.camera)
+
 					drawRotatedQuad(Vec2(1f, 0f), Vec2(0.8f, 0.8f), (-30f).degrees, Vec4(0.8f, 0.2f, 0.3f, 1f))
 					drawQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), Vec4(0.8f, 0.2f, 0.3f, 1f))
 					drawQuad(Vec2(0.5f, -0.5f), Vec2(0.5f, 0.75f), squareColor)
@@ -54,6 +56,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 						}
 						y += 0.5f
 					}
+					endScene()
 				}
 			}
 		}
