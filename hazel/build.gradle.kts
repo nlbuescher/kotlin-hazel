@@ -23,27 +23,29 @@ kotlin {
 	}
 
 	targets.withType<KotlinNativeTarget> {
-		compilations["main"].apply {
-			cinterops.create("hazel")
+		compilations {
+			"main" {
+				cinterops.create("hazel")
 
-			defaultSourceSet {
-				kotlin.srcDir("src/nativeMain/kotlin")
-				resources.srcDir("src/nativeMain/resources")
+				defaultSourceSet {
+					kotlin.srcDir("src/nativeMain/kotlin")
+					resources.srcDir("src/nativeMain/resources")
 
-				dependencies {
-					listOf("", "-glfw", "-opengl").forEach {
-						implementation("com.kotlin-imgui:imgui$it:$imguiVersion")
-					}
-					listOf("-glfw", "-glfw-static", "-opengl").forEach {
-						implementation("com.kgl:kgl$it:$kglVersion")
+					dependencies {
+						listOf("", "-glfw", "-opengl").forEach {
+							implementation("com.kotlin-imgui:imgui$it:$imguiVersion")
+						}
+						listOf("-glfw", "-glfw-static", "-opengl").forEach {
+							implementation("com.kgl:kgl$it:$kglVersion")
+						}
 					}
 				}
 			}
-		}
-		compilations["test"].apply {
-			defaultSourceSet {
-				kotlin.srcDir("src/nativeTest/kotlin")
-				resources.srcDir("src/nativeTest/resources")
+			"test" {
+				defaultSourceSet {
+					kotlin.srcDir("src/nativeTest/kotlin")
+					resources.srcDir("src/nativeTest/resources")
+				}
 			}
 		}
 	}
