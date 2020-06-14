@@ -5,12 +5,22 @@ import hazel.events.*
 import hazel.math.*
 import kotlin.math.*
 
+class Rect(
+	val left: Float, val right: Float,
+	val bottom: Float, val top: Float
+) {
+	val width: Float get() = right - left
+	val height: Float get() = top - bottom
+}
+
 class OrthographicCameraController(
 	private var aspectRatio: Float,
 	private val allowRotation: Boolean = false
 ) {
 	private var zoomLevel: Float = 1f
-	val camera = OrthographicCamera(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+	var bounds = Rect(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+		private set
+	val camera = OrthographicCamera(bounds.left, bounds.right, bounds.bottom, bounds.top)
 	private val cameraPosition = MutableVec3()
 	private var cameraRotation: Float = 0f
 	private var cameraTranslationSpeed: Float = zoomLevel
@@ -68,7 +78,8 @@ class OrthographicCameraController(
 			zoomLevel -= event.yOffset * 0.25f
 			zoomLevel = zoomLevel.coerceAtLeast(0.25f)
 			cameraTranslationSpeed = zoomLevel
-			camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+			bounds = Rect(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+			camera.setProjection(bounds.left, bounds.right, bounds.bottom, bounds.top)
 		}
 		return false
 	}
@@ -76,7 +87,8 @@ class OrthographicCameraController(
 	private fun onWindowResizeEvent(event: WindowResizeEvent): Boolean {
 		Hazel.profile("OrthographicCameraController.onWindowResizeEvent(WindowResizeEvent): Boolean") {
 			aspectRatio = event.width.toFloat() / event.height.toFloat()
-			camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+			bounds = Rect(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+			camera.setProjection(bounds.left, bounds.right, bounds.bottom, bounds.top)
 		}
 		return false
 	}
