@@ -187,51 +187,55 @@ sealed class Mat4 {
 		this[3, 0] / scalar, this[3, 1] / scalar, this[3, 2] / scalar, this[3, 3] / scalar
 	)
 
-	operator fun plus(other: Mat4): Mat4 = Mat4(
-		this[0, 0] + other[0, 0], this[0, 1] + other[0, 1], this[0, 2] + other[0, 2], this[0, 3] + other[0, 3],
-		this[1, 0] + other[1, 0], this[1, 1] + other[1, 1], this[1, 2] + other[1, 2], this[1, 3] + other[1, 3],
-		this[2, 0] + other[2, 0], this[2, 1] + other[2, 1], this[2, 2] + other[2, 2], this[2, 3] + other[2, 3],
-		this[3, 0] + other[3, 0], this[3, 1] + other[3, 1], this[3, 2] + other[3, 2], this[3, 3] + other[3, 3]
-	)
+	operator fun plus(other: Mat4): Mat4 =
+		Mat4(
+			this[0, 0] + other[0, 0], this[0, 1] + other[0, 1], this[0, 2] + other[0, 2], this[0, 3] + other[0, 3],
+			this[1, 0] + other[1, 0], this[1, 1] + other[1, 1], this[1, 2] + other[1, 2], this[1, 3] + other[1, 3],
+			this[2, 0] + other[2, 0], this[2, 1] + other[2, 1], this[2, 2] + other[2, 2], this[2, 3] + other[2, 3],
+			this[3, 0] + other[3, 0], this[3, 1] + other[3, 1], this[3, 2] + other[3, 2], this[3, 3] + other[3, 3]
+		)
 
-	operator fun minus(other: Mat4): Mat4 = Mat4(
-		this[0, 0] - other[0, 0], this[0, 1] - other[0, 1], this[0, 2] - other[0, 2], this[0, 3] - other[0, 3],
-		this[1, 0] - other[1, 0], this[1, 1] - other[1, 1], this[1, 2] - other[1, 2], this[1, 3] - other[1, 3],
-		this[2, 0] - other[2, 0], this[2, 1] - other[2, 1], this[2, 2] - other[2, 2], this[2, 3] - other[2, 3],
-		this[3, 0] - other[3, 0], this[3, 1] - other[3, 1], this[3, 2] - other[3, 2], this[3, 3] - other[3, 3]
-	)
+	operator fun minus(other: Mat4): Mat4 =
+		Mat4(
+			this[0, 0] - other[0, 0], this[0, 1] - other[0, 1], this[0, 2] - other[0, 2], this[0, 3] - other[0, 3],
+			this[1, 0] - other[1, 0], this[1, 1] - other[1, 1], this[1, 2] - other[1, 2], this[1, 3] - other[1, 3],
+			this[2, 0] - other[2, 0], this[2, 1] - other[2, 1], this[2, 2] - other[2, 2], this[2, 3] - other[2, 3],
+			this[3, 0] - other[3, 0], this[3, 1] - other[3, 1], this[3, 2] - other[3, 2], this[3, 3] - other[3, 3]
+		)
 
-	operator fun times(other: Mat4): Mat4 = Mat4(
-		this[0, 0] * other[0, 0] + this[1, 0] * other[0, 1] + this[2, 0] * other[0, 2] + this[3, 0] * other[0, 3],
-		this[0, 1] * other[0, 0] + this[1, 1] * other[0, 1] + this[2, 1] * other[0, 2] + this[3, 1] * other[0, 3],
-		this[0, 2] * other[0, 0] + this[1, 2] * other[0, 1] + this[2, 2] * other[0, 2] + this[3, 2] * other[0, 3],
-		this[0, 3] * other[0, 0] + this[1, 3] * other[0, 1] + this[2, 3] * other[0, 2] + this[3, 3] * other[0, 3],
+	operator fun times(other: Mat4): Mat4 =
+		Mat4(
+			this[0, 0] * other[0, 0] + this[1, 0] * other[0, 1] + this[2, 0] * other[0, 2] + this[3, 0] * other[0, 3],
+			this[0, 1] * other[0, 0] + this[1, 1] * other[0, 1] + this[2, 1] * other[0, 2] + this[3, 1] * other[0, 3],
+			this[0, 2] * other[0, 0] + this[1, 2] * other[0, 1] + this[2, 2] * other[0, 2] + this[3, 2] * other[0, 3],
+			this[0, 3] * other[0, 0] + this[1, 3] * other[0, 1] + this[2, 3] * other[0, 2] + this[3, 3] * other[0, 3],
 
-		this[0, 0] * other[1, 0] + this[1, 0] * other[1, 1] + this[2, 0] * other[1, 2] + this[3, 0] * other[1, 3],
-		this[0, 1] * other[1, 0] + this[1, 1] * other[1, 1] + this[2, 1] * other[1, 2] + this[3, 1] * other[1, 3],
-		this[0, 2] * other[1, 0] + this[1, 2] * other[1, 1] + this[2, 2] * other[1, 2] + this[3, 2] * other[1, 3],
-		this[0, 3] * other[1, 0] + this[1, 3] * other[1, 1] + this[2, 3] * other[1, 2] + this[3, 3] * other[1, 3],
+			this[0, 0] * other[1, 0] + this[1, 0] * other[1, 1] + this[2, 0] * other[1, 2] + this[3, 0] * other[1, 3],
+			this[0, 1] * other[1, 0] + this[1, 1] * other[1, 1] + this[2, 1] * other[1, 2] + this[3, 1] * other[1, 3],
+			this[0, 2] * other[1, 0] + this[1, 2] * other[1, 1] + this[2, 2] * other[1, 2] + this[3, 2] * other[1, 3],
+			this[0, 3] * other[1, 0] + this[1, 3] * other[1, 1] + this[2, 3] * other[1, 2] + this[3, 3] * other[1, 3],
 
-		this[0, 0] * other[2, 0] + this[1, 0] * other[2, 1] + this[2, 0] * other[2, 2] + this[3, 0] * other[2, 3],
-		this[0, 1] * other[2, 0] + this[1, 1] * other[2, 1] + this[2, 1] * other[2, 2] + this[3, 1] * other[2, 3],
-		this[0, 2] * other[2, 0] + this[1, 2] * other[2, 1] + this[2, 2] * other[2, 2] + this[3, 2] * other[2, 3],
-		this[0, 3] * other[2, 0] + this[1, 3] * other[2, 1] + this[2, 3] * other[2, 2] + this[3, 3] * other[2, 3],
+			this[0, 0] * other[2, 0] + this[1, 0] * other[2, 1] + this[2, 0] * other[2, 2] + this[3, 0] * other[2, 3],
+			this[0, 1] * other[2, 0] + this[1, 1] * other[2, 1] + this[2, 1] * other[2, 2] + this[3, 1] * other[2, 3],
+			this[0, 2] * other[2, 0] + this[1, 2] * other[2, 1] + this[2, 2] * other[2, 2] + this[3, 2] * other[2, 3],
+			this[0, 3] * other[2, 0] + this[1, 3] * other[2, 1] + this[2, 3] * other[2, 2] + this[3, 3] * other[2, 3],
 
-		this[0, 0] * other[3, 0] + this[1, 0] * other[3, 1] + this[2, 0] * other[3, 2] + this[3, 0] * other[3, 3],
-		this[0, 1] * other[3, 0] + this[1, 1] * other[3, 1] + this[2, 1] * other[3, 2] + this[3, 1] * other[3, 3],
-		this[0, 2] * other[3, 0] + this[1, 2] * other[3, 1] + this[2, 2] * other[3, 2] + this[3, 2] * other[3, 3],
-		this[0, 3] * other[3, 0] + this[1, 3] * other[3, 1] + this[2, 3] * other[3, 2] + this[3, 3] * other[3, 3]
-	)
+			this[0, 0] * other[3, 0] + this[1, 0] * other[3, 1] + this[2, 0] * other[3, 2] + this[3, 0] * other[3, 3],
+			this[0, 1] * other[3, 0] + this[1, 1] * other[3, 1] + this[2, 1] * other[3, 2] + this[3, 1] * other[3, 3],
+			this[0, 2] * other[3, 0] + this[1, 2] * other[3, 1] + this[2, 2] * other[3, 2] + this[3, 2] * other[3, 3],
+			this[0, 3] * other[3, 0] + this[1, 3] * other[3, 1] + this[2, 3] * other[3, 2] + this[3, 3] * other[3, 3]
+		)
 
 	operator fun div(other: Mat4): Mat4 = this * other.inverse
 
 
-	operator fun times(vector: Vec4): Vec4 = Vec4(
-		this[0, 0] * vector[0] + this[1, 0] * vector[1] + this[2, 0] * vector[2] + this[3, 0] * vector[3],
-		this[0, 1] * vector[0] + this[1, 1] * vector[1] + this[2, 1] * vector[2] + this[3, 1] * vector[3],
-		this[0, 2] * vector[0] + this[1, 2] * vector[1] + this[2, 2] * vector[2] + this[3, 2] * vector[3],
-		this[0, 3] * vector[0] + this[1, 3] * vector[1] + this[2, 3] * vector[2] + this[3, 3] * vector[3]
-	)
+	operator fun times(vector: Vec4): Vec4 =
+		Vec4(
+			this[0, 0] * vector[0] + this[1, 0] * vector[1] + this[2, 0] * vector[2] + this[3, 0] * vector[3],
+			this[0, 1] * vector[0] + this[1, 1] * vector[1] + this[2, 1] * vector[2] + this[3, 1] * vector[3],
+			this[0, 2] * vector[0] + this[1, 2] * vector[1] + this[2, 2] * vector[2] + this[3, 2] * vector[3],
+			this[0, 3] * vector[0] + this[1, 3] * vector[1] + this[2, 3] * vector[2] + this[3, 3] * vector[3]
+		)
 
 
 	fun transposed(): Mat4 = Mat4(
@@ -547,45 +551,51 @@ fun Mat4.toFloatArray(): FloatArray = floatArrayOf(
 	this[3, 0], this[3, 1], this[3, 2], this[3, 3]
 )
 
-fun Mat4.toMat4(): Mat4 = Mat4(
-	this[0, 0], this[0, 1], this[0, 2], this[0, 3],
-	this[1, 0], this[1, 1], this[1, 2], this[1, 3],
-	this[2, 0], this[2, 1], this[2, 2], this[2, 3],
-	this[3, 0], this[3, 1], this[3, 2], this[3, 3]
-)
+fun Mat4.toMat4(): Mat4 =
+	Mat4(
+		this[0, 0], this[0, 1], this[0, 2], this[0, 3],
+		this[1, 0], this[1, 1], this[1, 2], this[1, 3],
+		this[2, 0], this[2, 1], this[2, 2], this[2, 3],
+		this[3, 0], this[3, 1], this[3, 2], this[3, 3]
+	)
 
-fun Mat4.toMutableMat4(): MutableMat4 = MutableMat4(
-	this[0, 0], this[0, 1], this[0, 2], this[0, 3],
-	this[1, 0], this[1, 1], this[1, 2], this[1, 3],
-	this[2, 0], this[2, 1], this[2, 2], this[2, 3],
-	this[3, 0], this[3, 1], this[3, 2], this[3, 3]
-)
+fun Mat4.toMutableMat4(): MutableMat4 =
+	MutableMat4(
+		this[0, 0], this[0, 1], this[0, 2], this[0, 3],
+		this[1, 0], this[1, 1], this[1, 2], this[1, 3],
+		this[2, 0], this[2, 1], this[2, 2], this[2, 3],
+		this[3, 0], this[3, 1], this[3, 2], this[3, 3]
+	)
 
 
-operator fun Float.plus(matrix: Mat4): Mat4 = Mat4(
-	this + matrix[0, 0], this + matrix[0, 1], this + matrix[0, 2], this + matrix[0, 3],
-	this + matrix[1, 0], this + matrix[1, 1], this + matrix[1, 2], this + matrix[1, 3],
-	this + matrix[2, 0], this + matrix[2, 1], this + matrix[2, 2], this + matrix[2, 3],
-	this + matrix[3, 0], this + matrix[3, 1], this + matrix[3, 2], this + matrix[3, 3]
-)
+operator fun Float.plus(matrix: Mat4): Mat4 =
+	Mat4(
+		this + matrix[0, 0], this + matrix[0, 1], this + matrix[0, 2], this + matrix[0, 3],
+		this + matrix[1, 0], this + matrix[1, 1], this + matrix[1, 2], this + matrix[1, 3],
+		this + matrix[2, 0], this + matrix[2, 1], this + matrix[2, 2], this + matrix[2, 3],
+		this + matrix[3, 0], this + matrix[3, 1], this + matrix[3, 2], this + matrix[3, 3]
+	)
 
-operator fun Float.minus(matrix: Mat4): Mat4 = Mat4(
-	this - matrix[0, 0], this - matrix[0, 1], this - matrix[0, 2], this - matrix[0, 3],
-	this - matrix[1, 0], this - matrix[1, 1], this - matrix[1, 2], this - matrix[1, 3],
-	this - matrix[2, 0], this - matrix[2, 1], this - matrix[2, 2], this - matrix[2, 3],
-	this - matrix[3, 0], this - matrix[3, 1], this - matrix[3, 2], this - matrix[3, 3]
-)
+operator fun Float.minus(matrix: Mat4): Mat4 =
+	Mat4(
+		this - matrix[0, 0], this - matrix[0, 1], this - matrix[0, 2], this - matrix[0, 3],
+		this - matrix[1, 0], this - matrix[1, 1], this - matrix[1, 2], this - matrix[1, 3],
+		this - matrix[2, 0], this - matrix[2, 1], this - matrix[2, 2], this - matrix[2, 3],
+		this - matrix[3, 0], this - matrix[3, 1], this - matrix[3, 2], this - matrix[3, 3]
+	)
 
-operator fun Float.times(matrix: Mat4): Mat4 = Mat4(
-	this * matrix[0, 0], this * matrix[0, 1], this * matrix[0, 2], this * matrix[0, 3],
-	this * matrix[1, 0], this * matrix[1, 1], this * matrix[1, 2], this * matrix[1, 3],
-	this * matrix[2, 0], this * matrix[2, 1], this * matrix[2, 2], this * matrix[2, 3],
-	this * matrix[3, 0], this * matrix[3, 1], this * matrix[3, 2], this * matrix[3, 3]
-)
+operator fun Float.times(matrix: Mat4): Mat4 =
+	Mat4(
+		this * matrix[0, 0], this * matrix[0, 1], this * matrix[0, 2], this * matrix[0, 3],
+		this * matrix[1, 0], this * matrix[1, 1], this * matrix[1, 2], this * matrix[1, 3],
+		this * matrix[2, 0], this * matrix[2, 1], this * matrix[2, 2], this * matrix[2, 3],
+		this * matrix[3, 0], this * matrix[3, 1], this * matrix[3, 2], this * matrix[3, 3]
+	)
 
-operator fun Float.div(matrix: Mat4): Mat4 = Mat4(
-	this / matrix[0, 0], this / matrix[0, 1], this / matrix[0, 2], this / matrix[0, 3],
-	this / matrix[1, 0], this / matrix[1, 1], this / matrix[1, 2], this / matrix[1, 3],
-	this / matrix[2, 0], this / matrix[2, 1], this / matrix[2, 2], this / matrix[2, 3],
-	this / matrix[3, 0], this / matrix[3, 1], this / matrix[3, 2], this / matrix[3, 3]
-)
+operator fun Float.div(matrix: Mat4): Mat4 =
+	Mat4(
+		this / matrix[0, 0], this / matrix[0, 1], this / matrix[0, 2], this / matrix[0, 3],
+		this / matrix[1, 0], this / matrix[1, 1], this / matrix[1, 2], this / matrix[1, 3],
+		this / matrix[2, 0], this / matrix[2, 1], this / matrix[2, 2], this / matrix[2, 3],
+		this / matrix[3, 0], this / matrix[3, 1], this / matrix[3, 2], this / matrix[3, 3]
+	)

@@ -33,17 +33,27 @@ sealed class Vec4 {
 	operator fun unaryPlus(): Vec4 = this
 	operator fun unaryMinus(): Vec4 = Vec4(-x, -y, -z, -w)
 
-	operator fun plus(scalar: Float): Vec4 = Vec4(x + scalar, y + scalar, z + scalar, w + scalar)
-	operator fun minus(scalar: Float): Vec4 = Vec4(x - scalar, y - scalar, z - scalar, w - scalar)
-	operator fun times(scalar: Float): Vec4 = Vec4(x * scalar, y * scalar, z * scalar, w * scalar)
-	operator fun div(scalar: Float): Vec4 = Vec4(x / scalar, y / scalar, z / scalar, w / scalar)
-	operator fun rem(scalar: Float): Vec4 = Vec4(x % scalar, y % scalar, z % scalar, w % scalar)
+	operator fun plus(scalar: Float): Vec4 =
+		Vec4(x + scalar, y + scalar, z + scalar, w + scalar)
+	operator fun minus(scalar: Float): Vec4 =
+		Vec4(x - scalar, y - scalar, z - scalar, w - scalar)
+	operator fun times(scalar: Float): Vec4 =
+		Vec4(x * scalar, y * scalar, z * scalar, w * scalar)
+	operator fun div(scalar: Float): Vec4 =
+		Vec4(x / scalar, y / scalar, z / scalar, w / scalar)
+	operator fun rem(scalar: Float): Vec4 =
+		Vec4(x % scalar, y % scalar, z % scalar, w % scalar)
 
-	operator fun plus(other: Vec4): Vec4 = Vec4(x + other.x, y + other.y, z + other.z, w + other.w)
-	operator fun minus(other: Vec4): Vec4 = Vec4(x - other.x, y - other.y, z - other.z, w - other.w)
-	operator fun times(other: Vec4): Vec4 = Vec4(x * other.x, y * other.y, z * other.z, w * other.w)
-	operator fun div(other: Vec4): Vec4 = Vec4(x / other.x, y / other.y, z / other.z, w / other.w)
-	operator fun rem(other: Vec4): Vec4 = Vec4(x % other.x, y % other.y, z % other.z, w % other.w)
+	operator fun plus(other: Vec4): Vec4 =
+		Vec4(x + other.x, y + other.y, z + other.z, w + other.w)
+	operator fun minus(other: Vec4): Vec4 =
+		Vec4(x - other.x, y - other.y, z - other.z, w - other.w)
+	operator fun times(other: Vec4): Vec4 =
+		Vec4(x * other.x, y * other.y, z * other.z, w * other.w)
+	operator fun div(other: Vec4): Vec4 =
+		Vec4(x / other.x, y / other.y, z / other.z, w / other.w)
+	operator fun rem(other: Vec4): Vec4 =
+		Vec4(x % other.x, y % other.y, z % other.z, w % other.w)
 
 	val squareMagnitude: Float get() = this dot this
 	val magnitude: Float get() = sqrt(this dot this)
@@ -92,7 +102,8 @@ sealed class Vec4 {
 fun Vec4(scalar: Float = 0f): Vec4 = MutableVec4(scalar)
 
 @Suppress("FunctionName")
-fun Vec4(x: Float, y: Float, z: Float, w: Float): Vec4 = MutableVec4(x, y, z, w)
+fun Vec4(x: Float, y: Float, z: Float, w: Float): Vec4 =
+	MutableVec4(x, y, z, w)
 
 
 class MutableVec4(x: Float, y: Float, z: Float, w: Float) : Vec4() {
@@ -210,7 +221,8 @@ fun Vec4.toFloatArray(): FloatArray = floatArrayOf(x, y, z, w)
 
 fun Vec4.toVec4(): Vec4 = toMutableVec4()
 
-fun Vec4.toMutableVec4(): MutableVec4 = MutableVec4(x, y, z, w)
+fun Vec4.toMutableVec4(): MutableVec4 =
+	MutableVec4(x, y, z, w)
 
 /** Returns the distance between [from] and [to]. */
 fun distance(from: Vec4, to: Vec4): Float {
@@ -252,8 +264,13 @@ fun min(a: Vec4, b: Vec4): Vec4 {
 }
 
 
-operator fun Float.plus(vector: Vec4): Vec4 = Vec4(this + vector.x, this + vector.y, this + vector.z, this + vector.w)
-operator fun Float.minus(vector: Vec4): Vec4 = Vec4(this - vector.x, this - vector.y, this - vector.z, this - vector.w)
-operator fun Float.times(vector: Vec4): Vec4 = Vec4(this * vector.x, this * vector.y, this * vector.z, this * vector.w)
-operator fun Float.div(vector: Vec4): Vec4 = Vec4(this / vector.x, this / vector.y, this / vector.z, this / vector.w)
-operator fun Float.rem(vector: Vec4): Vec4 = Vec4(this % vector.x, this % vector.y, this % vector.z, this % vector.w)
+operator fun Float.plus(vector: Vec4): Vec4 =
+	Vec4(this + vector.x, this + vector.y, this + vector.z, this + vector.w)
+operator fun Float.minus(vector: Vec4): Vec4 =
+	Vec4(this - vector.x, this - vector.y, this - vector.z, this - vector.w)
+operator fun Float.times(vector: Vec4): Vec4 =
+	Vec4(this * vector.x, this * vector.y, this * vector.z, this * vector.w)
+operator fun Float.div(vector: Vec4): Vec4 =
+	Vec4(this / vector.x, this / vector.y, this / vector.z, this / vector.w)
+operator fun Float.rem(vector: Vec4): Vec4 =
+	Vec4(this % vector.x, this % vector.y, this % vector.z, this % vector.w)
