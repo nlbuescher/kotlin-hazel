@@ -13,7 +13,7 @@ repositories {
 val os: OperatingSystem = OperatingSystem.current()
 
 val imguiVersion = "0.1.2"
-val kglVersion = "0.1.9-dev-9"
+val kglVersion = "0.1.9-dev-13"
 
 kotlin {
 	when {
@@ -26,18 +26,16 @@ kotlin {
 		compilations {
 			"main" {
 				cinterops.create("hazel")
-
 				defaultSourceSet {
 					kotlin.srcDir("src/nativeMain/kotlin")
 					resources.srcDir("src/nativeMain/resources")
-
-					dependencies {
-						listOf("", "-glfw", "-opengl").forEach {
-							implementation("com.kotlin-imgui:imgui$it:$imguiVersion")
-						}
-						listOf("-glfw", "-glfw-static", "-opengl").forEach {
-							implementation("com.kgl:kgl$it:$kglVersion")
-						}
+				}
+				dependencies {
+					listOf("", "-glfw", "-opengl").forEach {
+						implementation("com.kotlin-imgui:imgui$it:$imguiVersion")
+					}
+					listOf("-glfw", "-glfw-static", "-opengl").forEach {
+						implementation("com.kgl:kgl$it:$kglVersion")
 					}
 				}
 			}
@@ -46,20 +44,6 @@ kotlin {
 					kotlin.srcDir("src/nativeTest/kotlin")
 					resources.srcDir("src/nativeTest/resources")
 				}
-			}
-		}
-	}
-
-	sourceSets {
-		commonMain {
-			dependencies {
-				implementation(kotlin("stdlib-common"))
-			}
-		}
-		commonTest {
-			dependencies {
-				implementation(kotlin("test-common"))
-				implementation(kotlin("test-annotations-common"))
 			}
 		}
 	}

@@ -29,10 +29,9 @@ kotlin {
 			defaultSourceSet {
 				kotlin.srcDir("src/nativeMain/kotlin")
 				resources.srcDir("src/nativeMain/resources")
-
-				dependencies {
-					api(project(":hazel"))
-				}
+			}
+			dependencies {
+				api(project(":hazel"))
 			}
 		}
 	}

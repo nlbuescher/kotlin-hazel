@@ -1,7 +1,8 @@
 package = hazel.cinterop
 compilerOpts = -Isrc/nativeInterop/include
 ---
-#include <stdlib.h>
+#include <stddef.h> // for size_t and uint64_t
+
 static inline size_t sizeOf(void* a)
 {
 #if defined(_WIN32)
@@ -13,18 +14,13 @@ static inline size_t sizeOf(void* a)
 #endif
 }
 
-
 // obsolete in master (posix platform lib there defines _DARWIN_C_SOURCE, which enables this function)
 #if defined(__APPLE__)
-#include <pthread.h>
-#include <stdint.h>
-
 static inline int pthread_threadid(pthread_t thread, uint64_t* id)
 {
 	return pthread_threadid_np(thread, id);
 }
 #endif
-
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_FAILURE_STRINGS
