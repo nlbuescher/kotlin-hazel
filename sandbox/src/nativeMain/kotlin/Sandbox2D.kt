@@ -3,6 +3,7 @@ import hazel.core.*
 import hazel.events.*
 import hazel.math.*
 import hazel.math.Vec2
+import hazel.math.Vec4
 import hazel.renderer.*
 
 class Sandbox2D : Layer("Sandbox2D") {
@@ -17,9 +18,9 @@ class Sandbox2D : Layer("Sandbox2D") {
 		var sizeVariation = 0.3f
 		var endSize = 0f
 		var lifeTime = 5f
-		var velocity = Vec2.ZERO
+		var velocity = Vec2()
 		var velocityVariation = Vec2(3f, 1f)
-		var position = Vec2.ZERO
+		var position = Vec2()
 	}
 
 
@@ -34,7 +35,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 	}
 
 	private var rotation = 0f
-	private val squareColor = MutableVec4(0.2f, 0.3f, 0.8f, 1f)
+	private val squareColor = floatArrayOf(0.2f, 0.3f, 0.8f, 1f)
 
 	override fun onUpdate(timeStep: TimeStep) {
 		Hazel.profile("Sandbox2D.onUpdate(TimeStep)") {
@@ -55,7 +56,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 					drawRotatedQuad(Vec2(1f, 0f), Vec2(0.8f, 0.8f), (-30f).degrees, Vec4(0.8f, 0.2f, 0.3f, 1f))
 					drawQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), Vec4(0.8f, 0.2f, 0.3f, 1f))
-					drawQuad(Vec2(0.5f, -0.5f), Vec2(0.5f, 0.75f), squareColor)
+					drawQuad(Vec2(0.5f, -0.5f), Vec2(0.5f, 0.75f), squareColor.let { Vec4(it[0], it[1], it[2], it[3]) })
 					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(20f, 20f), checkerBoardTexture, 10f)
 					drawRotatedQuad(Vec3(-2f, 0f, 0.1f), Vec2(1f, 1f), rotation, checkerBoardTexture, 20f)
 
@@ -115,7 +116,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 				spacing()
 
-				colorEdit4("Square Color", squareColor.asFloatArray())
+				colorEdit4("Square Color", squareColor)
 				end()
 			}
 		}

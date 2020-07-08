@@ -46,13 +46,13 @@ class ParticleSystem(maxParticleCount: Int = 100_000) {
 		endColor: Vec4,
 		startSize: Float,
 		endSize: Float,
-		velocityVariation: Vec2 = Vec2.ZERO,
+		velocityVariation: Vec2 = Vec2(),
 		sizeVariation: Float = 0f,
 		lifeTime: Float = 1f
 	) {
 		particlePool[currentParticle].also {
 			it.isActive = true
-			it.position = position.toMutableVec2()
+			it.position = position.copy()
 			it.rotation = Random.nextFloat() * 2 * PI.toFloat()
 
 			it.velocity = Vec2(
@@ -74,10 +74,10 @@ class ParticleSystem(maxParticleCount: Int = 100_000) {
 	}
 
 	private class Particle {
-		var position: MutableVec2 = MutableVec2()
-		var velocity: Vec2 = Vec2.ZERO
-		var startColor: Vec4 = Vec4.ZERO
-		var endColor: Vec4 = Vec4.ZERO
+		var position: Vec2 = Vec2()
+		var velocity: Vec2 = Vec2()
+		var startColor: Vec4 = Vec4()
+		var endColor: Vec4 = Vec4()
 		var rotation: Float = 0f
 		var startSize: Float = 0f
 		var endSize: Float = 0f

@@ -310,19 +310,18 @@ object Renderer2D {
 				flushAndReset()
 			}
 
-			val transform = Mat4.IDENTITY.toMutableMat4().apply {
-				translate(position)
-				scale(size.toVec3())
-			}
+			val transform = Mat4()
+				.translate(position)
+				.scale(size.toVec3())
 			bufferQuad(transform, color)
 		}
 	}
 
-	fun drawQuad(position: Vec2, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
+	fun drawQuad(position: Vec2, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4(1f)) {
 		drawQuad(Vec3(position.x, position.y, 0f), size, texture, tilingFactor, tintColor)
 	}
 
-	fun drawQuad(position: Vec3, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4.ONE) {
+	fun drawQuad(position: Vec3, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4(1f)) {
 		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Texture2D, Float, Vec4)") {
 			with(data) {
 				if (data.indexCount >= data.maxIndices) {
@@ -339,10 +338,9 @@ object Renderer2D {
 						currentTexture += 1
 					}
 				}
-				val transform = Mat4.IDENTITY.toMutableMat4().apply {
-					translate(position)
-					scale(size.toVec3())
-				}
+				val transform = Mat4()
+					.translate(position)
+					.scale(size.toVec3())
 				bufferQuad(transform, tintColor, textureIndex, tilingFactor)
 			}
 		}
@@ -358,11 +356,10 @@ object Renderer2D {
 				flushAndReset()
 			}
 
-			val transform = Mat4.IDENTITY.toMutableMat4().apply {
-				translate(position)
-				rotate(rotation, Vec3.FORWARD)
-				scale(size.toVec3())
-			}
+			val transform = Mat4()
+				.translate(position)
+				.rotate(rotation, Vec3(0f, 0f, 1f))
+				.scale(size.toVec3())
 			bufferQuad(transform, color)
 		}
 	}
@@ -373,7 +370,7 @@ object Renderer2D {
 		rotation: Float,
 		texture: Texture2D,
 		tilingFactor: Float = 1f,
-		tintColor: Vec4 = Vec4.ONE
+		tintColor: Vec4 = Vec4(1f)
 	) {
 		drawRotatedQuad(Vec3(position.x, position.y, 0f), size, rotation, texture, tilingFactor, tintColor)
 	}
@@ -384,7 +381,7 @@ object Renderer2D {
 		rotation: Float,
 		texture: Texture2D,
 		tilingFactor: Float = 1f,
-		tintColor: Vec4 = Vec4.ONE
+		tintColor: Vec4 = Vec4(1f)
 	) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Texture2D, Float, Vec4)") {
 			with(data) {
@@ -402,11 +399,10 @@ object Renderer2D {
 						currentTexture += 1
 					}
 				}
-				val transform = Mat4.IDENTITY.toMutableMat4().apply {
-					translate(position)
-					rotate(rotation, Vec3.FORWARD)
-					scale(Vec3(size.x, size.y, 1f))
-				}
+				val transform = Mat4()
+					.translate(position)
+					.rotate(rotation, Vec3(0f, 0f, 1f))
+					.scale(Vec3(size.x, size.y, 1f))
 				bufferQuad(transform, tintColor, textureIndex, tilingFactor)
 			}
 		}

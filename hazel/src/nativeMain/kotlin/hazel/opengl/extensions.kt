@@ -116,7 +116,7 @@ internal inline fun glUniform(location: Int, f1: Float, f2: Float, f3: Float, f4
 }
 
 internal inline fun glUniform(location: Int, transpose: Boolean, matrix: Mat4) {
-	glUniformMatrix4fv(location, 1, transpose, (matrix as MutableMat4).asFloatArray().refTo(0))
+	glUniformMatrix4fv(location, 1, transpose, matrix.toFloatArray().refTo(0))
 }
 
 

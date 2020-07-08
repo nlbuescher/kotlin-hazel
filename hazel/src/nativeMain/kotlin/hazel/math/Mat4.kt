@@ -2,27 +2,43 @@ package hazel.math
 
 import kotlin.math.*
 
-sealed class Mat4 {
-	companion object {
-		val IDENTITY = Mat4(
-			1f, 0f, 0f, 0f,
-			0f, 1f, 0f, 0f,
-			0f, 0f, 1f, 0f,
-			0f, 0f, 0f, 1f
-		)
-		val ZERO = Mat4(
-			0f, 0f, 0f, 0f,
-			0f, 0f, 0f, 0f,
-			0f, 0f, 0f, 0f,
-			0f, 0f, 0f, 0f
-		)
-	}
+class Mat4(
+	private var row0: Vec4,
+	private var row1: Vec4,
+	private var row2: Vec4,
+	private var row3: Vec4
+) {
+	constructor(
+		c00: Float, c01: Float, c02: Float, c03: Float,
+		c10: Float, c11: Float, c12: Float, c13: Float,
+		c20: Float, c21: Float, c22: Float, c23: Float,
+		c30: Float, c31: Float, c32: Float, c33: Float
+	) : this(
+		Vec4(c00, c01, c02, c03),
+		Vec4(c10, c11, c12, c13),
+		Vec4(c20, c21, c22, c23),
+		Vec4(c30, c31, c32, c33)
+	)
+
+	constructor(scalar: Float = 1f) : this(
+		Vec4(scalar, 0f, 0f, 0f),
+		Vec4(0f, scalar, 0f, 0f),
+		Vec4(0f, 0f, scalar, 0f),
+		Vec4(0f, 0f, 0f, scalar)
+	)
 
 	fun copy(
-		c00: Float = this[0, 0], c01: Float = this[0, 1], c02: Float = this[0, 2], c03: Float = this[0, 3],
-		c10: Float = this[1, 0], c11: Float = this[1, 1], c12: Float = this[1, 2], c13: Float = this[1, 3],
-		c20: Float = this[2, 0], c21: Float = this[2, 1], c22: Float = this[2, 2], c23: Float = this[2, 3],
-		c30: Float = this[3, 0], c31: Float = this[3, 1], c32: Float = this[3, 2], c33: Float = this[3, 3]
+		row0: Vec4 = this.row0,
+		row1: Vec4 = this.row1,
+		row2: Vec4 = this.row2,
+		row3: Vec4 = this.row3
+	): Mat4 = Mat4(row0, row1, row2, row3)
+
+	fun copy(
+		c00: Float = row0[0], c01: Float = row0[1], c02: Float = row0[2], c03: Float = row0[3],
+		c10: Float = row1[0], c11: Float = row1[1], c12: Float = row1[2], c13: Float = row1[3],
+		c20: Float = row2[0], c21: Float = row2[1], c22: Float = row2[2], c23: Float = row2[3],
+		c30: Float = row3[0], c31: Float = row3[1], c32: Float = row3[2], c33: Float = row3[3]
 	): Mat4 = Mat4(
 		c00, c01, c02, c03,
 		c10, c11, c12, c13,
@@ -30,572 +46,227 @@ sealed class Mat4 {
 		c30, c31, c32, c33
 	)
 
-	fun copy(
-		row0: Vec4 = getRow(0),
-		row1: Vec4 = getRow(1),
-		row2: Vec4 = getRow(2),
-		row3: Vec4 = getRow(3)
-	): Mat4 = Mat4(row0, row1, row2, row3)
-
-	abstract operator fun get(row: Int, column: Int): Float
-
-	fun getRow(row: Int): Vec4 {
-		if (row !in 0..3) throw IndexOutOfBoundsException()
-		return Vec4(this[row, 0], this[row, 1], this[row, 2], this[row, 3])
-	}
-
-	fun getColumn(column: Int): Vec4 {
-		if (column !in 0..3) throw IndexOutOfBoundsException()
-		return Vec4(this[0, column], this[1, column], this[2, column], this[3, column])
+	operator fun get(row: Int): Vec4 = when (row) {
+		0 -> row0; 1 -> row1; 2 -> row2; 3 -> row3
+		else -> throw IndexOutOfBoundsException()
 	}
 
 	val determinant: Float
 		get() {
-			val a = this[0, 0]
-			val b = this[0, 1]
-			val c = this[0, 2]
-			val d = this[0, 3]
-			val e = this[1, 0]
-			val f = this[1, 1]
-			val g = this[1, 2]
-			val h = this[1, 3]
-			val i = this[2, 0]
-			val j = this[2, 1]
-			val k = this[2, 2]
-			val l = this[2, 3]
-			val m = this[3, 0]
-			val n = this[3, 1]
-			val o = this[3, 2]
-			val p = this[3, 3]
+			val subFactor0 = row2[2] * row3[3] - row3[2] * row2[3]
+			val subFactor1 = row2[1] * row3[3] - row3[1] * row2[3]
+			val subFactor2 = row2[1] * row3[2] - row3[1] * row2[2]
+			val subFactor3 = row2[0] * row3[3] - row3[0] * row2[3]
+			val subFactor4 = row2[0] * row3[2] - row3[0] * row2[2]
+			val subFactor5 = row2[0] * row3[1] - row3[0] * row2[1]
 
-			val ijmn = i * n - j * m
-			val ikmo = i * o - k * m
-			val ilmp = i * p - l * m
-			val jkno = j * o - k * n
-			val jlnp = j * p - l * n
-			val klop = k * p - l * o
+			val detCof = Vec4(
+				+(row1[1] * subFactor0 - row1[2] * subFactor1 + row1[3] * subFactor2),
+				-(row1[0] * subFactor0 - row1[2] * subFactor3 + row1[3] * subFactor4),
+				+(row1[0] * subFactor1 - row1[1] * subFactor3 + row1[3] * subFactor5),
+				-(row1[0] * subFactor2 - row1[1] * subFactor4 + row1[2] * subFactor5)
+			)
 
-			val efgijkmno = e * jkno - f * ikmo + g * ijmn
-			val efhijlmnp = e * jlnp - f * ilmp + h * ijmn
-			val eghiklmop = e * klop - g * ilmp + h * ikmo
-			val fghjklnop = f * klop - g * jlnp + h * jkno
-
-			return a * fghjklnop - b * eghiklmop + c * efhijlmnp - d * efgijkmno
+			return row0[0] * detCof[0] + row0[1] * detCof[1] + row0[2] * detCof[2] + row0[3] * detCof[3]
 		}
 
 	val inverse: Mat4
 		get() {
-			val a = this[0, 0]
-			val b = this[0, 1]
-			val c = this[0, 2]
-			val d = this[0, 3]
-			val e = this[1, 0]
-			val f = this[1, 1]
-			val g = this[1, 2]
-			val h = this[1, 3]
-			val i = this[2, 0]
-			val j = this[2, 1]
-			val k = this[2, 2]
-			val l = this[2, 3]
-			val m = this[3, 0]
-			val n = this[3, 1]
-			val o = this[3, 2]
-			val p = this[3, 3]
+			val coef00 = row2[2] * row3[3] - row3[2] * row2[3]
+			val coef02 = row1[2] * row3[3] - row3[2] * row1[3]
+			val coef03 = row1[2] * row2[3] - row2[2] * row1[3]
 
-			val efij = e * j - f * i
-			val efmn = e * n - f * m
-			val egik = e * k - g * i
-			val egmo = e * o - g * m
-			val ehil = e * l - h * i
-			val ehmp = e * p - h * m
-			val fgjk = f * k - g * j
-			val fgno = f * o - g * n
-			val fhjl = f * l - h * j
-			val fhnp = f * p - h * n
-			val ghkl = g * l - h * k
-			val ghop = g * p - h * o
-			val ijmn = i * n - j * m
-			val ikmo = i * o - k * m
-			val ilmp = i * p - l * m
-			val jkno = j * o - k * n
-			val jlnp = j * p - l * n
-			val klop = k * p - l * o
+			val coef04 = row2[1] * row3[3] - row3[1] * row2[3]
+			val coef06 = row1[1] * row3[3] - row3[1] * row1[3]
+			val coef07 = row1[1] * row2[3] - row2[1] * row1[3]
 
-			val abcefgijk = a * fgjk - b * egik + c * efij
-			val abcefgmno = a * fgno - b * egmo + c * efmn
-			val abcijkmno = a * jkno - b * ikmo + c * ijmn
-			val abdefhijl = a * fhjl - b * ehil + d * efij
-			val abdefhmnp = a * fhnp - b * ehmp + d * efmn
-			val abdijlmnp = a * jlnp - b * ilmp + d * ijmn
-			val acdeghikl = a * ghkl - c * ehil + d * egik
-			val acdeghmop = a * ghop - c * ehmp + d * egmo
-			val acdiklmop = a * klop - c * ilmp + d * ikmo
-			val bcdfghjkl = b * ghkl - c * fhjl + d * fgjk
-			val bcdfghnop = b * ghop - c * fhnp + d * fgno
-			val bcdjklnop = b * klop - c * jlnp + d * jkno
-			val efgijkmno = e * jkno - f * ikmo + g * ijmn
-			val efhijlmnp = e * jlnp - f * ilmp + h * ijmn
-			val eghiklmop = e * klop - g * ilmp + h * ikmo
-			val fghjklnop = f * klop - g * jlnp + h * jkno
+			val coef08 = row2[1] * row3[2] - row3[1] * row2[2]
+			val coef10 = row1[1] * row3[2] - row3[1] * row1[2]
+			val coef11 = row1[1] * row2[2] - row2[1] * row1[2]
 
-			return when (val determinant = a * fghjklnop - b * eghiklmop + c * efhijlmnp - d * efgijkmno) {
-				0f -> {
-					Mat4(
-						Float.NaN, Float.NaN, Float.NaN, Float.NaN,
-						Float.NaN, Float.NaN, Float.NaN, Float.NaN,
-						Float.NaN, Float.NaN, Float.NaN, Float.NaN,
-						Float.NaN, Float.NaN, Float.NaN, Float.NaN
-					)
-				}
-				else -> {
-					val inv = 1 / determinant
-					Mat4(
-						+(inv * fghjklnop), -(inv * bcdjklnop), +(inv * bcdfghnop), -(inv * bcdfghjkl),
-						-(inv * eghiklmop), +(inv * acdiklmop), -(inv * acdeghmop), +(inv * acdeghikl),
-						+(inv * efhijlmnp), -(inv * abdijlmnp), +(inv * abdefhmnp), -(inv * abdefhijl),
-						-(inv * efgijkmno), +(inv * abcijkmno), -(inv * abcefgmno), +(inv * abcefgijk)
-					)
-				}
-			}
+			val coef12 = row2[0] * row3[3] - row3[0] * row2[3]
+			val coef14 = row1[0] * row3[3] - row3[0] * row1[3]
+			val coef15 = row1[0] * row2[3] - row2[0] * row1[3]
+
+			val coef16 = row2[0] * row3[2] - row3[0] * row2[2]
+			val coef18 = row1[0] * row3[2] - row3[0] * row1[2]
+			val coef19 = row1[0] * row2[2] - row2[0] * row1[2]
+
+			val coef20 = row2[0] * row3[1] - row3[0] * row2[1]
+			val coef22 = row1[0] * row3[1] - row3[0] * row1[1]
+			val coef23 = row1[0] * row2[1] - row2[0] * row1[1]
+
+			val fac0 = Vec4(coef00, coef00, coef02, coef03)
+			val fac1 = Vec4(coef04, coef04, coef06, coef07)
+			val fac2 = Vec4(coef08, coef08, coef10, coef11)
+			val fac3 = Vec4(coef12, coef12, coef14, coef15)
+			val fac4 = Vec4(coef16, coef16, coef18, coef19)
+			val fac5 = Vec4(coef20, coef20, coef22, coef23)
+
+			val vec0 = Vec4(row1[0], row0[0], row0[0], row0[0])
+			val vec1 = Vec4(row1[1], row0[1], row0[1], row0[1])
+			val vec2 = Vec4(row1[2], row0[2], row0[2], row0[2])
+			val vec3 = Vec4(row1[3], row0[3], row0[3], row0[3])
+
+			val inv0 = vec1 * fac0 - vec2 * fac1 + vec3 * fac2
+			val inv1 = vec0 * fac0 - vec2 * fac3 + vec3 * fac4
+			val inv2 = vec0 * fac1 - vec1 * fac3 + vec3 * fac5
+			val inv3 = vec0 * fac2 - vec1 * fac4 + vec2 * fac5
+
+			val signA = Vec4(+1f, -1f, +1f, -1f)
+			val signB = Vec4(-1f, +1f, -1f, +1f)
+			val inverse = Mat4(inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB)
+
+			val row0 = Vec4(inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0])
+
+			val dot0 = row0 * row0
+			val dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w)
+
+			val oneOverDeterminant = 1 / dot1
+
+			return inverse * oneOverDeterminant
 		}
 
 	operator fun plus(scalar: Float): Mat4 = Mat4(
-		this[0, 0] + scalar, this[0, 1] + scalar, this[0, 2] + scalar, this[0, 3] + scalar,
-		this[1, 0] + scalar, this[1, 1] + scalar, this[1, 2] + scalar, this[1, 3] + scalar,
-		this[2, 0] + scalar, this[2, 1] + scalar, this[2, 2] + scalar, this[2, 3] + scalar,
-		this[3, 0] + scalar, this[3, 1] + scalar, this[3, 2] + scalar, this[3, 3] + scalar
+		row0 + scalar, row1 + scalar, row2 + scalar, row3 + scalar
 	)
 
 	operator fun minus(scalar: Float): Mat4 = Mat4(
-		this[0, 0] - scalar, this[0, 1] - scalar, this[0, 2] - scalar, this[0, 3] - scalar,
-		this[1, 0] - scalar, this[1, 1] - scalar, this[1, 2] - scalar, this[1, 3] - scalar,
-		this[2, 0] - scalar, this[2, 1] - scalar, this[2, 2] - scalar, this[2, 3] - scalar,
-		this[3, 0] - scalar, this[3, 1] - scalar, this[3, 2] - scalar, this[3, 3] - scalar
+		row0 - scalar, row1 - scalar, row2 - scalar, row3 - scalar
 	)
 
 	operator fun times(scalar: Float): Mat4 = Mat4(
-		this[0, 0] * scalar, this[0, 1] * scalar, this[0, 2] * scalar, this[0, 3] * scalar,
-		this[1, 0] * scalar, this[1, 1] * scalar, this[1, 2] * scalar, this[1, 3] * scalar,
-		this[2, 0] * scalar, this[2, 1] * scalar, this[2, 2] * scalar, this[2, 3] * scalar,
-		this[3, 0] * scalar, this[3, 1] * scalar, this[3, 2] * scalar, this[3, 3] * scalar
+		row0 * scalar, row1 * scalar, row2 * scalar, row3 * scalar
 	)
 
 	operator fun div(scalar: Float): Mat4 = Mat4(
-		this[0, 0] / scalar, this[0, 1] / scalar, this[0, 2] / scalar, this[0, 3] / scalar,
-		this[1, 0] / scalar, this[1, 1] / scalar, this[1, 2] / scalar, this[1, 3] / scalar,
-		this[2, 0] / scalar, this[2, 1] / scalar, this[2, 2] / scalar, this[2, 3] / scalar,
-		this[3, 0] / scalar, this[3, 1] / scalar, this[3, 2] / scalar, this[3, 3] / scalar
+		row0 / scalar, row1 / scalar, row2 / scalar, row3 / scalar
 	)
 
-	operator fun plus(other: Mat4): Mat4 =
-		Mat4(
-			this[0, 0] + other[0, 0], this[0, 1] + other[0, 1], this[0, 2] + other[0, 2], this[0, 3] + other[0, 3],
-			this[1, 0] + other[1, 0], this[1, 1] + other[1, 1], this[1, 2] + other[1, 2], this[1, 3] + other[1, 3],
-			this[2, 0] + other[2, 0], this[2, 1] + other[2, 1], this[2, 2] + other[2, 2], this[2, 3] + other[2, 3],
-			this[3, 0] + other[3, 0], this[3, 1] + other[3, 1], this[3, 2] + other[3, 2], this[3, 3] + other[3, 3]
-		)
+	operator fun plus(other: Mat4): Mat4 = Mat4(
+		row0 + other[0], row1 + other[1], row2 + other[2], row3 + other[3]
+	)
 
-	operator fun minus(other: Mat4): Mat4 =
-		Mat4(
-			this[0, 0] - other[0, 0], this[0, 1] - other[0, 1], this[0, 2] - other[0, 2], this[0, 3] - other[0, 3],
-			this[1, 0] - other[1, 0], this[1, 1] - other[1, 1], this[1, 2] - other[1, 2], this[1, 3] - other[1, 3],
-			this[2, 0] - other[2, 0], this[2, 1] - other[2, 1], this[2, 2] - other[2, 2], this[2, 3] - other[2, 3],
-			this[3, 0] - other[3, 0], this[3, 1] - other[3, 1], this[3, 2] - other[3, 2], this[3, 3] - other[3, 3]
-		)
+	operator fun minus(other: Mat4): Mat4 = Mat4(
+		row0 - other[0], row1 - other[1], row2 - other[2], row3 - other[3]
+	)
 
-	operator fun times(other: Mat4): Mat4 =
-		Mat4(
-			this[0, 0] * other[0, 0] + this[1, 0] * other[0, 1] + this[2, 0] * other[0, 2] + this[3, 0] * other[0, 3],
-			this[0, 1] * other[0, 0] + this[1, 1] * other[0, 1] + this[2, 1] * other[0, 2] + this[3, 1] * other[0, 3],
-			this[0, 2] * other[0, 0] + this[1, 2] * other[0, 1] + this[2, 2] * other[0, 2] + this[3, 2] * other[0, 3],
-			this[0, 3] * other[0, 0] + this[1, 3] * other[0, 1] + this[2, 3] * other[0, 2] + this[3, 3] * other[0, 3],
-
-			this[0, 0] * other[1, 0] + this[1, 0] * other[1, 1] + this[2, 0] * other[1, 2] + this[3, 0] * other[1, 3],
-			this[0, 1] * other[1, 0] + this[1, 1] * other[1, 1] + this[2, 1] * other[1, 2] + this[3, 1] * other[1, 3],
-			this[0, 2] * other[1, 0] + this[1, 2] * other[1, 1] + this[2, 2] * other[1, 2] + this[3, 2] * other[1, 3],
-			this[0, 3] * other[1, 0] + this[1, 3] * other[1, 1] + this[2, 3] * other[1, 2] + this[3, 3] * other[1, 3],
-
-			this[0, 0] * other[2, 0] + this[1, 0] * other[2, 1] + this[2, 0] * other[2, 2] + this[3, 0] * other[2, 3],
-			this[0, 1] * other[2, 0] + this[1, 1] * other[2, 1] + this[2, 1] * other[2, 2] + this[3, 1] * other[2, 3],
-			this[0, 2] * other[2, 0] + this[1, 2] * other[2, 1] + this[2, 2] * other[2, 2] + this[3, 2] * other[2, 3],
-			this[0, 3] * other[2, 0] + this[1, 3] * other[2, 1] + this[2, 3] * other[2, 2] + this[3, 3] * other[2, 3],
-
-			this[0, 0] * other[3, 0] + this[1, 0] * other[3, 1] + this[2, 0] * other[3, 2] + this[3, 0] * other[3, 3],
-			this[0, 1] * other[3, 0] + this[1, 1] * other[3, 1] + this[2, 1] * other[3, 2] + this[3, 1] * other[3, 3],
-			this[0, 2] * other[3, 0] + this[1, 2] * other[3, 1] + this[2, 2] * other[3, 2] + this[3, 2] * other[3, 3],
-			this[0, 3] * other[3, 0] + this[1, 3] * other[3, 1] + this[2, 3] * other[3, 2] + this[3, 3] * other[3, 3]
-		)
+	operator fun times(other: Mat4): Mat4 = Mat4(
+		row0 * other[0], row1 * other[1], row2 * other[2], row3 * other[3]
+	)
 
 	operator fun div(other: Mat4): Mat4 = this * other.inverse
 
 
-	operator fun times(vector: Vec4): Vec4 =
-		Vec4(
-			this[0, 0] * vector[0] + this[1, 0] * vector[1] + this[2, 0] * vector[2] + this[3, 0] * vector[3],
-			this[0, 1] * vector[0] + this[1, 1] * vector[1] + this[2, 1] * vector[2] + this[3, 1] * vector[3],
-			this[0, 2] * vector[0] + this[1, 2] * vector[1] + this[2, 2] * vector[2] + this[3, 2] * vector[3],
-			this[0, 3] * vector[0] + this[1, 3] * vector[1] + this[2, 3] * vector[2] + this[3, 3] * vector[3]
-		)
+	operator fun times(vector: Vec4): Vec4 {
+		val mov0 = Vec4(vector[0])
+		val mov1 = Vec4(vector[1])
+		val mul0 = row0 * mov0
+		val mul1 = row1 * mov1
+		val add0 = mul0 + mul1
+		val mov2 = Vec4(vector[2])
+		val mov3 = Vec4(vector[3])
+		val mul2 = row2 * mov2
+		val mul3 = row3 * mov3
+		val add1 = mul2 + mul3
+		return add0 + add1
+	}
 
-
-	fun transposed(): Mat4 = Mat4(
-		this[0, 0], this[1, 0], this[2, 0], this[3, 0],
-		this[0, 1], this[1, 1], this[2, 1], this[3, 1],
-		this[0, 2], this[1, 2], this[2, 2], this[3, 2],
-		this[0, 3], this[1, 3], this[2, 3], this[3, 3]
+	fun transpose(): Mat4 = Mat4(
+		row0[0], row1[0], row2[0], row3[0],
+		row0[1], row1[1], row2[1], row3[1],
+		row0[2], row1[2], row2[2], row3[2],
+		row0[3], row1[3], row2[3], row3[3]
 	)
 
-	fun translated(vector: Vec3): Mat4 = toMutableMat4().also {
-		it.setRow(3, getRow(0) * vector[0] + getRow(1) * vector[1] + getRow(2) * vector[2] + getRow(3))
-	}
+	fun translate(vector: Vec3): Mat4 = copy(
+		row3 = row0 * vector[0] + row1 * vector[1] + row2 * vector[2] + row3
+	)
 
-	fun rotated(angle: Float, vector: Vec3): Mat4 {
-		val cosine = cos(angle)
-		val sine = sin(angle)
+	fun rotate(angle: Float, v: Vec3): Mat4 {
+		val a = angle
+		val c = cos(a)
+		val s = sin(a)
 
-		val axis = vector.normalized()
-		val temp = axis * (1 - cosine)
+		val axis = v.normalize()
+		val temp = (1 - c) * axis
 
-		val rotate = IDENTITY.toMutableMat4().also {
-			it[0, 0] = cosine + temp[0] * axis[0]
-			it[0, 1] = temp[0] * axis[1] + sine * axis[2]
-			it[0, 2] = temp[0] * axis[2] - sine * axis[1]
+		val rotate = Mat4().also {
+			it[0][0] = c + temp[0] * axis[0]
+			it[0][1] = temp[0] * axis[1] + s * axis[2]
+			it[0][2] = temp[0] * axis[2] - s * axis[1]
 
-			it[1, 0] = temp[1] * axis[0] - sine * axis[2]
-			it[1, 1] = cosine + temp[1] * axis[1]
-			it[1, 2] = temp[1] * axis[2] + sine * axis[0]
+			it[1][0] = temp[1] * axis[0] - s * axis[2]
+			it[1][1] = c + temp[1] * axis[1]
+			it[1][2] = temp[1] * axis[2] + s * axis[0]
 
-			it[2, 0] = temp[2] * axis[0] + sine * axis[1]
-			it[2, 1] = temp[2] * axis[1] - sine * axis[0]
-			it[2, 2] = cosine + temp[2] * axis[2]
+			it[2][0] = temp[2] * axis[0] + s * axis[1]
+			it[2][1] = temp[2] * axis[1] - s * axis[0]
+			it[2][2] = c + temp[2] * axis[2]
 		}
 
-		return Mat4(
-			getRow(0) * rotate[0, 0] + getRow(1) * rotate[0, 1] + getRow(2) * rotate[0, 2],
-			getRow(0) * rotate[1, 0] + getRow(1) * rotate[1, 1] + getRow(2) * rotate[1, 2],
-			getRow(0) * rotate[2, 0] + getRow(1) * rotate[2, 1] + getRow(2) * rotate[2, 2],
-			getRow(3)
+		return copy(
+			row0 = row0 * rotate[0][0] + row1 * rotate[0][1] + row2 * rotate[0][2],
+			row1 = row0 * rotate[1][0] + row1 * rotate[1][1] + row2 * rotate[1][2],
+			row2 = row0 * rotate[2][0] + row1 * rotate[2][1] + row2 * rotate[2][2]
 		)
 	}
 
-	fun scaled(vector: Vec3): Mat4 {
-		return Mat4(
-			getRow(0) * vector[0],
-			getRow(1) * vector[1],
-			getRow(2) * vector[2],
-			getRow(3)
-		)
-	}
+	fun scale(vector: Vec3): Mat4 = copy(
+		row0 = row0 * vector[0],
+		row1 = row1 * vector[1],
+		row2 = row2 * vector[2]
+	)
 
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
-		if (other !is Mat4) return false
-
-		if (getRow(0) != other.getRow(0)) return false
-		if (getRow(1) != other.getRow(1)) return false
-		if (getRow(2) != other.getRow(2)) return false
-		if (getRow(3) != other.getRow(3)) return false
-
-		return true
+		return other is Mat4 &&
+			row0 == other.row0 &&
+			row1 == other.row1 &&
+			row2 == other.row2 &&
+			row3 == other.row3
 	}
 
 	override fun hashCode(): Int {
-		var result = getRow(0).hashCode()
-		result = 31 * result + getRow(1).hashCode()
-		result = 31 * result + getRow(2).hashCode()
-		result = 31 * result + getRow(3).hashCode()
+		var result = row0.hashCode()
+		result = 31 * result + row1.hashCode()
+		result = 31 * result + row2.hashCode()
+		result = 31 * result + row3.hashCode()
 		return result
 	}
 
-	override fun toString(): String = "${getRow(0)}\n${getRow(1)}\n${getRow(2)}\n${getRow(3)}"
+	override fun toString(): String = "${row0}\n${row1}\n${row2}\n${row3}"
 }
 
-@Suppress("FunctionName")
-fun Mat4(
-	row0: Vec4,
-	row1: Vec4,
-	row2: Vec4,
-	row3: Vec4
-): Mat4 = MutableMat4(row0, row1, row2, row3)
-
-@Suppress("FunctionName")
-fun Mat4(
-	c00: Float, c01: Float, c02: Float, c03: Float,
-	c10: Float, c11: Float, c12: Float, c13: Float,
-	c20: Float, c21: Float, c22: Float, c23: Float,
-	c30: Float, c31: Float, c32: Float, c33: Float
-): Mat4 = MutableMat4(
-	c00, c01, c02, c03,
-	c10, c11, c12, c13,
-	c20, c21, c22, c23,
-	c30, c31, c32, c33
-)
-
-
-class MutableMat4 : Mat4 {
-	private val m: FloatArray
-
-	constructor(
-		c00: Float, c01: Float, c02: Float, c03: Float,
-		c10: Float, c11: Float, c12: Float, c13: Float,
-		c20: Float, c21: Float, c22: Float, c23: Float,
-		c30: Float, c31: Float, c32: Float, c33: Float
-	) {
-		m = floatArrayOf(c00, c01, c02, c03, c10, c11, c12, c13, c20, c21, c22, c23, c30, c31, c32, c33)
-	}
-
-	constructor(row0: Vec4, row1: Vec4, row2: Vec4, row3: Vec4) {
-		m = floatArrayOf(
-			row0[0], row0[1], row0[2], row0[3],
-			row1[0], row1[1], row1[2], row1[3],
-			row2[0], row2[1], row2[2], row2[3],
-			row3[0], row3[1], row3[2], row3[3]
-		)
-	}
-
-	/** changes to the array are reflected in the matrix */
-	fun asFloatArray(): FloatArray = m
-
-	override operator fun get(row: Int, column: Int): Float {
-		if (row !in 0..3 || column !in 0..3) {
-			throw IndexOutOfBoundsException("row=$row, column=$column")
-		}
-		return m[row * 4 + column]
-	}
-
-	operator fun set(row: Int, column: Int, value: Float) {
-		if (row !in 0..3 || column !in 0..3) {
-			throw IndexOutOfBoundsException("row=$row, column=$column")
-		}
-		m[row * 4 + column] = value
-	}
-
-	fun setRow(row: Int, value: Vec4) {
-		if (row !in 0..3) throw IndexOutOfBoundsException()
-		this[row, 0] = value[0]
-		this[row, 1] = value[1]
-		this[row, 2] = value[2]
-		this[row, 3] = value[3]
-	}
-
-	fun setColumn(column: Int, value: Vec4) {
-		if (column !in 0..3) throw IndexOutOfBoundsException()
-		this[0, column] = value[0]
-		this[1, column] = value[1]
-		this[2, column] = value[2]
-		this[3, column] = value[3]
-	}
-
-	operator fun plusAssign(scalar: Float) {
-		this[0, 0] += scalar; this[0, 1] += scalar; this[0, 2] += scalar; this[0, 3] += scalar
-		this[1, 0] += scalar; this[1, 1] += scalar; this[1, 2] += scalar; this[1, 3] += scalar
-		this[2, 0] += scalar; this[2, 1] += scalar; this[2, 2] += scalar; this[2, 3] += scalar
-		this[3, 0] += scalar; this[3, 1] += scalar; this[3, 2] += scalar; this[3, 3] += scalar
-	}
-
-	operator fun minusAssign(scalar: Float) {
-		this[0, 0] -= scalar; this[0, 1] -= scalar; this[0, 2] -= scalar; this[0, 3] -= scalar
-		this[1, 0] -= scalar; this[1, 1] -= scalar; this[1, 2] -= scalar; this[1, 3] -= scalar
-		this[2, 0] -= scalar; this[2, 1] -= scalar; this[2, 2] -= scalar; this[2, 3] -= scalar
-		this[3, 0] -= scalar; this[3, 1] -= scalar; this[3, 2] -= scalar; this[3, 3] -= scalar
-	}
-
-	operator fun timesAssign(scalar: Float) {
-		this[0, 0] *= scalar; this[0, 1] *= scalar; this[0, 2] *= scalar; this[0, 3] *= scalar
-		this[1, 0] *= scalar; this[1, 1] *= scalar; this[1, 2] *= scalar; this[1, 3] *= scalar
-		this[2, 0] *= scalar; this[2, 1] *= scalar; this[2, 2] *= scalar; this[2, 3] *= scalar
-		this[3, 0] *= scalar; this[3, 1] *= scalar; this[3, 2] *= scalar; this[3, 3] *= scalar
-	}
-
-	operator fun divAssign(scalar: Float) {
-		this[0, 0] /= scalar; this[0, 1] /= scalar; this[0, 2] /= scalar; this[0, 3] /= scalar
-		this[1, 0] /= scalar; this[1, 1] /= scalar; this[1, 2] /= scalar; this[1, 3] /= scalar
-		this[2, 0] /= scalar; this[2, 1] /= scalar; this[2, 2] /= scalar; this[2, 3] /= scalar
-		this[3, 0] /= scalar; this[3, 1] /= scalar; this[3, 2] /= scalar; this[3, 3] /= scalar
-	}
-
-	operator fun plusAssign(other: Mat4) {
-		this[0, 0] += other[0, 0]; this[0, 1] += other[0, 1]; this[0, 2] += other[0, 2]; this[0, 3] += other[0, 3]
-		this[1, 0] += other[1, 0]; this[1, 1] += other[1, 1]; this[1, 2] += other[1, 2]; this[1, 3] += other[1, 3]
-		this[2, 0] += other[2, 0]; this[2, 1] += other[2, 1]; this[2, 2] += other[2, 2]; this[2, 3] += other[2, 3]
-		this[3, 0] += other[3, 0]; this[3, 1] += other[3, 1]; this[3, 2] += other[3, 2]; this[3, 3] += other[3, 3]
-	}
-
-	operator fun minusAssign(other: Mat4) {
-		this[0, 0] -= other[0, 0]; this[0, 1] -= other[0, 1]; this[0, 2] -= other[0, 2]; this[0, 3] -= other[0, 3]
-		this[1, 0] -= other[1, 0]; this[1, 1] -= other[1, 1]; this[1, 2] -= other[1, 2]; this[1, 3] -= other[1, 3]
-		this[2, 0] -= other[2, 0]; this[2, 1] -= other[2, 1]; this[2, 2] -= other[2, 2]; this[2, 3] -= other[2, 3]
-		this[3, 0] -= other[3, 0]; this[3, 1] -= other[3, 1]; this[3, 2] -= other[3, 2]; this[3, 3] -= other[3, 3]
-	}
-
-	operator fun timesAssign(other: Mat4) {
-		//@formatter:off
-		val temp00 = this[0, 0] * other[0, 0] + this[1, 0] * other[0, 1] + this[2, 0] * other[0, 2] + this[3, 0] * other[0, 3]
-		val temp01 = this[0, 1] * other[0, 0] + this[1, 1] * other[0, 1] + this[2, 1] * other[0, 2] + this[3, 1] * other[0, 3]
-		val temp02 = this[0, 2] * other[0, 0] + this[1, 2] * other[0, 1] + this[2, 2] * other[0, 2] + this[3, 2] * other[0, 3]
-		val temp03 = this[0, 3] * other[0, 0] + this[1, 3] * other[0, 1] + this[2, 3] * other[0, 2] + this[3, 3] * other[0, 3]
-
-		val temp10 = this[0, 0] * other[1, 0] + this[1, 0] * other[1, 1] + this[2, 0] * other[1, 2] + this[3, 0] * other[1, 3]
-		val temp11 = this[0, 1] * other[1, 0] + this[1, 1] * other[1, 1] + this[2, 1] * other[1, 2] + this[3, 1] * other[1, 3]
-		val temp12 = this[0, 2] * other[1, 0] + this[1, 2] * other[1, 1] + this[2, 2] * other[1, 2] + this[3, 2] * other[1, 3]
-		val temp13 = this[0, 3] * other[1, 0] + this[1, 3] * other[1, 1] + this[2, 3] * other[1, 2] + this[3, 3] * other[1, 3]
-
-		val temp20 = this[0, 0] * other[2, 0] + this[1, 0] * other[2, 1] + this[2, 0] * other[2, 2] + this[3, 0] * other[2, 3]
-		val temp21 = this[0, 1] * other[2, 0] + this[1, 1] * other[2, 1] + this[2, 1] * other[2, 2] + this[3, 1] * other[2, 3]
-		val temp22 = this[0, 2] * other[2, 0] + this[1, 2] * other[2, 1] + this[2, 2] * other[2, 2] + this[3, 2] * other[2, 3]
-		val temp23 = this[0, 3] * other[2, 0] + this[1, 3] * other[2, 1] + this[2, 3] * other[2, 2] + this[3, 3] * other[2, 3]
-
-		val temp30 = this[0, 0] * other[3, 0] + this[1, 0] * other[3, 1] + this[2, 0] * other[3, 2] + this[3, 0] * other[3, 3]
-		val temp31 = this[0, 1] * other[3, 0] + this[1, 1] * other[3, 1] + this[2, 1] * other[3, 2] + this[3, 1] * other[3, 3]
-		val temp32 = this[0, 2] * other[3, 0] + this[1, 2] * other[3, 1] + this[2, 2] * other[3, 2] + this[3, 2] * other[3, 3]
-		val temp33 = this[0, 3] * other[3, 0] + this[1, 3] * other[3, 1] + this[2, 3] * other[3, 2] + this[3, 3] * other[3, 3]
-		//@formatter:on
-
-		this[0, 0] = temp00
-		this[0, 1] = temp01
-		this[0, 2] = temp02
-		this[0, 3] = temp03
-
-		this[1, 0] = temp10
-		this[1, 1] = temp11
-		this[1, 2] = temp12
-		this[1, 3] = temp13
-
-		this[2, 0] = temp20
-		this[2, 1] = temp21
-		this[2, 2] = temp22
-		this[2, 3] = temp23
-
-		this[3, 0] = temp30
-		this[3, 1] = temp31
-		this[3, 2] = temp32
-		this[3, 3] = temp33
-	}
-
-	operator fun divAssign(other: Mat4) {
-		this *= other.inverse
-	}
-
-	fun transpose() {
-		var temp = m[1]
-		m[1] = m[4]
-		m[4] = temp
-
-		temp = m[2]
-		m[2] = m[8]
-		m[8] = temp
-
-		temp = m[3]
-		m[3] = m[12]
-		m[12] = temp
-
-		temp = m[6]
-		m[6] = m[9]
-		m[9] = temp
-
-		temp = m[7]
-		m[7] = m[13]
-		m[13] = temp
-
-		temp = m[11]
-		m[11] = m[14]
-		m[14] = temp
-	}
-
-	fun translate(vector: Vec3) {
-		setRow(3, getRow(0) * vector[0] + getRow(1) * vector[1] + getRow(2) * vector[2] + getRow(3))
-	}
-
-	fun rotate(angle: Float, vector: Vec3) {
-		val cosine = cos(angle)
-		val sine = sin(angle)
-
-		val axis = vector.normalized()
-		val temp = axis * (1 - cosine)
-
-		val rotate = IDENTITY.toMutableMat4().also {
-			it[0, 0] = cosine + temp[0] * axis[0]
-			it[0, 1] = temp[0] * axis[1] + sine * axis[2]
-			it[0, 2] = temp[0] * axis[2] - sine * axis[1]
-
-			it[1, 0] = temp[1] * axis[0] - sine * axis[2]
-			it[1, 1] = cosine + temp[1] * axis[1]
-			it[1, 2] = temp[1] * axis[2] + sine * axis[0]
-
-			it[2, 0] = temp[2] * axis[0] + sine * axis[1]
-			it[2, 1] = temp[2] * axis[1] - sine * axis[0]
-			it[2, 2] = cosine + temp[2] * axis[2]
-		}
-
-		val row0 = getRow(0) * rotate[0, 0] + getRow(1) * rotate[0, 1] + getRow(2) * rotate[0, 2]
-		val row1 = getRow(0) * rotate[1, 0] + getRow(1) * rotate[1, 1] + getRow(2) * rotate[1, 2]
-		val row2 = getRow(0) * rotate[2, 0] + getRow(1) * rotate[2, 1] + getRow(2) * rotate[2, 2]
-
-		setRow(0, row0)
-		setRow(1, row1)
-		setRow(2, row2)
-	}
-
-	fun scale(vector: Vec3) {
-		setRow(0, getRow(0) * vector[0])
-		setRow(1, getRow(1) * vector[1])
-		setRow(2, getRow(2) * vector[2])
-	}
-}
 
 fun Mat4.toFloatArray(): FloatArray = floatArrayOf(
-	this[0, 0], this[0, 1], this[0, 2], this[0, 3],
-	this[1, 0], this[1, 1], this[1, 2], this[1, 3],
-	this[2, 0], this[2, 1], this[2, 2], this[2, 3],
-	this[3, 0], this[3, 1], this[3, 2], this[3, 3]
+	this[0][0], this[0][1], this[0][2], this[0][3],
+	this[1][0], this[1][1], this[1][2], this[1][3],
+	this[2][0], this[2][1], this[2][2], this[2][3],
+	this[3][0], this[3][1], this[3][2], this[3][3]
 )
 
-fun Mat4.toMat4(): Mat4 =
-	Mat4(
-		this[0, 0], this[0, 1], this[0, 2], this[0, 3],
-		this[1, 0], this[1, 1], this[1, 2], this[1, 3],
-		this[2, 0], this[2, 1], this[2, 2], this[2, 3],
-		this[3, 0], this[3, 1], this[3, 2], this[3, 3]
-	)
-
-fun Mat4.toMutableMat4(): MutableMat4 =
-	MutableMat4(
-		this[0, 0], this[0, 1], this[0, 2], this[0, 3],
-		this[1, 0], this[1, 1], this[1, 2], this[1, 3],
-		this[2, 0], this[2, 1], this[2, 2], this[2, 3],
-		this[3, 0], this[3, 1], this[3, 2], this[3, 3]
-	)
+fun Mat4.toMat4(): Mat4 = Mat4(
+	this[0][0], this[0][1], this[0][2], this[0][3],
+	this[1][0], this[1][1], this[1][2], this[1][3],
+	this[2][0], this[2][1], this[2][2], this[2][3],
+	this[3][0], this[3][1], this[3][2], this[3][3]
+)
 
 
-operator fun Float.plus(matrix: Mat4): Mat4 =
-	Mat4(
-		this + matrix[0, 0], this + matrix[0, 1], this + matrix[0, 2], this + matrix[0, 3],
-		this + matrix[1, 0], this + matrix[1, 1], this + matrix[1, 2], this + matrix[1, 3],
-		this + matrix[2, 0], this + matrix[2, 1], this + matrix[2, 2], this + matrix[2, 3],
-		this + matrix[3, 0], this + matrix[3, 1], this + matrix[3, 2], this + matrix[3, 3]
-	)
+operator fun Float.plus(matrix: Mat4): Mat4 = Mat4(
+	this + matrix[0], this + matrix[1], this + matrix[2], this + matrix[3]
+)
 
-operator fun Float.minus(matrix: Mat4): Mat4 =
-	Mat4(
-		this - matrix[0, 0], this - matrix[0, 1], this - matrix[0, 2], this - matrix[0, 3],
-		this - matrix[1, 0], this - matrix[1, 1], this - matrix[1, 2], this - matrix[1, 3],
-		this - matrix[2, 0], this - matrix[2, 1], this - matrix[2, 2], this - matrix[2, 3],
-		this - matrix[3, 0], this - matrix[3, 1], this - matrix[3, 2], this - matrix[3, 3]
-	)
+operator fun Float.minus(matrix: Mat4): Mat4 = Mat4(
+	this - matrix[0], this - matrix[1], this - matrix[2], this - matrix[3]
+)
 
-operator fun Float.times(matrix: Mat4): Mat4 =
-	Mat4(
-		this * matrix[0, 0], this * matrix[0, 1], this * matrix[0, 2], this * matrix[0, 3],
-		this * matrix[1, 0], this * matrix[1, 1], this * matrix[1, 2], this * matrix[1, 3],
-		this * matrix[2, 0], this * matrix[2, 1], this * matrix[2, 2], this * matrix[2, 3],
-		this * matrix[3, 0], this * matrix[3, 1], this * matrix[3, 2], this * matrix[3, 3]
-	)
+operator fun Float.times(matrix: Mat4): Mat4 = Mat4(
+	this * matrix[0], this * matrix[1], this * matrix[2], this * matrix[3]
+)
 
-operator fun Float.div(matrix: Mat4): Mat4 =
-	Mat4(
-		this / matrix[0, 0], this / matrix[0, 1], this / matrix[0, 2], this / matrix[0, 3],
-		this / matrix[1, 0], this / matrix[1, 1], this / matrix[1, 2], this / matrix[1, 3],
-		this / matrix[2, 0], this / matrix[2, 1], this / matrix[2, 2], this / matrix[2, 3],
-		this / matrix[3, 0], this / matrix[3, 1], this / matrix[3, 2], this / matrix[3, 3]
-	)
+operator fun Float.div(matrix: Mat4): Mat4 = Mat4(
+	this / matrix[0], this / matrix[1], this / matrix[2], this / matrix[3]
+)

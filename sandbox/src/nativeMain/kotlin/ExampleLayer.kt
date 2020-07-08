@@ -2,6 +2,7 @@ import com.imgui.*
 import hazel.core.*
 import hazel.events.*
 import hazel.math.*
+import hazel.math.Vec4
 import hazel.renderer.*
 
 class ExampleLayer : Layer("ExampleLayer") {
@@ -65,7 +66,7 @@ class ExampleLayer : Layer("ExampleLayer") {
 	private val texture: Texture2D
 	private val chernoLogoTexture: Texture2D
 	private val squareVertexArray = VertexArray()
-	private val squareColor = MutableVec3(0f, 0f, 1f)
+	private val squareColor = floatArrayOf(0f, 0f, 1f)
 
 	init {
 		val squareVertexBuffer = vertexBufferOf(
@@ -141,18 +142,15 @@ class ExampleLayer : Layer("ExampleLayer") {
 		RenderCommand.clear()
 
 		Renderer.scene(cameraController.camera) {
-			val scale = Mat4.IDENTITY.scaled(Vec3(0.1f))
+			val scale = Mat4().scale(Vec3(0.1f))
 
 			flatColorShader.bind()
-			flatColorShader["u_Color"] = squareColor
+			flatColorShader["u_Color"] = Vec3(squareColor[0], squareColor[1], squareColor[2])
 
 			for (y in 0 until 20) {
 				for (x in 0 until 20) {
 					val position = Vec3(x * 0.11f, y * 0.11f, 0f)
-					val transform = Mat4.IDENTITY.toMutableMat4().apply {
-						translate(position)
-						this *= scale
-					}
+					val transform = Mat4().translate(position) * scale
 					submit(flatColorShader, squareVertexArray, transform)
 				}
 			}
@@ -161,9 +159,9 @@ class ExampleLayer : Layer("ExampleLayer") {
 
 			// square
 			texture.bind()
-			submit(textureShader, squareVertexArray, Mat4.IDENTITY.scaled(Vec3(1.5f)))
+			submit(textureShader, squareVertexArray, Mat4().scale(Vec3(1.5f)))
 			chernoLogoTexture.bind()
-			submit(textureShader, squareVertexArray, Mat4.IDENTITY.scaled(Vec3(1.5f)))
+			submit(textureShader, squareVertexArray, Mat4().scale(Vec3(1.5f)))
 
 			// triangle
 			//submit(shader, vertexArray)
@@ -173,7 +171,7 @@ class ExampleLayer : Layer("ExampleLayer") {
 	override fun onImGuiRender() {
 		with(ImGui) {
 			begin("Settings")
-			colorEdit3("Square Color", squareColor.asFloatArray())
+			colorEdit3("Square Color", squareColor)
 			end()
 		}
 	}
