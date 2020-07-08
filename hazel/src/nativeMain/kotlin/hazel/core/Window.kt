@@ -121,7 +121,7 @@ class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : 
 				}
 
 				val nativeWindow = Hazel.profile("Glfw create window") {
-					GlfwWindow(width, height, title) {
+					with(Glfw.windowHints) {
 						// enable the most recent version of OpenGL on macOS
 						// (most recent is the default on other platforms)
 						if (Platform.osFamily == OsFamily.MACOSX) {
@@ -131,6 +131,7 @@ class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : 
 							openGLProfile = OpenGLProfile.Core
 						}
 					}
+					GlfwWindow(width, height, title)
 				}
 				windowCount += 1
 				Window(nativeWindow)

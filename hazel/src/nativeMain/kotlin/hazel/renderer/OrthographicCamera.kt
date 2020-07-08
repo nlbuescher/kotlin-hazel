@@ -6,7 +6,7 @@ import hazel.math.*
 class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 	var projectionMatrix: Mat4 = orthographicProjectionOf(left, right, bottom, top, -1f, 1f)
 		private set
-	var viewMatrix: Mat4 = Mat4.IDENTITY
+	var viewMatrix = Mat4()
 		private set
 	var viewProjectionMatrix: Mat4
 		private set
@@ -40,10 +40,9 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 
 	private fun recalculateViewMatrix() {
 		Hazel.profile("OrthographicCamera.recalculateViewMatrix()") {
-			val transform = Mat4.IDENTITY.toMutableMat4().apply {
-				translate(position)
-				rotate(rotation, Vec3.FORWARD)
-			}
+			val transform = Mat4()
+				.translate(position)
+				.rotate(rotation, Vec3(0f, 0f, 1f))
 
 			viewMatrix = transform.inverse
 			viewProjectionMatrix = projectionMatrix * viewMatrix

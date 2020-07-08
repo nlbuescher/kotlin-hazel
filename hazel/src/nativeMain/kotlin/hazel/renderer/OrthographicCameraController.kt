@@ -21,7 +21,7 @@ class OrthographicCameraController(
 	var bounds = Rect(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
 		private set
 	val camera = OrthographicCamera(bounds.left, bounds.right, bounds.bottom, bounds.top)
-	private val cameraPosition = MutableVec3()
+	private val cameraPosition = Vec3()
 	private var cameraRotation: Float = 0f
 	private var cameraTranslationSpeed: Float = zoomLevel
 	private val cameraRotationSpeed: Float = 180f.degrees

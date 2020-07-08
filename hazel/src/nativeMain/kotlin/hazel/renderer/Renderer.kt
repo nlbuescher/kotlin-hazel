@@ -4,7 +4,7 @@ import hazel.core.*
 import hazel.math.*
 
 private class SceneData {
-	var viewProjectionMatrix: Mat4 = Mat4.IDENTITY
+	var viewProjectionMatrix = Mat4()
 }
 
 private val sceneData = SceneData()
@@ -45,7 +45,7 @@ object Renderer {
 		endScene()
 	}
 
-	fun submit(shader: Shader, vertexArray: VertexArray, transform: Mat4 = Mat4.IDENTITY) {
+	fun submit(shader: Shader, vertexArray: VertexArray, transform: Mat4 = Mat4()) {
 		shader.bind()
 		shader["u_ViewProjection"] = sceneData.viewProjectionMatrix
 		shader["u_Transform"] = transform
