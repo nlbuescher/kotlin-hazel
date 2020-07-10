@@ -1,4 +1,5 @@
 import com.imgui.*
+import hazel.*
 import hazel.core.*
 import hazel.events.*
 import hazel.math.*
@@ -7,7 +8,7 @@ import hazel.math.Vec4
 import hazel.renderer.*
 
 class Sandbox2D : Layer("Sandbox2D") {
-	private val cameraController = OrthographicCameraController(1280f / 720f, true)
+	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
 	private val particleSystem = ParticleSystem()
 
 	private lateinit var checkerBoardTexture: Texture2D
@@ -60,16 +61,13 @@ class Sandbox2D : Layer("Sandbox2D") {
 					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(20f, 20f), checkerBoardTexture, 10f)
 					drawRotatedQuad(Vec3(-2f, 0f, 0.1f), Vec2(1f, 1f), rotation, checkerBoardTexture, 20f)
 
-					var y = -4.75f
-					while (y < 5.25f) {
-						var x = -4.75f
-						while (x < 5.25f) {
+					for (y in -4.75f..4.75f step 0.5f) {
+						for (x in -4.75f..4.75f step 0.5f) {
 							val color = Vec4((x + 5) / 10, 0.4f, (y + 5) / 10, 0.7f)
 							drawQuad(Vec2(x, y), Vec2(0.45f, 0.45f), color)
-							x += 0.5f
 						}
-						y += 0.5f
 					}
+
 					endScene()
 				}
 			}
