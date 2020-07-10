@@ -3,29 +3,13 @@ package hazel.math
 import hazel.cinterop.*
 import kotlin.math.*
 
-class Vec4 private constructor(private var data: Vector128) {
-	var x: Float
-		get() = data.getFloatAt(0)
-		set(value) {
-			data = vectorOf(value, y, z, w)
-		}
-	var y: Float
-		get() = data.getFloatAt(1)
-		set(value) {
-			data = vectorOf(x, value, z, w)
-		}
-	var z: Float
-		get() = data.getFloatAt(2)
-		set(value) {
-			data = vectorOf(x, y, value, w)
-		}
+class Vec4(
+	var x: Float,
+	var y: Float,
+	var z: Float,
 	var w: Float
-		get() = data.getFloatAt(3)
-		set(value) {
-			data = vectorOf(x, y, z, value)
-		}
-
-	constructor(x: Float, y: Float, z: Float, w: Float) : this(vectorOf(x, y, z, w))
+) {
+	constructor(v: Vector128) : this(v.getFloatAt(0), v.getFloatAt(1), v.getFloatAt(2), v.getFloatAt(3))
 	constructor(scalar: Float = 0f) : this(scalar, scalar, scalar, scalar)
 
 	fun copy(x: Float = this.x, y: Float = this.y, z: Float = this.z, w: Float = this.w): Vec4 = Vec4(x, y, z, w)
@@ -43,57 +27,95 @@ class Vec4 private constructor(private var data: Vector128) {
 	operator fun unaryPlus(): Vec4 = this
 	operator fun unaryMinus(): Vec4 = Vec4(-x, -y, -z, -w)
 
-	operator fun plus(scalar: Float): Vec4 = Vec4(vec4_add(data, vectorOf(scalar, scalar, scalar, scalar)))
-	operator fun minus(scalar: Float): Vec4 = Vec4(vec4_sub(data, vectorOf(scalar, scalar, scalar, scalar)))
-	operator fun times(scalar: Float): Vec4 = Vec4(vec4_mul(data, vectorOf(scalar, scalar, scalar, scalar)))
-	operator fun div(scalar: Float): Vec4 = Vec4(vec4_div(data, vectorOf(scalar, scalar, scalar, scalar)))
-	operator fun rem(scalar: Float): Vec4 = Vec4(vec4_mod(data, vectorOf(scalar, scalar, scalar, scalar)))
+	operator fun plus(scalar: Float): Vec4 = Vec4(
+		vec4_add(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+	)
 
-	operator fun plus(other: Vec4): Vec4 = Vec4(vec4_add(data, other.data))
-	operator fun minus(other: Vec4): Vec4 = Vec4(vec4_sub(data, other.data))
-	operator fun times(other: Vec4): Vec4 = Vec4(vec4_mul(data, other.data))
-	operator fun div(other: Vec4): Vec4 = Vec4(vec4_div(data, other.data))
-	operator fun rem(other: Vec4): Vec4 = Vec4(vec4_mod(data, other.data))
+	operator fun minus(scalar: Float): Vec4 = Vec4(
+		vec4_sub(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+	)
+
+	operator fun times(scalar: Float): Vec4 = Vec4(
+		vec4_mul(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+	)
+
+	operator fun div(scalar: Float): Vec4 = Vec4(
+		vec4_div(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+	)
+
+	operator fun rem(scalar: Float): Vec4 = Vec4(
+		vec4_mod(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+	)
+
+	operator fun plus(other: Vec4): Vec4 = Vec4(
+		vec4_add(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+	)
+
+	operator fun minus(other: Vec4): Vec4 = Vec4(
+		vec4_sub(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+	)
+
+	operator fun times(other: Vec4): Vec4 = Vec4(
+		vec4_mul(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+	)
+
+	operator fun div(other: Vec4): Vec4 = Vec4(
+		vec4_div(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+	)
+
+	operator fun rem(other: Vec4): Vec4 = Vec4(
+		vec4_mod(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+	)
 
 	operator fun plusAssign(scalar: Float) {
-		data = vec4_add(data, vectorOf(scalar, scalar, scalar, scalar))
+		val v = vec4_add(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	operator fun minusAssign(scalar: Float) {
-		data = vec4_sub(data, vectorOf(scalar, scalar, scalar, scalar))
+		val v = vec4_sub(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	operator fun timesAssign(scalar: Float) {
-		data = vec4_mul(data, vectorOf(scalar, scalar, scalar, scalar))
+		val v = vec4_mul(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	operator fun divAssign(scalar: Float) {
-		data = vec4_div(data, vectorOf(scalar, scalar, scalar, scalar))
+		val v = vec4_div(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	operator fun remAssign(scalar: Float) {
-		data = vec4_mod(data, vectorOf(scalar, scalar, scalar, scalar))
+		val v = vec4_mod(vectorOf(x, y, z, w), vectorOf(scalar, scalar, scalar, scalar))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 
 	operator fun plusAssign(other: Vec4) {
-		data = vec4_add(data, other.data)
+		val v = vec4_add(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	operator fun minusAssign(other: Vec4) {
-		data = vec4_sub(data, other.data)
+		val v = vec4_sub(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	operator fun timesAssign(other: Vec4) {
-		data = vec4_mul(data, other.data)
+		val v = vec4_mul(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	operator fun divAssign(other: Vec4) {
-		data = vec4_div(data, other.data)
+		val v = vec4_div(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	operator fun remAssign(other: Vec4) {
-		data = vec4_mod(data, other.data)
+		val v = vec4_mod(vectorOf(x, y, z, w), vectorOf(other.x, other.y, other.z, other.w))
+		x = v.getFloatAt(0); y = v.getFloatAt(1); z = v.getFloatAt(2); w = v.getFloatAt(3)
 	}
 
 	val squareMagnitude: Float get() = this dot this
