@@ -34,7 +34,7 @@ class OrthographicCameraController(
 				cameraPosition.y -= sin(cameraRotation) * cameraTranslationSpeed * timeStep.inSeconds
 			} else if (Input.isKeyPressed(Key.D)) {
 				cameraPosition.x += cos(cameraRotation) * cameraTranslationSpeed * timeStep.inSeconds
-				cameraPosition.x += sin(cameraRotation) * cameraTranslationSpeed * timeStep.inSeconds
+				cameraPosition.y += sin(cameraRotation) * cameraTranslationSpeed * timeStep.inSeconds
 			}
 
 			if (Input.isKeyPressed(Key.W)) {

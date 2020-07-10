@@ -25,8 +25,8 @@ void main() {
 }
 
 
-	#type fragment
-	#version 330 core
+#type fragment
+#version 330 core
 
 layout(location = 0) out vec4 color;
 

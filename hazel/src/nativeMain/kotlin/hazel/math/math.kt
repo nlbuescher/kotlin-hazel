@@ -16,11 +16,11 @@ fun orthographicProjectionOf(
 	top: Float,
 	zNear: Float,
 	zFar: Float
-): Mat4 = Mat4(1f).also {
-	it[0][0] = 2f / (right - left)
-	it[1][1] = 2f / (top - bottom)
-	it[2][2] = -2f / (zFar - zNear)
+): Mat4 = Mat4().also {
+	it[0][0] = 2 / (right - left)
+	it[1][1] = 2 / (top - bottom)
+	it[2][2] = -2 / (zFar - zNear)
 	it[3][0] = -(right + left) / (right - left)
 	it[3][1] = -(top + bottom) / (top - bottom)
-	it[3][2] = -zNear / (zFar - zNear)
+	it[3][2] = -(zFar + zNear) / (zFar - zNear)
 }

@@ -119,7 +119,7 @@ class Mat4(
 
 			val row0 = Vec4(inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0])
 
-			val dot0 = row0 * row0
+			val dot0 = this.row0 * row0
 			val dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w)
 
 			val oneOverDeterminant = 1 / dot1
@@ -152,7 +152,10 @@ class Mat4(
 	)
 
 	operator fun times(other: Mat4): Mat4 = Mat4(
-		row0 * other[0], row1 * other[1], row2 * other[2], row3 * other[3]
+		row0 * other.row0[0] + row1 * other.row0[1] + row2 * other.row0[2] + row3 * other.row0[3],
+		row0 * other.row1[0] + row1 * other.row1[1] + row2 * other.row1[2] + row3 * other.row1[3],
+		row0 * other.row2[0] + row1 * other.row2[1] + row2 * other.row2[2] + row3 * other.row2[3],
+		row0 * other.row3[0] + row1 * other.row3[1] + row2 * other.row3[2] + row3 * other.row3[3]
 	)
 
 	operator fun div(other: Mat4): Mat4 = this * other.inverse
@@ -184,38 +187,39 @@ class Mat4(
 	)
 
 	fun rotate(angle: Float, v: Vec3): Mat4 {
-		val a = angle
-		val c = cos(a)
-		val s = sin(a)
+		val cosine = cos(angle)
+		val sine = sin(angle)
 
 		val axis = v.normalize()
-		val temp = (1 - c) * axis
+		val temp = (1 - cosine) * axis
 
 		val rotate = Mat4().also {
-			it[0][0] = c + temp[0] * axis[0]
-			it[0][1] = temp[0] * axis[1] + s * axis[2]
-			it[0][2] = temp[0] * axis[2] - s * axis[1]
+			it[0][0] = cosine + temp[0] * axis[0]
+			it[0][1] = temp[0] * axis[1] + sine * axis[2]
+			it[0][2] = temp[0] * axis[2] - sine * axis[1]
 
-			it[1][0] = temp[1] * axis[0] - s * axis[2]
-			it[1][1] = c + temp[1] * axis[1]
-			it[1][2] = temp[1] * axis[2] + s * axis[0]
+			it[1][0] = temp[1] * axis[0] - sine * axis[2]
+			it[1][1] = cosine + temp[1] * axis[1]
+			it[1][2] = temp[1] * axis[2] + sine * axis[0]
 
-			it[2][0] = temp[2] * axis[0] + s * axis[1]
-			it[2][1] = temp[2] * axis[1] - s * axis[0]
-			it[2][2] = c + temp[2] * axis[2]
+			it[2][0] = temp[2] * axis[0] + sine * axis[1]
+			it[2][1] = temp[2] * axis[1] - sine * axis[0]
+			it[2][2] = cosine + temp[2] * axis[2]
 		}
 
-		return copy(
-			row0 = row0 * rotate[0][0] + row1 * rotate[0][1] + row2 * rotate[0][2],
-			row1 = row0 * rotate[1][0] + row1 * rotate[1][1] + row2 * rotate[1][2],
-			row2 = row0 * rotate[2][0] + row1 * rotate[2][1] + row2 * rotate[2][2]
+		return Mat4(
+			row0 * rotate[0][0] + row1 * rotate[0][1] + row2 * rotate[0][2],
+			row0 * rotate[1][0] + row1 * rotate[1][1] + row2 * rotate[1][2],
+			row0 * rotate[2][0] + row1 * rotate[2][1] + row2 * rotate[2][2],
+			row3.copy()
 		)
 	}
 
-	fun scale(vector: Vec3): Mat4 = copy(
-		row0 = row0 * vector[0],
-		row1 = row1 * vector[1],
-		row2 = row2 * vector[2]
+	fun scale(vector: Vec3): Mat4 = Mat4(
+		row0 * vector[0],
+		row1 * vector[1],
+		row2 * vector[2],
+		row3.copy()
 	)
 
 
@@ -236,7 +240,7 @@ class Mat4(
 		return result
 	}
 
-	override fun toString(): String = "${row0}\n${row1}\n${row2}\n${row3}"
+	override fun toString(): String = "$row0\n$row1\n$row2\n$row3"
 }
 
 
@@ -247,12 +251,7 @@ fun Mat4.toFloatArray(): FloatArray = floatArrayOf(
 	this[3][0], this[3][1], this[3][2], this[3][3]
 )
 
-fun Mat4.toMat4(): Mat4 = Mat4(
-	this[0][0], this[0][1], this[0][2], this[0][3],
-	this[1][0], this[1][1], this[1][2], this[1][3],
-	this[2][0], this[2][1], this[2][2], this[2][3],
-	this[3][0], this[3][1], this[3][2], this[3][3]
-)
+fun Mat4.toMat4(): Mat4 = copy()
 
 
 operator fun Float.plus(matrix: Mat4): Mat4 = Mat4(
