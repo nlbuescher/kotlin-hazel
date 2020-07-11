@@ -6,6 +6,7 @@ plugins {
 }
 
 repositories {
+	mavenLocal()
 	maven("https://dl.bintray.com/dominaezzz/kotlin-native")
 	jcenter()
 }
