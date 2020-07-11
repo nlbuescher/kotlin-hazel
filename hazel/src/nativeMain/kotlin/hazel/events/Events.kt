@@ -5,8 +5,6 @@ import kotlin.reflect.*
 
 sealed class Event {
 	var isHandled = false
-		protected set
-
 	val name: String get() = this::class.simpleName ?: "Event"
 	override fun toString(): String = name
 

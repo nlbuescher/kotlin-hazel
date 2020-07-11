@@ -9,6 +9,7 @@ import cimgui.internal.ImVec4
 import com.imgui.*
 import com.imgui.impl.*
 import hazel.core.*
+import hazel.events.*
 import kotlinx.cinterop.*
 
 open class ImGuiLayer : Overlay("ImGuiLayer") {
@@ -59,6 +60,12 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 			glfw.close()
 			ImGui.destroyContext()
 		}
+	}
+
+	override fun onEvent(event: Event) {
+		val io = ImGui.getIO()
+		event.isHandled = event.isHandled || (event is MouseEvent && io.wantCaptureMouse)
+		event.isHandled = event.isHandled || (event is KeyEvent && io.wantCaptureKeyboard)
 	}
 
 	fun begin() {

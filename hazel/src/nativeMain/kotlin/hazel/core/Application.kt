@@ -85,8 +85,8 @@ abstract class Application : Disposable {
 			event.dispatch(::onWindowClose)
 
 			for (layer in layerStack.reversed()) {
-				layer.onEvent(event)
 				if (event.isHandled) break
+				layer.onEvent(event)
 			}
 		}
 	}

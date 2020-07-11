@@ -9,7 +9,7 @@ enum class ShaderDataType(val size: kotlin.Int) {
 	Boolean(1),
 	Int(4), Int2(8), Int3(12), Int4(16),
 	Float(4), Float2(8), Float3(12), Float4(16),
-	Mat3(36), Mat4(64)
+	Mat3(3), Mat4(4)
 }
 
 class BufferElement(

@@ -4,6 +4,7 @@ import com.kgl.opengl.*
 import hazel.core.*
 import hazel.opengl.*
 import hazel.renderer.*
+import kotlinx.cinterop.*
 
 internal class OpenGLVertexArray : VertexArray {
 	private val rendererId: UInt
@@ -58,15 +59,43 @@ internal class OpenGLVertexArray : VertexArray {
 			vertexBuffer.bind()
 
 			vertexBuffer.layout.elements.forEachIndexed { index, element ->
-				glEnableVertexAttribArray(index.toUInt())
-				glVertexAttribPointer(
-					index.toUInt(),
-					element.componentCount,
-					element.type.toOpenGLBaseType(),
-					element.isNormalized,
-					vertexBuffer.layout.stride,
-					element.offset
-				)
+				when (element.type) {
+					ShaderDataType.Float,
+					ShaderDataType.Float2,
+					ShaderDataType.Float3,
+					ShaderDataType.Float4,
+					ShaderDataType.Int,
+					ShaderDataType.Int2,
+					ShaderDataType.Int3,
+					ShaderDataType.Int4,
+					ShaderDataType.Boolean -> {
+						glEnableVertexAttribArray(index.toUInt())
+						glVertexAttribPointer(
+							index.toUInt(),
+							element.componentCount,
+							element.type.toOpenGLBaseType(),
+							element.isNormalized,
+							vertexBuffer.layout.stride,
+							element.offset
+						)
+					}
+					ShaderDataType.Mat3,
+					ShaderDataType.Mat4 -> {
+						val count = element.componentCount
+						for (i in 0 until count) {
+							glEnableVertexAttribArray(index.toUInt())
+							glVertexAttribPointer(
+								index.toUInt(),
+								count,
+								element.type.toOpenGLBaseType(),
+								element.isNormalized,
+								vertexBuffer.layout.stride,
+								(sizeOf<FloatVar>() * count * i).toInt()
+							)
+							glVertexAttribDivisor(index.toUInt(), 1u)
+						}
+					}
+				}
 			}
 
 			vertexBuffers.add(vertexBuffer)
