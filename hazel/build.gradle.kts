@@ -6,13 +6,14 @@ plugins {
 }
 
 repositories {
+	mavenLocal()
 	maven("https://dl.bintray.com/dominaezzz/kotlin-native")
 	jcenter()
 }
 
 val os: OperatingSystem = OperatingSystem.current()
 
-val imguiVersion = "0.1.2"
+val imguiVersion = "docking" //"0.1.2"
 val kglVersion = "0.1.9-dev-13"
 
 kotlin {

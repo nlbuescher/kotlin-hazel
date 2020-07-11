@@ -7,14 +7,17 @@ import cimgui.internal.ImGuiStyle
 import cimgui.internal.ImVec2
 import cimgui.internal.ImVec4
 import com.imgui.*
+import com.imgui.ImGuiCol
+import com.imgui.ImGuiConfigFlags
 import com.imgui.impl.*
+import com.kgl.glfw.*
 import hazel.core.*
 import hazel.events.*
 import kotlinx.cinterop.*
 
 open class ImGuiLayer : Overlay("ImGuiLayer") {
-	lateinit var glfw: ImGuiGLFW
-	lateinit var openGL3: ImguiOpenGL3
+	private lateinit var glfw: ImGuiGlfw
+	private lateinit var openGL3: ImGuiOpenGL3
 
 	override fun onAttach() {
 		Hazel.profile("ImGuiLayer.onAttach()") {
@@ -29,28 +32,28 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 				szDrawidx = sizeOf<ImDrawIdxVar>().convert()
 			)
 			ImGui.createContext()
-			val io = ImGui.getIO().ptr.pointed
-			io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_NavEnableKeyboard.convert() // enable keyboard controls
-			//io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_NavEnableGamepad.convert() // enable gamepad controls
-			//io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_DockingEnable.convert() // enable docking
-			//io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_ViewportsEnable.convert() // enable multi-viewport / platform windows
-			//io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_ViewportsNoTaskBarIcon.convert()
-			//io.ConfigFlags = io.ConfigFlags or ImGuiConfigFlags_ViewportsNoMerge.convert()
+			val io = ImGui.getIO()
+			io.configFlags = io.configFlags or ImGuiConfigFlags.NavEnableKeyboard // enable keyboard controls
+			//io.configFlags = io.configFlags or ImGuiConfigFlags.NavEnableGamepad // enable gamepad controls
+			io.configFlags = io.configFlags or ImGuiConfigFlags.DockingEnable // enable docking
+			io.configFlags = io.configFlags or ImGuiConfigFlags.ViewportsEnable // enable multi-viewport / platform windows
+			//io.configFlags = io.configFlags or ImGuiConfigFlags.ViewportsNoTaskBarIcon
+			//io.configFlags = io.configFlags or ImGuiConfigFlags.ViewportsNoMerge
 
 			// setup Dear ImGui style
 			ImGui.styleColorsDark()
 			//ImGui.styleColorsClassic()
 
 			// when viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones
-			//val style = ImGui.getStyle().ptr.pointed
-			//if (io.ConfigFlags and ImGuiConfigFlags_ViewportsEnable.convert() != 0) {
-			//    style.WindowRounding = 0f
-			//    style.Colors[ImGuiCol_WindowBg.convert()].w = 1f
-			//}
+			val style = ImGui.getStyle().ptr.pointed
+			if (ImGuiConfigFlags.ViewportsEnable in io.configFlags) {
+			    style.WindowRounding = 0f
+			    style.Colors[ImGuiCol.WindowBg.value].w = 1f
+			}
 
 			// setup Platform / Renderer Bindings
-			glfw = ImGuiGLFW(Hazel.application.window.nativeWindow, true)
-			openGL3 = ImguiOpenGL3("#version 330")
+			glfw = ImGuiGlfw(Hazel.application.window.nativeWindow, true)
+			openGL3 = ImGuiOpenGL3("#version 330")
 		}
 	}
 
@@ -78,21 +81,20 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 
 	fun end() {
 		Hazel.profile("ImGuiLayer.end()") {
-			val io = ImGui.getIO().ptr.pointed
+			val io = ImGui.getIO()
 			val (width, height) = Hazel.application.window.size
-			io.DisplaySize.x = width.toFloat()
-			io.DisplaySize.y = height.toFloat()
+			io.displaySize = Vec2(width.toFloat(), height.toFloat())
 
 			// Rendering
 			ImGui.render()
 			openGL3.renderDrawData(ImGui.getDrawData())
 
-			//if (io.ConfigFlags and ImGuiConfigFlags_ViewportsEnable.convert() != 0) {
-			//	val backupCurrentContext = glfwGetCurrentContext()
-			//	igUpdatePlatformWindows()
-			//	igRenderPlatformWindowsDefault(null, null)
-			//	glfwMakeContextCurrent(backupCurrentContext)
-			//}
+			if (ImGuiConfigFlags.ViewportsEnable in io.configFlags) {
+				val backupCurrentContext = Glfw.currentContext
+				ImGui.updatePlatformWindows()
+				ImGui.renderPlatformWindowsDefault()
+				Glfw.currentContext = backupCurrentContext
+			}
 		}
 	}
 }
