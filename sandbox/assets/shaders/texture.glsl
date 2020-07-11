@@ -38,5 +38,23 @@ in float v_TilingFactor;
 uniform sampler2D u_Textures[16];
 
 void main() {
-	color = texture(u_Textures[int(v_TextureIndex)], v_TextureCoordinate * v_TilingFactor) * v_Color;
+	vec4 textureColor = v_Color;
+	switch (int(v_TextureIndex)) {
+		case  0: textureColor *= texture(u_Textures[ 0], v_TextureCoordinate * v_TilingFactor); break;
+		case  1: textureColor *= texture(u_Textures[ 1], v_TextureCoordinate * v_TilingFactor); break;
+		case  2: textureColor *= texture(u_Textures[ 2], v_TextureCoordinate * v_TilingFactor); break;
+		case  3: textureColor *= texture(u_Textures[ 3], v_TextureCoordinate * v_TilingFactor); break;
+		case  5: textureColor *= texture(u_Textures[ 5], v_TextureCoordinate * v_TilingFactor); break;
+		case  6: textureColor *= texture(u_Textures[ 6], v_TextureCoordinate * v_TilingFactor); break;
+		case  7: textureColor *= texture(u_Textures[ 7], v_TextureCoordinate * v_TilingFactor); break;
+		case  8: textureColor *= texture(u_Textures[ 8], v_TextureCoordinate * v_TilingFactor); break;
+		case  9: textureColor *= texture(u_Textures[ 9], v_TextureCoordinate * v_TilingFactor); break;
+		case 10: textureColor *= texture(u_Textures[10], v_TextureCoordinate * v_TilingFactor); break;
+		case 11: textureColor *= texture(u_Textures[11], v_TextureCoordinate * v_TilingFactor); break;
+		case 12: textureColor *= texture(u_Textures[12], v_TextureCoordinate * v_TilingFactor); break;
+		case 13: textureColor *= texture(u_Textures[13], v_TextureCoordinate * v_TilingFactor); break;
+		case 14: textureColor *= texture(u_Textures[14], v_TextureCoordinate * v_TilingFactor); break;
+		case 15: textureColor *= texture(u_Textures[15], v_TextureCoordinate * v_TilingFactor); break;
+	}
+	color = textureColor;
 }
