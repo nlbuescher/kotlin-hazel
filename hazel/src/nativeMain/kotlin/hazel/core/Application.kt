@@ -79,6 +79,10 @@ abstract class Application : Disposable {
 		}
 	}
 
+	fun close() {
+		isRunning = false
+	}
+
 	fun onEvent(event: Event) {
 		Hazel.profile("Application.onEvent(Event)") {
 			event.dispatch(::onWindowResize)
@@ -107,7 +111,7 @@ abstract class Application : Disposable {
 
 	@Suppress("UNUSED_PARAMETER")
 	private fun onWindowClose(event: WindowCloseEvent): Boolean {
-		isRunning = false
+		close()
 		return true
 	}
 }

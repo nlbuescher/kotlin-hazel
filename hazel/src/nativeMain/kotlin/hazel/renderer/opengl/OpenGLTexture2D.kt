@@ -9,7 +9,7 @@ import kotlinx.cinterop.*
 import platform.posix.*
 
 class OpenGLTexture2D : Texture2D {
-	private val rendererID: UInt
+	override val rendererID: UInt
 
 	private val path: String?
 

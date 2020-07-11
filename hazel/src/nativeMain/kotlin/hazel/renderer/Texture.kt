@@ -4,6 +4,7 @@ import hazel.core.*
 import hazel.renderer.opengl.*
 
 interface Texture : Disposable {
+	val rendererID: UInt
 	val width: Int
 	val height: Int
 
