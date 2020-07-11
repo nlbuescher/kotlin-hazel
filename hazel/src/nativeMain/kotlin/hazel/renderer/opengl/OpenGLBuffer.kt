@@ -6,7 +6,7 @@ import hazel.opengl.*
 import hazel.renderer.*
 
 internal class OpenGLVertexBuffer : VertexBuffer {
-	private val rendererId: UInt
+	private val rendererID: UInt
 
 	override var layout = BufferLayout()
 
@@ -14,8 +14,8 @@ internal class OpenGLVertexBuffer : VertexBuffer {
 		val profiler = Hazel.Profiler("OpenGLVertexBuffer(Int): OpenGLVertexBuffer")
 		profiler.start()
 
-		rendererId = glGenBuffer()
-		glBindBuffer(GL_ARRAY_BUFFER, rendererId)
+		rendererID = glGenBuffer()
+		glBindBuffer(GL_ARRAY_BUFFER, rendererID)
 		glBufferData(GL_ARRAY_BUFFER, byteCount, GL_DYNAMIC_DRAW)
 
 		profiler.stop()
@@ -25,8 +25,8 @@ internal class OpenGLVertexBuffer : VertexBuffer {
 		val profiler = Hazel.Profiler("OpenGLVertexBuffer(FloatArray): OpenGLVertexBuffer")
 		profiler.start()
 
-		rendererId = glGenBuffer()
-		glBindBuffer(GL_ARRAY_BUFFER, rendererId)
+		rendererID = glGenBuffer()
+		glBindBuffer(GL_ARRAY_BUFFER, rendererID)
 		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
 
 		profiler.stop()
@@ -34,13 +34,13 @@ internal class OpenGLVertexBuffer : VertexBuffer {
 
 	override fun dispose() {
 		Hazel.profile("OpenGLVertexBuffer.dispose()") {
-			glDeleteBuffers(rendererId)
+			glDeleteBuffers(rendererID)
 		}
 	}
 
 	override fun bind() {
 		Hazel.profile("OpenGLVertexBuffer.bind()") {
-			glBindBuffer(GL_ARRAY_BUFFER, rendererId)
+			glBindBuffer(GL_ARRAY_BUFFER, rendererID)
 		}
 	}
 
@@ -51,13 +51,13 @@ internal class OpenGLVertexBuffer : VertexBuffer {
 	}
 
 	override fun setData(data: ByteArray, size: Int) {
-		glBindBuffer(GL_ARRAY_BUFFER, rendererId)
+		glBindBuffer(GL_ARRAY_BUFFER, rendererID)
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data)
 	}
 }
 
 class OpenGLIndexBuffer(indices: UIntArray) : IndexBuffer {
-	private val rendererId: UInt
+	private val rendererID: UInt
 
 	override val count: Int = indices.size
 
@@ -65,8 +65,8 @@ class OpenGLIndexBuffer(indices: UIntArray) : IndexBuffer {
 		val profiler = Hazel.Profiler("OpenGLIndexBuffer(UIntArray): OpenGLIndexBuffer")
 		profiler.start()
 
-		rendererId = glGenBuffer()
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId)
+		rendererID = glGenBuffer()
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID)
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW)
 
 		profiler.stop()
@@ -74,13 +74,13 @@ class OpenGLIndexBuffer(indices: UIntArray) : IndexBuffer {
 
 	override fun dispose() {
 		Hazel.profile("OpenGLIndexBuffer.dispose()") {
-			glDeleteBuffer(rendererId)
+			glDeleteBuffer(rendererID)
 		}
 	}
 
 	override fun bind() {
 		Hazel.profile("OpenGLIndexBuffer.bind()") {
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId)
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID)
 		}
 	}
 

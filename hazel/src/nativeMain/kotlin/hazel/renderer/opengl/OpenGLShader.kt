@@ -13,7 +13,7 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 class OpenGLShader : Shader {
-	private var rendererId: UInt = 0u
+	private var rendererID: UInt = 0u
 
 	override val name: String
 
@@ -48,13 +48,13 @@ class OpenGLShader : Shader {
 
 	override fun dispose() {
 		Hazel.profile("OpenGLShader.dispose()") {
-			glDeleteProgram(rendererId)
+			glDeleteProgram(rendererID)
 		}
 	}
 
 	override fun bind() {
 		Hazel.profile("OpenGLShader.bind()") {
-			glUseProgram(rendererId)
+			glUseProgram(rendererID)
 		}
 	}
 
@@ -101,37 +101,37 @@ class OpenGLShader : Shader {
 	}
 
 	fun uploadUniform(name: String, int: Int) {
-		val location = glGetUniformLocation(rendererId, name)
+		val location = glGetUniformLocation(rendererID, name)
 		glUniform(location, int)
 	}
 
 	fun uploadUniform(name: String, ints: IntArray) {
-		val location = glGetUniformLocation(rendererId, name)
+		val location = glGetUniformLocation(rendererID, name)
 		glUniform(location, ints)
 	}
 
 	fun uploadUniform(name: String, float: Float) {
-		val location = glGetUniformLocation(rendererId, name)
+		val location = glGetUniformLocation(rendererID, name)
 		glUniform(location, float)
 	}
 
 	fun uploadUniform(name: String, vector: Vec2) {
-		val location = glGetUniformLocation(rendererId, name)
+		val location = glGetUniformLocation(rendererID, name)
 		glUniform(location, vector.x, vector.y)
 	}
 
 	fun uploadUniform(name: String, vector: Vec3) {
-		val location = glGetUniformLocation(rendererId, name)
+		val location = glGetUniformLocation(rendererID, name)
 		glUniform(location, vector.x, vector.y, vector.z)
 	}
 
 	fun uploadUniform(name: String, vector: Vec4) {
-		val location = glGetUniformLocation(rendererId, name)
+		val location = glGetUniformLocation(rendererID, name)
 		glUniform(location, vector.x, vector.y, vector.z, vector.w)
 	}
 
 	fun uploadUniform(name: String, matrix: Mat4) {
-		val location = glGetUniformLocation(rendererId, name)
+		val location = glGetUniformLocation(rendererID, name)
 		glUniform(location, false, matrix)
 	}
 
@@ -205,7 +205,7 @@ class OpenGLShader : Shader {
 			glLinkProgram(program)
 
 			if (glGetProgramUInt(program, GL_LINK_STATUS) == GL_FALSE) {
-				rendererId = 0u
+				rendererID = 0u
 				val infoLog = glGetProgramInfoLog(program)
 
 				glDeleteProgram(program)
@@ -220,7 +220,7 @@ class OpenGLShader : Shader {
 
 			for (id in glShaderIds) glDetachShader(program, id)
 
-			rendererId = program
+			rendererID = program
 		}
 	}
 

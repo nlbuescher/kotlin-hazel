@@ -9,7 +9,7 @@ import kotlinx.cinterop.*
 import platform.posix.*
 
 class OpenGLTexture2D : Texture2D {
-	private val rendererId: UInt
+	private val rendererID: UInt
 
 	private val path: String?
 
@@ -30,8 +30,8 @@ class OpenGLTexture2D : Texture2D {
 		internalFormat = GL_RGBA8
 		dataFormat = GL_RGBA
 
-		rendererId = glGenTexture()
-		glBindTexture(GL_TEXTURE_2D, rendererId)
+		rendererID = glGenTexture()
+		glBindTexture(GL_TEXTURE_2D, rendererID)
 
 		glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 		glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
@@ -72,8 +72,8 @@ class OpenGLTexture2D : Texture2D {
 
 		Hazel.coreAssert(internalFormat != 0u && dataFormat != 0u, "Format not supported!")
 
-		rendererId = glGenTexture()
-		glBindTexture(GL_TEXTURE_2D, rendererId)
+		rendererID = glGenTexture()
+		glBindTexture(GL_TEXTURE_2D, rendererID)
 
 		glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 		glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
@@ -85,7 +85,7 @@ class OpenGLTexture2D : Texture2D {
 
 	override fun dispose() {
 		Hazel.profile("OpenGLTexture2D.dispose()") {
-			glDeleteTextures(rendererId)
+			glDeleteTextures(rendererID)
 		}
 	}
 
@@ -100,16 +100,16 @@ class OpenGLTexture2D : Texture2D {
 	override fun bind(slot: Int) {
 		Hazel.profile("OpenGLTexture2D.bind(UInt)") {
 			glActiveTexture(GL_TEXTURE0 + slot.toUInt())
-			glBindTexture(GL_TEXTURE_2D, rendererId)
+			glBindTexture(GL_TEXTURE_2D, rendererID)
 		}
 	}
 
-	override fun hashCode(): Int = rendererId.hashCode()
+	override fun hashCode(): Int = rendererID.hashCode()
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (other !is OpenGLTexture2D) return false
 
-		return rendererId == other.rendererId
+		return rendererID == other.rendererID
 	}
 }

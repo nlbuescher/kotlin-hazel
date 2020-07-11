@@ -24,12 +24,12 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 			// setup Dear ImGui context
 			ImGui.debugCheckVersionAndDataLayout(
 				versionStr = ImGui.getVersion()!!,
-				szIo = sizeOf<ImGuiIO>().convert(),
-				szStyle = sizeOf<ImGuiStyle>().convert(),
-				szVec2 = sizeOf<ImVec2>().convert(),
-				szVec4 = sizeOf<ImVec4>().convert(),
-				szDrawvert = sizeOf<ImDrawVert>().convert(),
-				szDrawidx = sizeOf<ImDrawIdxVar>().convert()
+				szIo = sizeOf<ImGuiIO>().toULong(),
+				szStyle = sizeOf<ImGuiStyle>().toULong(),
+				szVec2 = sizeOf<ImVec2>().toULong(),
+				szVec4 = sizeOf<ImVec4>().toULong(),
+				szDrawvert = sizeOf<ImDrawVert>().toULong(),
+				szDrawidx = sizeOf<ImDrawIdxVar>().toULong()
 			)
 			ImGui.createContext()
 			val io = ImGui.getIO()
