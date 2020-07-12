@@ -1,4 +1,8 @@
 import com.imgui.*
+import com.imgui.ImGuiConfigFlags
+import com.imgui.ImGuiDockNodeFlags
+import com.imgui.ImGuiStyleVar
+import com.imgui.ImGuiWindowFlags
 import hazel.*
 import hazel.core.*
 import hazel.events.*
@@ -6,6 +10,7 @@ import hazel.math.*
 import hazel.math.Vec2
 import hazel.math.Vec4
 import hazel.renderer.*
+import kotlinx.cinterop.*
 
 class Sandbox2D : Layer("Sandbox2D") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
@@ -99,9 +104,47 @@ class Sandbox2D : Layer("Sandbox2D") {
 		}
 	}
 
+	private var dockSpaceOpen: Boolean = true
+	private var isFullscreenPersistent: Boolean = true
+	private var dockSpaceFlags: Flag<ImGuiDockNodeFlags>? = null
+
 	override fun onImGuiRender() {
 		Hazel.profile("Sandbox2D.onImGuiRender()") {
 			with(ImGui) {
+				val isFullScreen = isFullscreenPersistent
+
+				var windowFlags: Flag<ImGuiWindowFlags> = ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoDocking
+				if (isFullScreen) {
+					val viewport = getMainViewport()
+					setNextWindowPos(viewport.pos)
+					setNextWindowSize(viewport.size)
+					setNextWindowViewport(viewport.id)
+					pushStyleVar(ImGuiStyleVar.WindowRounding, 0f)
+					pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f)
+					windowFlags = windowFlags or ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.NoCollapse or
+						ImGuiWindowFlags.NoResize or ImGuiWindowFlags.NoMove or
+						ImGuiWindowFlags.NoBringToFrontOnFocus or ImGuiWindowFlags.NoNavFocus
+				}
+
+				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))
+				begin("Dockspace Demo", ::dockSpaceOpen, windowFlags)
+				popStyleVar()
+
+				if (isFullScreen) popStyleVar(2)
+
+				val io = getIO()
+				if (ImGuiConfigFlags.DockingEnable in io.configFlags) {
+					val dockspaceID = getID("Dockspace")
+					dockSpace(dockspaceID, com.imgui.Vec2(0f, 0f), dockSpaceFlags)
+				}
+				if (beginMenuBar()) {
+					if (beginMenu("File")) {
+						if (menuItem("Exit")) Hazel.application.close()
+						endMenu()
+					}
+					endMenuBar()
+				}
+
 				begin("Settings")
 
 				with(Renderer2D.stats) {
@@ -115,6 +158,13 @@ class Sandbox2D : Layer("Sandbox2D") {
 				spacing()
 
 				colorEdit4("Square Color", squareColor)
+
+				spacing()
+
+				image(ImTextureID(checkerBoardTexture.rendererID.toLong().toCPointer()!!), com.imgui.Vec2(256f, 256f))
+
+				end()
+
 				end()
 			}
 		}

@@ -7,7 +7,7 @@ import hazel.renderer.*
 import kotlinx.cinterop.*
 
 internal class OpenGLVertexArray : VertexArray {
-	private val rendererId: UInt
+	private val rendererID: UInt
 
 	override val vertexBuffers = mutableListOf<VertexBuffer>()
 
@@ -16,7 +16,7 @@ internal class OpenGLVertexArray : VertexArray {
 		get() = _indexBuffer
 		set(value) {
 			Hazel.profile("OpenGLVertexArray.indexBuffer.set(IndexBuffer)") {
-				glBindVertexArray(rendererId)
+				glBindVertexArray(rendererID)
 				value.bind()
 				_indexBuffer = value
 			}
@@ -26,7 +26,7 @@ internal class OpenGLVertexArray : VertexArray {
 		val profiler = Hazel.Profiler("OpenGLVertexArray(): OpenGLVertexBuffer")
 		profiler.start()
 
-		rendererId = glGenVertexArray()
+		rendererID = glGenVertexArray()
 
 		profiler.stop()
 	}
@@ -35,13 +35,13 @@ internal class OpenGLVertexArray : VertexArray {
 		Hazel.profile("OpenGLVertexArray.dispose()") {
 			vertexBuffers.forEach { it.dispose() }
 			indexBuffer.dispose()
-			glDeleteVertexArrays(rendererId)
+			glDeleteVertexArrays(rendererID)
 		}
 	}
 
 	override fun bind() {
 		Hazel.profile("OpenGLVertexArray.bind()") {
-			glBindVertexArray(rendererId)
+			glBindVertexArray(rendererID)
 		}
 	}
 
@@ -55,7 +55,7 @@ internal class OpenGLVertexArray : VertexArray {
 		Hazel.profile("OpenGLVertexArray.addVertexBuffer(VertexBuffer)") {
 			Hazel.coreAssert(vertexBuffer.layout.elements.isNotEmpty(), "Vertex buffer has no layout!")
 
-			glBindVertexArray(rendererId)
+			glBindVertexArray(rendererID)
 			vertexBuffer.bind()
 
 			vertexBuffer.layout.elements.forEachIndexed { index, element ->
