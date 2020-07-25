@@ -15,12 +15,17 @@ import kotlinx.cinterop.*
 class Sandbox2D : Layer("Sandbox2D") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
 
+	private lateinit var frameBuffer: FrameBuffer
+
 	private lateinit var checkerBoardTexture: Texture2D
 
 
 	override fun onAttach() {
 		Hazel.profile("Sandbox2D.onAttach()") {
 			checkerBoardTexture = Texture2D("assets/textures/checkerboard.png")
+
+			val spec = FrameBuffer.Specification(1280, 720)
+			frameBuffer = FrameBuffer(spec)
 		}
 	}
 
@@ -39,6 +44,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 			// render
 			Renderer2D.resetStats()
 			Hazel.profile("Renderer Prep") {
+				frameBuffer.bind()
 				RenderCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1f))
 				RenderCommand.clear()
 			}
@@ -63,6 +69,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 					endScene()
 				}
+				frameBuffer.unbind()
 			}
 		}
 	}
@@ -124,11 +131,12 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 				spacing()
 
-				image(ImTextureID(checkerBoardTexture.rendererID.toLong().toCPointer()!!), com.imgui.Vec2(256f, 256f))
+				val textureID = ImTextureID(frameBuffer.colorAttachmentRendererID.toLong().toCPointer()!!)
+				image(textureID, com.imgui.Vec2(1280f, 720f))
 
-				end()
+				end() // Settings
 
-				end()
+				end() // Dockspace
 			}
 		}
 	}
