@@ -6,8 +6,6 @@ import hazel.renderer.*
 import kotlin.native.concurrent.*
 import com.kgl.glfw.Window as GlfwWindow
 
-private var windowCount: Int = 0
-
 class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : Disposable {
 	private val context: GraphicsContext
 
@@ -107,6 +105,8 @@ class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : 
 
 
 	companion object {
+		private var windowCount: Int = 0
+
 		operator fun invoke(width: Int = 1280, height: Int = 720, title: String = "Hazel Engine"): Window {
 			return Hazel.profile("Window(Int, Int, String): Window") {
 				Hazel.coreInfo("Creating window $title ($width, $height)")

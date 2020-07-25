@@ -13,11 +13,11 @@ data class ProfileResult(
 
 data class InstrumentationSession(val name: String)
 
-private var currentSession: InstrumentationSession? = null
-private var profileCount: Int = 0
-private var file: CPointer<FILE>? = null
-
 object Instrumentor {
+	private var currentSession: InstrumentationSession? = null
+	private var profileCount: Int = 0
+	private var file: CPointer<FILE>? = null
+
 	fun session(name: String, filepath: String = "profile.json", block: () -> Unit) {
 		beginSession(name, filepath)
 		block()

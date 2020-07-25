@@ -3,8 +3,6 @@ package hazel.renderer
 import hazel.math.*
 import hazel.renderer.opengl.*
 
-private var api: RenderAPI.API = RenderAPI.API.OpenGL
-
 interface RenderAPI {
 	enum class API {
 		None, OpenGL
@@ -19,11 +17,7 @@ interface RenderAPI {
 	fun drawIndexed(vertexArray: VertexArray, indexCount: Int = 0)
 
 	companion object {
-		var api: API
-			get() = hazel.renderer.api
-			set(new) {
-				hazel.renderer.api = new
-			}
+		var api: API = API.OpenGL
 	}
 }
 

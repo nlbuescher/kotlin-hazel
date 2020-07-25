@@ -27,6 +27,9 @@ kotlin {
 		compilations {
 			"main" {
 				cinterops.create("hazel")
+				kotlinOptions {
+					freeCompilerArgs = listOf("-memory-model", "relaxed")
+				}
 				defaultSourceSet {
 					kotlin.srcDir("src/nativeMain/kotlin")
 					resources.srcDir("src/nativeMain/resources")
@@ -40,22 +43,19 @@ kotlin {
 					}
 				}
 			}
-			"test" {
-				defaultSourceSet {
-					kotlin.srcDir("src/nativeTest/kotlin")
-					resources.srcDir("src/nativeTest/resources")
-				}
-			}
 		}
 	}
 
-	sourceSets.all {
-		languageSettings.apply {
-			enableLanguageFeature("MultiPlatformProjects")
-			enableLanguageFeature("InlineClasses")
-			enableLanguageFeature("NewInference")
-			useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-			useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+	sourceSets {
+		all {
+			languageSettings.apply {
+				enableLanguageFeature("MultiPlatformProjects")
+				enableLanguageFeature("InlineClasses")
+				enableLanguageFeature("NewInference")
+				useExperimentalAnnotation("kotlin.RequiresOptIn")
+				useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+				useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+			}
 		}
 	}
 }

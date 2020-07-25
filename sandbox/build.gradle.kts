@@ -27,6 +27,9 @@ kotlin {
 			}
 		}
 		compilations["main"].apply {
+			kotlinOptions {
+				freeCompilerArgs = listOf("-memory-model", "relaxed")
+			}
 			defaultSourceSet {
 				kotlin.srcDir("src/nativeMain/kotlin")
 				resources.srcDir("src/nativeMain/resources")

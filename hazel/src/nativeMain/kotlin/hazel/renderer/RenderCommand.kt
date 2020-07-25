@@ -2,9 +2,9 @@ package hazel.renderer
 
 import hazel.math.*
 
-private var renderAPI: RenderAPI = RenderAPI()
-
 object RenderCommand {
+	private var renderAPI: RenderAPI = RenderAPI()
+
 	fun init() = renderAPI.init()
 
 	fun setViewport(x: Int, y: Int, width: Int, height: Int) {

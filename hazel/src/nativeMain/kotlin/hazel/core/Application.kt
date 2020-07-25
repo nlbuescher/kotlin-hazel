@@ -57,7 +57,7 @@ abstract class Application : Disposable {
 
 			while (isRunning) {
 				Hazel.profile("Run Loop") {
-					val time = Hazel.getTime()
+					val time = Hazel.currentTime
 					val timeStep = (time - lastFrameTime).toTimeStep(SECONDS)
 					lastFrameTime = time
 

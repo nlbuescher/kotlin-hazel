@@ -5,156 +5,8 @@ import hazel.math.*
 import kotlinx.cinterop.*
 import kotlinx.cinterop.internal.*
 
-// Use manually defined CStruct types and CPointers to enable byte array shenanigans for performance
-
-@CStruct("struct { float p0; float p1; }")
-class Float2(rawPtr: NativePtr) : CStructVar(rawPtr) {
-	companion object : CStructVar.Type(8, 4)
-
-	var x: Float
-		get() = memberAt<FloatVar>(0).value
-		set(value) {
-			memberAt<FloatVar>(0).value = value
-		}
-
-	var y: Float
-		get() = memberAt<FloatVar>(4).value
-		set(value) {
-			memberAt<FloatVar>(4).value = value
-		}
-}
-
-@CStruct("struct { float p0; float p1; float p2; }")
-class Float3(rawPtr: NativePtr) : CStructVar(rawPtr) {
-	companion object : CStructVar.Type(12, 4)
-
-	var x: Float
-		get() = memberAt<FloatVar>(0).value
-		set(value) {
-			memberAt<FloatVar>(0).value = value
-		}
-
-	var y: Float
-		get() = memberAt<FloatVar>(4).value
-		set(value) {
-			memberAt<FloatVar>(4).value = value
-		}
-
-	var z: Float
-		get() = memberAt<FloatVar>(8).value
-		set(value) {
-			memberAt<FloatVar>(8).value = value
-		}
-}
-
-@CStruct("struct { float p0; float p1; float p2; float p3; }")
-class Float4(rawPtr: NativePtr) : CStructVar(rawPtr) {
-	companion object : CStructVar.Type(16, 4)
-
-	var x: Float
-		get() = memberAt<FloatVar>(0).value
-		set(value) {
-			memberAt<FloatVar>(0).value = value
-		}
-
-	var y: Float
-		get() = memberAt<FloatVar>(4).value
-		set(value) {
-			memberAt<FloatVar>(4).value = value
-		}
-
-	var z: Float
-		get() = memberAt<FloatVar>(8).value
-		set(value) {
-			memberAt<FloatVar>(8).value = value
-		}
-
-	var w: Float
-		get() = memberAt<FloatVar>(12).value
-		set(value) {
-			memberAt<FloatVar>(12).value = value
-		}
-}
-
-@CStruct("struct { struct { float p0; float p1; float p2; } p0; struct { float p0; float p1; float p2; float p3; } p1; struct { float p0; float p1; } p2; }")
-class QuadVertex(rawPtr: NativePtr) : CStructVar(rawPtr) {
-	companion object : CStructVar.Type(44, 4)
-
-	val position: Float3
-		get() = memberAt(0)
-
-	val color: Float4
-		get() = memberAt(12)
-
-	val textureCoordinate: Float2
-		get() = memberAt(28)
-
-	var textureIndex: Float
-		get() = memberAt<FloatVar>(36).value
-		set(value) {
-			memberAt<FloatVar>(36).value = value
-		}
-
-	var tilingFactor: Float
-		get() = memberAt<FloatVar>(40).value
-		set(value) {
-			memberAt<FloatVar>(40).value = value
-		}
-}
-
-private class Renderer2DData : Disposable {
-	companion object {
-		const val maxQuads: Int = 20_000
-		const val maxVertices: Int = maxQuads * 4
-		const val maxIndices: Int = maxQuads * 6
-		const val maxTextures: Int = 16
-	}
-
-	lateinit var quadVertexArray: VertexArray
-	lateinit var quadVertexBuffer: VertexBuffer
-	lateinit var textureShader: Shader
-	lateinit var whiteTexture: Texture2D
-
-	var indexCount: Int = 0
-	var currentVertex: Int = 0
-
-	// use a pinned byte array as the backing for quadVertices
-	// this enables passing the byte array to a kotlin function with neither copying NOR cinterop types in the API
-	val quadVertexData = ByteArray(maxVertices * sizeOf<QuadVertex>().toInt())
-	private val pinnedQuadVertexData: Pinned<ByteArray> = quadVertexData.pin()
-	val quadVertices: CArrayPointer<QuadVertex> = pinnedQuadVertexData.addressOf(0).reinterpret()
-
-	val textures: Array<Texture2D?> = Array(maxTextures) { null }
-	var currentTexture = 1 // 0 = white texture
-
-	val quadVertexPositions = arrayOf(
-		Vec4(-0.5f, -0.5f, 0f, 1f),
-		Vec4(+0.5f, -0.5f, 0f, 1f),
-		Vec4(+0.5f, +0.5f, 0f, 1f),
-		Vec4(-0.5f, +0.5f, 0f, 1f)
-	)
-
-	val stats = Renderer2D.Stats()
-
-	override fun dispose() {
-		quadVertexArray.dispose()
-		textureShader.dispose()
-		whiteTexture.dispose()
-		pinnedQuadVertexData.unpin()
-	}
-}
-
-
-private val data = Renderer2DData()
-
 object Renderer2D {
-	class Stats {
-		var drawCalls: Int = 0
-		var quadCount: Int = 0
-		val vertexCount: Int get() = quadCount * 4
-		val indexCount: Int get() = quadCount * 6
-	}
-
+	private val data = Renderer2DData()
 	val stats: Stats get() = data.stats
 
 	fun init() {
@@ -364,6 +216,153 @@ object Renderer2D {
 	) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Texture2D, Float, Vec4)") {
 			bufferQuad(position, rotation, size, tintColor, texture, tilingFactor)
+		}
+	}
+
+
+	class Stats {
+		var drawCalls: Int = 0
+		var quadCount: Int = 0
+		val vertexCount: Int get() = quadCount * 4
+		val indexCount: Int get() = quadCount * 6
+	}
+
+	// Use manually defined CStruct types and CPointers to enable byte array shenanigans for performance
+
+	@CStruct("struct { float p0; float p1; }")
+	class Float2(rawPtr: NativePtr) : CStructVar(rawPtr) {
+		companion object : CStructVar.Type(8, 4)
+
+		var x: Float
+			get() = memberAt<FloatVar>(0).value
+			set(value) {
+				memberAt<FloatVar>(0).value = value
+			}
+
+		var y: Float
+			get() = memberAt<FloatVar>(4).value
+			set(value) {
+				memberAt<FloatVar>(4).value = value
+			}
+	}
+
+	@CStruct("struct { float p0; float p1; float p2; }")
+	class Float3(rawPtr: NativePtr) : CStructVar(rawPtr) {
+		companion object : CStructVar.Type(12, 4)
+
+		var x: Float
+			get() = memberAt<FloatVar>(0).value
+			set(value) {
+				memberAt<FloatVar>(0).value = value
+			}
+
+		var y: Float
+			get() = memberAt<FloatVar>(4).value
+			set(value) {
+				memberAt<FloatVar>(4).value = value
+			}
+
+		var z: Float
+			get() = memberAt<FloatVar>(8).value
+			set(value) {
+				memberAt<FloatVar>(8).value = value
+			}
+	}
+
+	@CStruct("struct { float p0; float p1; float p2; float p3; }")
+	class Float4(rawPtr: NativePtr) : CStructVar(rawPtr) {
+		companion object : CStructVar.Type(16, 4)
+
+		var x: Float
+			get() = memberAt<FloatVar>(0).value
+			set(value) {
+				memberAt<FloatVar>(0).value = value
+			}
+
+		var y: Float
+			get() = memberAt<FloatVar>(4).value
+			set(value) {
+				memberAt<FloatVar>(4).value = value
+			}
+
+		var z: Float
+			get() = memberAt<FloatVar>(8).value
+			set(value) {
+				memberAt<FloatVar>(8).value = value
+			}
+
+		var w: Float
+			get() = memberAt<FloatVar>(12).value
+			set(value) {
+				memberAt<FloatVar>(12).value = value
+			}
+	}
+
+	@CStruct("struct { struct { float p0; float p1; float p2; } p0; struct { float p0; float p1; float p2; float p3; } p1; struct { float p0; float p1; } p2; }")
+	class QuadVertex(rawPtr: NativePtr) : CStructVar(rawPtr) {
+		companion object : CStructVar.Type(44, 4)
+
+		val position: Float3
+			get() = memberAt(0)
+
+		val color: Float4
+			get() = memberAt(12)
+
+		val textureCoordinate: Float2
+			get() = memberAt(28)
+
+		var textureIndex: Float
+			get() = memberAt<FloatVar>(36).value
+			set(value) {
+				memberAt<FloatVar>(36).value = value
+			}
+
+		var tilingFactor: Float
+			get() = memberAt<FloatVar>(40).value
+			set(value) {
+				memberAt<FloatVar>(40).value = value
+			}
+	}
+
+	private class Renderer2DData : Disposable {
+		companion object {
+			const val maxQuads: Int = 20_000
+			const val maxVertices: Int = maxQuads * 4
+			const val maxIndices: Int = maxQuads * 6
+			const val maxTextures: Int = 16
+		}
+
+		lateinit var quadVertexArray: VertexArray
+		lateinit var quadVertexBuffer: VertexBuffer
+		lateinit var textureShader: Shader
+		lateinit var whiteTexture: Texture2D
+
+		var indexCount: Int = 0
+		var currentVertex: Int = 0
+
+		// use a pinned byte array as the backing for quadVertices
+		// this enables passing the byte array to a kotlin function with neither copying NOR cinterop types in the API
+		val quadVertexData = ByteArray(maxVertices * sizeOf<QuadVertex>().toInt())
+		private val pinnedQuadVertexData: Pinned<ByteArray> = quadVertexData.pin()
+		val quadVertices: CArrayPointer<QuadVertex> = pinnedQuadVertexData.addressOf(0).reinterpret()
+
+		val textures: Array<Texture2D?> = Array(maxTextures) { null }
+		var currentTexture = 1 // 0 = white texture
+
+		val quadVertexPositions = arrayOf(
+			Vec4(-0.5f, -0.5f, 0f, 1f),
+			Vec4(+0.5f, -0.5f, 0f, 1f),
+			Vec4(+0.5f, +0.5f, 0f, 1f),
+			Vec4(-0.5f, +0.5f, 0f, 1f)
+		)
+
+		val stats = Stats()
+
+		override fun dispose() {
+			quadVertexArray.dispose()
+			textureShader.dispose()
+			whiteTexture.dispose()
+			pinnedQuadVertexData.unpin()
 		}
 	}
 }

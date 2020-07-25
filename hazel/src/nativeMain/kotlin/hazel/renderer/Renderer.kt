@@ -3,17 +3,17 @@ package hazel.renderer
 import hazel.core.*
 import hazel.math.*
 
-private class SceneData {
-	var viewProjectionMatrix = Mat4()
-}
-
-private val sceneData = SceneData()
-
 object Renderer {
+	private class SceneData {
+		var viewProjectionMatrix = Mat4()
+	}
+
+	private val sceneData = SceneData()
+
 	var api: RenderAPI.API
 		get() = RenderAPI.api
-		set(new) {
-			RenderAPI.api = new
+		set(value) {
+			RenderAPI.api = value
 		}
 
 	fun init() {
