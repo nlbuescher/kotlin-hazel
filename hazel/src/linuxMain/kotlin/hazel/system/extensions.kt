@@ -2,10 +2,8 @@
 
 package hazel.system
 
-import platform.linux.SYS_gettid
-import platform.posix.SIGTRAP
-import platform.posix.raise
-import platform.posix.syscall
+import platform.linux.*
+import platform.posix.*
 
 actual inline fun breakpoint() {
 	raise(SIGTRAP)

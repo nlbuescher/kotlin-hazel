@@ -14,20 +14,8 @@ import kotlinx.cinterop.*
 
 class Sandbox2D : Layer("Sandbox2D") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
-	private val particleSystem = ParticleSystem()
 
 	private lateinit var checkerBoardTexture: Texture2D
-	private val particleTemplate = object {
-		var startColor = Vec4(254 / 255f, 212 / 255f, 123 / 255f, 1f)
-		var endColor = Vec4(254 / 255f, 109 / 255f, 41 / 255f, 1f)
-		var startSize = 0.5f
-		var sizeVariation = 0.3f
-		var endSize = 0f
-		var lifeTime = 5f
-		var velocity = Vec2()
-		var velocityVariation = Vec2(3f, 1f)
-		var position = Vec2()
-	}
 
 
 	override fun onAttach() {
@@ -76,31 +64,6 @@ class Sandbox2D : Layer("Sandbox2D") {
 					endScene()
 				}
 			}
-
-			if (Input.isMouseButtonPressed(MouseButton.BUTTON_LEFT)) {
-				val (width, height) = Hazel.application.window.size
-
-				val cameraBounds = cameraController.bounds
-				val cameraPosition = cameraController.camera.position
-				val x = Input.mouseX / width * cameraBounds.width - cameraBounds.width * 0.5f
-				val y = cameraBounds.height * 0.5f - Input.mouseY / height * cameraBounds.height
-				particleTemplate.position = Vec2(x + cameraPosition.x, y + cameraPosition.y)
-
-				for (i in 0 until 50) {
-					with(particleTemplate) {
-						particleSystem.emit(
-							position, velocity,
-							startColor, endColor,
-							startSize, endSize,
-							velocityVariation, sizeVariation,
-							lifeTime
-						)
-					}
-				}
-			}
-
-			particleSystem.onUpdate(timeStep)
-			particleSystem.onRender(cameraController.camera)
 		}
 	}
 
