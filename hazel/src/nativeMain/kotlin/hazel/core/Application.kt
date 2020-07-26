@@ -5,7 +5,7 @@ import hazel.events.*
 import hazel.imgui.*
 import hazel.renderer.*
 
-abstract class Application : Disposable {
+abstract class Application(name: String = "Hazel App") : Disposable {
 	val window: Window
 
 	private var isRunning: Boolean = true
@@ -20,7 +20,7 @@ abstract class Application : Disposable {
 		val profiler = Hazel.Profiler("Application(): Application")
 		profiler.start()
 
-		window = Window().apply { setEventCallback(::onEvent) }
+		window = Window(name).apply { setEventCallback(::onEvent) }
 
 		Renderer.init()
 

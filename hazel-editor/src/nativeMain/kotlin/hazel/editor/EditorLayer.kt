@@ -1,3 +1,5 @@
+package hazel.editor
+
 import com.imgui.*
 import com.imgui.ImGuiConfigFlags
 import com.imgui.ImGuiDockNodeFlags
@@ -12,8 +14,10 @@ import hazel.math.Vec4
 import hazel.renderer.*
 import kotlinx.cinterop.*
 
-class Sandbox2D : Layer("Sandbox2D") {
+class EditorLayer : Layer("Sandbox2D") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
+
+	private lateinit var frameBuffer: FrameBuffer
 
 	private lateinit var checkerBoardTexture: Texture2D
 
@@ -21,6 +25,9 @@ class Sandbox2D : Layer("Sandbox2D") {
 	override fun onAttach() {
 		Hazel.profile("Sandbox2D.onAttach()") {
 			checkerBoardTexture = Texture2D("assets/textures/checkerboard.png")
+
+			val spec = FrameBuffer.Specification(1280, 720)
+			frameBuffer = FrameBuffer(spec)
 		}
 	}
 
@@ -39,6 +46,7 @@ class Sandbox2D : Layer("Sandbox2D") {
 			// render
 			Renderer2D.resetStats()
 			Hazel.profile("Renderer Prep") {
+				frameBuffer.bind()
 				RenderCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1f))
 				RenderCommand.clear()
 			}
@@ -63,13 +71,52 @@ class Sandbox2D : Layer("Sandbox2D") {
 
 					endScene()
 				}
+				frameBuffer.unbind()
 			}
 		}
 	}
 
+	private var dockSpaceOpen: Boolean = true
+	private var isFullscreenPersistent: Boolean = true
+	private var dockSpaceFlags: Flag<ImGuiDockNodeFlags>? = null
+
 	override fun onImGuiRender() {
 		Hazel.profile("Sandbox2D.onImGuiRender()") {
 			with(ImGui) {
+				val isFullScreen = isFullscreenPersistent
+
+				var windowFlags: Flag<ImGuiWindowFlags> = ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoDocking
+				if (isFullScreen) {
+					val viewport = getMainViewport()
+					setNextWindowPos(viewport.pos)
+					setNextWindowSize(viewport.size)
+					setNextWindowViewport(viewport.id)
+					pushStyleVar(ImGuiStyleVar.WindowRounding, 0f)
+					pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f)
+					windowFlags = windowFlags or ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.NoCollapse or
+						ImGuiWindowFlags.NoResize or ImGuiWindowFlags.NoMove or
+						ImGuiWindowFlags.NoBringToFrontOnFocus or ImGuiWindowFlags.NoNavFocus
+				}
+
+				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))
+				begin("Dockspace Demo", ::dockSpaceOpen, windowFlags)
+				popStyleVar()
+
+				if (isFullScreen) popStyleVar(2)
+
+				val io = getIO()
+				if (ImGuiConfigFlags.DockingEnable in io.configFlags) {
+					val dockspaceID = getID("Dockspace")
+					dockSpace(dockspaceID, com.imgui.Vec2(0f, 0f), dockSpaceFlags)
+				}
+				if (beginMenuBar()) {
+					if (beginMenu("File")) {
+						if (menuItem("Exit")) Hazel.application.close()
+						endMenu()
+					}
+					endMenuBar()
+				}
+
 				begin("Settings")
 
 				with(Renderer2D.stats) {
@@ -80,8 +127,18 @@ class Sandbox2D : Layer("Sandbox2D") {
 					text("Indices   : $indexCount")
 				}
 
+				spacing()
+
 				colorEdit4("Square Color", squareColor)
-				end()
+
+				spacing()
+
+				val textureID = ImTextureID(frameBuffer.colorAttachmentRendererID.toLong().toCPointer()!!)
+				image(textureID, com.imgui.Vec2(1280f, 720f), com.imgui.Vec2(0f, 1f), com.imgui.Vec2(1f, 0f))
+
+				end() // Settings
+
+				end() // Dockspace
 			}
 		}
 	}
