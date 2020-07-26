@@ -5,14 +5,17 @@ import hazel.core.*
 import hazel.renderer.*
 
 class OpenGLFrameBuffer(
-	override val specification: FrameBuffer.Specification
+	spec: FrameBuffer.Specification
 ) : FrameBuffer, Disposable {
-	private var rendererID: UInt = 0u
+	override var specification: FrameBuffer.Specification = spec
+		private set
 
+	private var rendererID: UInt = 0u
 	private var colorAttachment: UInt = 0u
+	private var depthAttachment: UInt = 0u
+
 	override val colorAttachmentRendererID: UInt get() = colorAttachment
 
-	private var depthAttachment: UInt = 0u
 
 	init {
 		invalidate()
@@ -20,9 +23,17 @@ class OpenGLFrameBuffer(
 
 	override fun dispose() {
 		glDeleteFramebuffer(rendererID)
+		glDeleteTexture(colorAttachment)
+		glDeleteTexture(depthAttachment)
 	}
 
 	private fun invalidate() {
+		if (rendererID != 0u) {
+			glDeleteFramebuffer(rendererID)
+			glDeleteTexture(colorAttachment)
+			glDeleteTexture(depthAttachment)
+		}
+
 		rendererID = glGenFramebuffer()
 		glBindFramebuffer(GL_FRAMEBUFFER, rendererID)
 
@@ -36,12 +47,9 @@ class OpenGLFrameBuffer(
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorAttachment, 0)
 
-		//@formatter:off
 		depthAttachment = glCreateTexture(GL_TEXTURE_2D)
 		glBindTexture(GL_TEXTURE_2D, depthAttachment)
 		glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, specification.width, specification.height)
-//		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8.toInt(), specification.width, specification.height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, null)
-		//@formatter:on
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthAttachment, 0)
 
@@ -55,9 +63,16 @@ class OpenGLFrameBuffer(
 
 	override fun bind() {
 		glBindFramebuffer(GL_FRAMEBUFFER, rendererID)
+		glViewport(0, 0, specification.width, specification.height)
 	}
 
 	override fun unbind() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0u)
+	}
+
+	override fun resize(width: Int, height: Int) {
+		specification = specification.copy(width, height)
+
+		invalidate()
 	}
 }

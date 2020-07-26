@@ -1,10 +1,13 @@
 package hazelnut
 
+import cimgui.internal.*
+import cimgui.internal.ImVec2
 import com.imgui.*
 import com.imgui.ImGuiConfigFlags
 import com.imgui.ImGuiDockNodeFlags
 import com.imgui.ImGuiStyleVar
 import com.imgui.ImGuiWindowFlags
+import com.imgui.ImTextureID
 import hazel.*
 import hazel.core.*
 import hazel.events.*
@@ -18,8 +21,8 @@ class EditorLayer : Layer("Sandbox2D") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
 
 	private lateinit var frameBuffer: FrameBuffer
-
 	private lateinit var checkerBoardTexture: Texture2D
+	private var viewportSize = Vec2()
 
 
 	override fun onAttach() {
@@ -80,6 +83,13 @@ class EditorLayer : Layer("Sandbox2D") {
 	private var isFullscreenPersistent: Boolean = true
 	private var dockSpaceFlags: Flag<ImGuiDockNodeFlags>? = null
 
+	@Suppress("unused")
+	private fun ImGui.getContentRegionAvail(): com.imgui.Vec2 = memScoped {
+		val result = alloc<ImVec2>()
+		igGetContentRegionAvail(result.ptr)
+		com.imgui.Vec2(result.x, result.y)
+	}
+
 	override fun onImGuiRender() {
 		Hazel.profile("Sandbox2D.onImGuiRender()") {
 			with(ImGui) {
@@ -118,7 +128,6 @@ class EditorLayer : Layer("Sandbox2D") {
 				}
 
 				begin("Settings")
-
 				with(Renderer2D.stats) {
 					text("Renderer2D Stats")
 					text("Draw calls: $drawCalls")
@@ -126,17 +135,21 @@ class EditorLayer : Layer("Sandbox2D") {
 					text("Vertices  : $vertexCount")
 					text("Indices   : $indexCount")
 				}
-
-				spacing()
-
 				colorEdit4("Square Color", squareColor)
-
-				spacing()
-
-				val textureID = ImTextureID(frameBuffer.colorAttachmentRendererID.toLong().toCPointer()!!)
-				image(textureID, com.imgui.Vec2(1280f, 720f), com.imgui.Vec2(0f, 1f), com.imgui.Vec2(1f, 0f))
-
 				end() // Settings
+
+				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))
+				begin("Viewport")
+				val viewportPanelSize = getContentRegionAvail()
+				if (viewportSize.x != viewportPanelSize.x || viewportSize.y != viewportPanelSize.y) {
+					frameBuffer.resize(viewportPanelSize.x.toInt(), viewportPanelSize.y.toInt())
+					viewportSize = Vec2(viewportPanelSize.x, viewportPanelSize.y)
+					cameraController.onResize(viewportSize.x.toInt(), viewportSize.y.toInt())
+				}
+				val textureID = ImTextureID(frameBuffer.colorAttachmentRendererID.toLong().toCPointer()!!)
+				image(textureID, com.imgui.Vec2(viewportSize.x, viewportSize.y), com.imgui.Vec2(0f, 1f), com.imgui.Vec2(1f, 0f))
+				end() // Viewport
+				popStyleVar()
 
 				end() // Dockspace
 			}

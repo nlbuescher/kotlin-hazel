@@ -5,22 +5,12 @@ import hazel.events.*
 import hazel.math.*
 import kotlin.math.*
 
-class Rect(
-	val left: Float, val right: Float,
-	val bottom: Float, val top: Float
-) {
-	val width: Float get() = right - left
-	val height: Float get() = top - bottom
-}
-
 class OrthographicCameraController(
 	private var aspectRatio: Float,
 	private val allowRotation: Boolean = false
 ) {
 	private var zoomLevel: Float = 1f
-	var bounds = Rect(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
-		private set
-	val camera = OrthographicCamera(bounds.left, bounds.right, bounds.bottom, bounds.top)
+	val camera = OrthographicCamera(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
 	private val cameraPosition = Vec3()
 	private var cameraRotation: Float = 0f
 	private var cameraTranslationSpeed: Float = zoomLevel
@@ -73,22 +63,23 @@ class OrthographicCameraController(
 		}
 	}
 
+	fun onResize(width: Int, height: Int) {
+		aspectRatio = width.toFloat() / height.toFloat()
+		camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+	}
+
 	private fun onMouseScrolledEvent(event: MouseScrolledEvent): Boolean {
 		Hazel.profile("OrthographicCameraController.onMouseScrolledEvent(MouseScrolledEvent): Boolean") {
 			zoomLevel -= event.yOffset * 0.25f
 			zoomLevel = zoomLevel.coerceAtLeast(0.25f)
-			cameraTranslationSpeed = zoomLevel
-			bounds = Rect(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
-			camera.setProjection(bounds.left, bounds.right, bounds.bottom, bounds.top)
+			camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
 		}
 		return false
 	}
 
 	private fun onWindowResizeEvent(event: WindowResizeEvent): Boolean {
 		Hazel.profile("OrthographicCameraController.onWindowResizeEvent(WindowResizeEvent): Boolean") {
-			aspectRatio = event.width.toFloat() / event.height.toFloat()
-			bounds = Rect(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
-			camera.setProjection(bounds.left, bounds.right, bounds.bottom, bounds.top)
+			onResize(event.width, event.height)
 		}
 		return false
 	}
