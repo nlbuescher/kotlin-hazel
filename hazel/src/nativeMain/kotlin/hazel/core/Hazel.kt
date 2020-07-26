@@ -7,6 +7,7 @@ import hazel.system.*
 import kotlin.native.concurrent.*
 import kotlin.time.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 object Hazel {
 	object Config {
 		var enableProfiling: Boolean = Platform.isDebugBinary
@@ -50,6 +51,7 @@ object Hazel {
 	}
 
 
+	@Suppress("ObjectPropertyName")
 	private var _application: Application? = null
 		set(value) {
 			if (field != null) kotlin.error("application already set!")

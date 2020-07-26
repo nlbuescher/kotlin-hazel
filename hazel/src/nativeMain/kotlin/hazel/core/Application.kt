@@ -5,6 +5,7 @@ import hazel.events.*
 import hazel.imgui.*
 import hazel.renderer.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class Application(name: String = "Hazel App") : Disposable {
 	val window: Window
 

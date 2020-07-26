@@ -1,7 +1,10 @@
+@file:Suppress("unused")
+
 package hazel.math
 
 import kotlin.math.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 class Vec3(var x: Float, var y: Float, var z: Float) {
 	constructor(scalar: Float = 0f) : this(scalar, scalar, scalar)
 

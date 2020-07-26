@@ -1,8 +1,11 @@
+@file:Suppress("unused")
+
 package hazel.math
 
 import hazel.cinterop.*
 import kotlin.math.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 class Vec4(
 	var x: Float,
 	var y: Float,

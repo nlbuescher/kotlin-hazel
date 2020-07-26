@@ -14,6 +14,7 @@ enum class ShaderDataType(val size: kotlin.Int) {
 
 class BufferElement(
 	val type: ShaderDataType,
+	@Suppress("unused")
 	val name: String,
 	val isNormalized: Boolean = false
 ) {

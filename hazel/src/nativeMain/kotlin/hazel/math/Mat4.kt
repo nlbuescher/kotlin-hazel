@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package hazel.math
 
 import kotlin.math.*

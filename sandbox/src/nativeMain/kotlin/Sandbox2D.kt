@@ -1,8 +1,4 @@
 import com.imgui.*
-import com.imgui.ImGuiConfigFlags
-import com.imgui.ImGuiDockNodeFlags
-import com.imgui.ImGuiStyleVar
-import com.imgui.ImGuiWindowFlags
 import hazel.*
 import hazel.core.*
 import hazel.events.*
@@ -10,7 +6,6 @@ import hazel.math.*
 import hazel.math.Vec2
 import hazel.math.Vec4
 import hazel.renderer.*
-import kotlinx.cinterop.*
 
 class Sandbox2D : Layer("Sandbox2D") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)

@@ -14,11 +14,11 @@ interface FrameBuffer {
 
 	fun resize(width: Int, height: Int)
 
+	@Suppress("MemberVisibilityCanBePrivate")
 	class Specification(
 		val width: Int,
 		val height: Int,
 		val samples: Int = 1,
-
 		val isSwapChainTarget: Boolean = false
 	) {
 		fun copy(

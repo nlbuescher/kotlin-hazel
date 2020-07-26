@@ -5,6 +5,7 @@ import hazel.math.*
 import kotlinx.cinterop.*
 import kotlinx.cinterop.internal.*
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 object Renderer2D {
 	private val data = Renderer2DData()
 	val stats: Stats get() = data.stats

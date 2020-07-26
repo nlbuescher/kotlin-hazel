@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package hazel
 
 private fun mod(a: Float, b: Float): Float {

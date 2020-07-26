@@ -109,15 +109,15 @@ class EditorLayer : Layer("Sandbox2D") {
 				}
 
 				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))
-				begin("Dockspace Demo", ::dockSpaceOpen, windowFlags)
+				begin("DockSpace Demo", ::dockSpaceOpen, windowFlags)
 				popStyleVar()
 
 				if (isFullScreen) popStyleVar(2)
 
 				val io = getIO()
 				if (ImGuiConfigFlags.DockingEnable in io.configFlags) {
-					val dockspaceID = getID("Dockspace")
-					dockSpace(dockspaceID, com.imgui.Vec2(0f, 0f), dockSpaceFlags)
+					val dockSpaceID = getID("DockSpace")
+					dockSpace(dockSpaceID, com.imgui.Vec2(0f, 0f), dockSpaceFlags)
 				}
 				if (beginMenuBar()) {
 					if (beginMenu("File")) {
@@ -151,7 +151,7 @@ class EditorLayer : Layer("Sandbox2D") {
 				end() // Viewport
 				popStyleVar()
 
-				end() // Dockspace
+				end() // DockSpace
 			}
 		}
 	}

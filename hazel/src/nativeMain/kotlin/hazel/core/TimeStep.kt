@@ -16,7 +16,7 @@ private fun convertTimeStepUnit(value: Float, sourceUnit: TimeStepUnit, targetUn
 
 private inline val storageUnit get() = TimeStepUnit.MILLISECONDS
 
-@Suppress("NON_PUBLIC_PRIMARY_CONSTRUCTOR_OF_INLINE_CLASS")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_PRIMARY_CONSTRUCTOR_OF_INLINE_CLASS")
 inline class TimeStep internal constructor(internal val value: Float) {
 	companion object {
 		val ZERO = TimeStep(0f)

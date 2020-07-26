@@ -13,7 +13,7 @@ repositories {
 
 val os: OperatingSystem = OperatingSystem.current()
 
-val imguiVersion = "docking" //"0.1.2"
+val imGuiVersion = "docking" //"0.1.2"
 val kglVersion = "0.1.9-dev-13"
 
 kotlin {
@@ -36,7 +36,7 @@ kotlin {
 				}
 				dependencies {
 					listOf("", "-glfw", "-opengl").forEach {
-						implementation("com.kotlin-imgui:imgui$it:$imguiVersion")
+						implementation("com.kotlin-imgui:imgui$it:$imGuiVersion")
 					}
 					listOf("-glfw", "-glfw-static", "-opengl").forEach {
 						implementation("com.kgl:kgl$it:$kglVersion")

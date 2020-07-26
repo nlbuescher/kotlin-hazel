@@ -5,6 +5,7 @@ import hazel.math.*
 import hazel.math.Vec4
 import hazel.renderer.*
 
+@Suppress("unused")
 class ExampleLayer : Layer("ExampleLayer") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, true)
 

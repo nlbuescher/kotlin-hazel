@@ -46,15 +46,15 @@ internal inline fun glDeleteVertexArrays(vararg arrays: UInt) {
 
 // G
 
-internal inline fun glGetProgramUInt(program: UInt, pname: UInt): UInt = memScoped {
+internal inline fun glGetProgramUInt(program: UInt, parameter: UInt): UInt = memScoped {
 	val iv = alloc<IntVar>()
-	glGetProgramiv(program, pname, iv.ptr)
+	glGetProgramiv(program, parameter, iv.ptr)
 	iv.value.convert()
 }
 
-internal inline fun glGetShaderUInt(shader: UInt, pname: UInt): UInt = memScoped {
+internal inline fun glGetShaderUInt(shader: UInt, parameter: UInt): UInt = memScoped {
 	val iv = alloc<IntVar>()
-	glGetShaderiv(shader, pname, iv.ptr)
+	glGetShaderiv(shader, parameter, iv.ptr)
 	iv.value.convert()
 }
 
@@ -84,8 +84,8 @@ internal inline fun glTexImage2D(
 	)
 }
 
-internal inline fun glTexParameter(texture: UInt, pname: UInt, param: UInt) {
-	glTexParameteri(texture, pname, param.convert())
+internal inline fun glTexParameter(texture: UInt, parameter: UInt, param: UInt) {
+	glTexParameteri(texture, parameter, param.convert())
 }
 
 

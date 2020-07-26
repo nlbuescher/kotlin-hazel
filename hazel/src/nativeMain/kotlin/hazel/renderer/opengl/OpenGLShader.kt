@@ -12,6 +12,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class OpenGLShader : Shader {
 	private var rendererID: UInt = 0u
 

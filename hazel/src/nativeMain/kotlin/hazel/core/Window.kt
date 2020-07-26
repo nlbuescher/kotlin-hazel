@@ -6,6 +6,7 @@ import hazel.renderer.*
 import kotlin.native.concurrent.*
 import com.kgl.glfw.Window as GlfwWindow
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : Disposable {
 	private val context: GraphicsContext
 

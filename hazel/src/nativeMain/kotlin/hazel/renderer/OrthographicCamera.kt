@@ -3,6 +3,7 @@ package hazel.renderer
 import hazel.core.*
 import hazel.math.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
 	var projectionMatrix: Mat4 = orthographicProjectionOf(left, right, bottom, top, -1f, 1f)
 		private set

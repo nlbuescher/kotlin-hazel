@@ -31,6 +31,7 @@ fun Shader(name: String, vertexSource: String, fragmentSource: String): Shader =
 }
 
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class ShaderLibrary : Disposable {
 	private val shaders = mutableMapOf<String, Shader>()
 

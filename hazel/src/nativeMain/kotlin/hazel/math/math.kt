@@ -5,6 +5,7 @@ import kotlin.math.*
 /** Returns the specified numbers of degrees as radians */
 val Float.degrees: Float get() = (this * PI / 180).toFloat()
 
+@Suppress("unused")
 fun lerp(from: Float, to: Float, ratio: Float): Float {
 	return from * (1 - ratio) + to * ratio
 }

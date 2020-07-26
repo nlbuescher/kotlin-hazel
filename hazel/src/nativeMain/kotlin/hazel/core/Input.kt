@@ -1,9 +1,12 @@
+@file:Suppress("unused")
+
 package hazel.core
 
 import com.kgl.glfw.*
 import com.kgl.glfw.KeyboardKey as GlfwKey
 import com.kgl.glfw.MouseButton as GlfwMouseButton
 
+@Suppress("MemberVisibilityCanBePrivate")
 object Input {
 	fun isKeyPressed(key: Key): Boolean {
 		val window = Hazel.application.window.nativeWindow
