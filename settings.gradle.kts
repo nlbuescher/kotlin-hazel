@@ -1,5 +1,5 @@
 rootProject.name = "kotlin-hazel"
 
 include("hazel")
-include("hazel-editor")
+include("hazelnut")
 include("sandbox")

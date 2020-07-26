@@ -22,8 +22,8 @@ kotlin {
 
 	targets.withType<KotlinNativeTarget> {
 		binaries {
-			executable("HazelEditor") {
-				entryPoint = "hazel.editor.main"
+			executable("Hazelnut") {
+				entryPoint = "hazelnut.main"
 			}
 		}
 		compilations {

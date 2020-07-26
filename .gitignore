@@ -8,5 +8,5 @@ build
 .idea
 
 imgui.ini
-hazel-editor/*.json
+hazelnut/*.json
 sandbox/*.json

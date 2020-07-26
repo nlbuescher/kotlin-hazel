@@ -1,4 +1,4 @@
-package hazel.editor
+package hazelnut
 
 import com.imgui.*
 import com.imgui.ImGuiConfigFlags
