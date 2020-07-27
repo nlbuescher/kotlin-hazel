@@ -17,7 +17,7 @@ import hazel.math.Vec4
 import hazel.renderer.*
 import kotlinx.cinterop.*
 
-class EditorLayer : Layer("Sandbox2D") {
+class EditorLayer : Layer("Editor") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
 
 	private lateinit var frameBuffer: FrameBuffer
@@ -26,7 +26,7 @@ class EditorLayer : Layer("Sandbox2D") {
 
 
 	override fun onAttach() {
-		Hazel.profile("Sandbox2D.onAttach()") {
+		Hazel.profile("EditorLayer.onAttach()") {
 			checkerBoardTexture = Texture2D("assets/textures/checkerboard.png")
 
 			val spec = FrameBuffer.Specification(1280, 720)
@@ -35,14 +35,14 @@ class EditorLayer : Layer("Sandbox2D") {
 	}
 
 	override fun onDetach() {
-		Hazel.profile("Sandbox2D.onDetach()") {}
+		Hazel.profile("EditorLayer.onDetach()") {}
 	}
 
 	private var rotation = 0f
 	private val squareColor = floatArrayOf(0.2f, 0.3f, 0.8f, 1f)
 
 	override fun onUpdate(timeStep: TimeStep) {
-		Hazel.profile("Sandbox2D.onUpdate(TimeStep)") {
+		Hazel.profile("EditorLayer.onUpdate(TimeStep)") {
 			// update
 			cameraController.onUpdate(timeStep)
 
@@ -91,7 +91,7 @@ class EditorLayer : Layer("Sandbox2D") {
 	}
 
 	override fun onImGuiRender() {
-		Hazel.profile("Sandbox2D.onImGuiRender()") {
+		Hazel.profile("EditorLayer.onImGuiRender()") {
 			with(ImGui) {
 				val isFullScreen = isFullscreenPersistent
 
