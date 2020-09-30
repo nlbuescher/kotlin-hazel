@@ -6,7 +6,6 @@ plugins {
 }
 
 repositories {
-	mavenLocal()
 	maven("https://dl.bintray.com/dominaezzz/kotlin-native")
 	jcenter()
 }
@@ -26,18 +25,10 @@ kotlin {
 				entryPoint = "hazelnut.main"
 			}
 		}
-		compilations {
-			"main" {
-				kotlinOptions {
-					freeCompilerArgs = listOf("-memory-model", "relaxed")
-				}
-				defaultSourceSet {
-					kotlin.srcDir("src/nativeMain/kotlin")
-					resources.srcDir("src/nativeMain/resources")
-				}
-				dependencies {
-					implementation(project(":hazel"))
-				}
+
+		compilations.all {
+			kotlinOptions {
+				freeCompilerArgs = listOf("-memory-model", "relaxed")
 			}
 		}
 	}
@@ -45,9 +36,19 @@ kotlin {
 	sourceSets {
 		all {
 			languageSettings.apply {
-				enableLanguageFeature("MultiPlatformProjects")
 				enableLanguageFeature("InlineClasses")
 				useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+			}
+		}
+
+		targets.withType<KotlinNativeTarget> {
+			named("${name}Main") {
+				kotlin.srcDir("src/nativeMain/kotlin")
+				resources.srcDir("src/nativeMain/resources")
+
+				dependencies {
+					implementation(project(":hazel"))
+				}
 			}
 		}
 	}

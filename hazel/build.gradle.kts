@@ -6,15 +6,14 @@ plugins {
 }
 
 repositories {
-	mavenLocal()
 	maven("https://dl.bintray.com/dominaezzz/kotlin-native")
 	jcenter()
 }
 
 val os: OperatingSystem = OperatingSystem.current()
 
-val imGuiVersion = "docking" //"0.1.2"
-val kglVersion = "0.1.9-dev-13"
+val imGuiVersion = "0.1.7-docking"
+val kglVersion = "0.1.10"
 
 kotlin {
 	when {
@@ -25,15 +24,33 @@ kotlin {
 
 	targets.withType<KotlinNativeTarget> {
 		compilations {
-			"main" {
-				cinterops.create("hazel")
+			all {
 				kotlinOptions {
 					freeCompilerArgs = listOf("-memory-model", "relaxed")
 				}
-				defaultSourceSet {
-					kotlin.srcDir("src/nativeMain/kotlin")
-					resources.srcDir("src/nativeMain/resources")
-				}
+			}
+
+			named("main") {
+				cinterops.create("hazel")
+			}
+		}
+	}
+
+	sourceSets {
+		all {
+			languageSettings.apply {
+				enableLanguageFeature("InlineClasses")
+				useExperimentalAnnotation("kotlin.RequiresOptIn")
+				useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+				useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+			}
+		}
+
+		targets.withType<KotlinNativeTarget> {
+			named("${name}Main") {
+				kotlin.srcDir("src/nativeMain/kotlin")
+				resources.srcDir("src/nativeMain/resources")
+
 				dependencies {
 					listOf("", "-glfw", "-opengl").forEach {
 						implementation("com.kotlin-imgui:imgui$it:$imGuiVersion")
@@ -42,19 +59,6 @@ kotlin {
 						implementation("com.kgl:kgl$it:$kglVersion")
 					}
 				}
-			}
-		}
-	}
-
-	sourceSets {
-		all {
-			languageSettings.apply {
-				enableLanguageFeature("MultiPlatformProjects")
-				enableLanguageFeature("InlineClasses")
-				enableLanguageFeature("NewInference")
-				useExperimentalAnnotation("kotlin.RequiresOptIn")
-				useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-				useExperimentalAnnotation("kotlin.time.ExperimentalTime")
 			}
 		}
 	}
