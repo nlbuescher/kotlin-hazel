@@ -6,6 +6,7 @@ import com.kgl.glfw.*
 import com.kgl.glfw.KeyboardKey as GlfwKey
 import com.kgl.glfw.MouseButton as GlfwMouseButton
 
+// TODO replace with expect and actual for the different platforms
 @Suppress("MemberVisibilityCanBePrivate")
 object Input {
 	fun isKeyPressed(key: Key): Boolean {
@@ -40,23 +41,23 @@ inline class Key(val value: Int) {
 
 		// Printable keys
 		val SPACE = Key(32)
-		val APOSTROPHE = Key(39) // '
-		val COMMA = Key(44) // ,
-		val MINUS = Key(45) // -
-		val PERIOD = Key(46) // .
-		val SLASH = Key(47) // /
-		val D0 = Key(48) // 0
-		val D1 = Key(49) // 1
-		val D2 = Key(50) // 2
-		val D3 = Key(51) // 3
-		val D4 = Key(52) // 4
-		val D5 = Key(53) // 5
-		val D6 = Key(54) // 6
-		val D7 = Key(55) // 7
-		val D8 = Key(56) // 8
-		val D9 = Key(57) // 9
-		val SEMICOLON = Key(59) // ;
-		val EQUAL = Key(61) // =
+		val APOSTROPHE = Key(39)    // '
+		val COMMA = Key(44)         // ,
+		val MINUS = Key(45)         // -
+		val PERIOD = Key(46)        // .
+		val SLASH = Key(47)         // /
+		val D0 = Key(48)            // 0
+		val D1 = Key(49)            // 1
+		val D2 = Key(50)            // 2
+		val D3 = Key(51)            // 3
+		val D4 = Key(52)            // 4
+		val D5 = Key(53)            // 5
+		val D6 = Key(54)            // 6
+		val D7 = Key(55)            // 7
+		val D8 = Key(56)            // 8
+		val D9 = Key(57)            // 9
+		val SEMICOLON = Key(59)     // ;
+		val EQUAL = Key(61)         // =
 		val A = Key(65)
 		val B = Key(66)
 		val C = Key(67)
@@ -83,12 +84,12 @@ inline class Key(val value: Int) {
 		val X = Key(88)
 		val Y = Key(89)
 		val Z = Key(90)
-		val LEFT_BRACKET = Key(91) // [
-		val BACKSLASH = Key(92) // \
+		val LEFT_BRACKET = Key(91)  // [
+		val BACKSLASH = Key(92)     // \
 		val RIGHT_BRACKET = Key(93) // ]
-		val GRAVE_ACCENT = Key(96) // `
-		val WORLD_1 = Key(161) // non-US #1
-		val WORLD_2 = Key(162) // non-US #2
+		val GRAVE_ACCENT = Key(96)  // `
+		val WORLD_1 = Key(161)      // non-US #1
+		val WORLD_2 = Key(162)      // non-US #2
 
 		// Function keys
 		val ESCAPE = Key(256)

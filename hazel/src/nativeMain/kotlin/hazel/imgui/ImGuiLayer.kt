@@ -19,6 +19,8 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 	private lateinit var glfw: ImGuiGlfw
 	private lateinit var openGL3: ImGuiOpenGL3
 
+	var blockEvents: Boolean = true
+
 	override fun onAttach() {
 		Hazel.profile("ImGuiLayer.onAttach()") {
 			// setup Dear ImGui context
@@ -36,7 +38,8 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 			io.configFlags = io.configFlags or ImGuiConfigFlags.NavEnableKeyboard // enable keyboard controls
 			//io.configFlags = io.configFlags or ImGuiConfigFlags.NavEnableGamepad // enable gamepad controls
 			io.configFlags = io.configFlags or ImGuiConfigFlags.DockingEnable // enable docking
-			io.configFlags = io.configFlags or ImGuiConfigFlags.ViewportsEnable // enable multi-viewport / platform windows
+			io.configFlags =
+				io.configFlags or ImGuiConfigFlags.ViewportsEnable // enable multi-viewport / platform windows
 			//io.configFlags = io.configFlags or ImGuiConfigFlags.ViewportsNoTaskBarIcon
 			//io.configFlags = io.configFlags or ImGuiConfigFlags.ViewportsNoMerge
 
@@ -47,8 +50,8 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 			// when viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones
 			val style = ImGui.getStyle().ptr.pointed
 			if (ImGuiConfigFlags.ViewportsEnable in io.configFlags) {
-			    style.WindowRounding = 0f
-			    style.Colors[ImGuiCol.WindowBg.value].w = 1f
+				style.WindowRounding = 0f
+				style.Colors[ImGuiCol.WindowBg.value].w = 1f
 			}
 
 			// setup Platform / Renderer Bindings
@@ -66,9 +69,11 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 	}
 
 	override fun onEvent(event: Event) {
-		val io = ImGui.getIO()
-		event.isHandled = event.isHandled || (event is MouseEvent && io.wantCaptureMouse)
-		event.isHandled = event.isHandled || (event is KeyEvent && io.wantCaptureKeyboard)
+		if (blockEvents) {
+			val io = ImGui.getIO()
+			event.isHandled = event.isHandled || (event is MouseEvent && io.wantCaptureMouse)
+			event.isHandled = event.isHandled || (event is KeyEvent && io.wantCaptureKeyboard)
+		}
 	}
 
 	fun begin() {

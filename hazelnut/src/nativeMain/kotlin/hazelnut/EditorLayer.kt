@@ -22,6 +22,9 @@ class EditorLayer : Layer("Editor") {
 
 	private lateinit var frameBuffer: FrameBuffer
 	private lateinit var checkerBoardTexture: Texture2D
+
+	private var isViewportFocused: Boolean = false
+	private var isViewportHovered: Boolean = false
 	private var viewportSize = Vec2()
 
 
@@ -44,7 +47,9 @@ class EditorLayer : Layer("Editor") {
 	override fun onUpdate(timeStep: TimeStep) {
 		Hazel.profile("EditorLayer.onUpdate(TimeStep)") {
 			// update
-			cameraController.onUpdate(timeStep)
+			if (isViewportFocused) {
+				cameraController.onUpdate(timeStep)
+			}
 
 			// render
 			Renderer2D.resetStats()
@@ -140,6 +145,11 @@ class EditorLayer : Layer("Editor") {
 
 				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))
 				begin("Viewport")
+
+				isViewportFocused = isWindowFocused()
+				isViewportHovered = isWindowHovered()
+				Hazel.application.imGuiLayer.blockEvents = !isViewportHovered
+
 				val viewportPanelSize = getContentRegionAvail()
 				if (viewportSize.x != viewportPanelSize.x || viewportSize.y != viewportPanelSize.y) {
 					frameBuffer.resize(viewportPanelSize.x.toInt(), viewportPanelSize.y.toInt())
@@ -147,7 +157,12 @@ class EditorLayer : Layer("Editor") {
 					cameraController.onResize(viewportSize.x.toInt(), viewportSize.y.toInt())
 				}
 				val textureID = ImTextureID(frameBuffer.colorAttachmentRendererID.toLong().toCPointer()!!)
-				image(textureID, com.imgui.Vec2(viewportSize.x, viewportSize.y), com.imgui.Vec2(0f, 1f), com.imgui.Vec2(1f, 0f))
+				image(
+					textureID,
+					com.imgui.Vec2(viewportSize.x, viewportSize.y),
+					com.imgui.Vec2(0f, 1f),
+					com.imgui.Vec2(1f, 0f)
+				)
 				end() // Viewport
 				popStyleVar()
 

@@ -13,7 +13,7 @@ abstract class Application(name: String = "Hazel App") : Disposable {
 	private var isMinimized: Boolean = false
 
 	private val layerStack: LayerStack = LayerStack()
-	private val imGuiLayer: ImGuiLayer
+	val imGuiLayer: ImGuiLayer
 
 	private var lastFrameTime: Float = 0f
 
