@@ -71,6 +71,11 @@ class OpenGLFrameBuffer(
 	}
 
 	override fun resize(width: Int, height: Int) {
+		if (width <= 0 || height <= 0) {
+			Hazel.coreWarn("Attempted to resize frame buffer to $width, $height")
+			return
+		}
+
 		specification = specification.copy(width, height)
 
 		invalidate()
