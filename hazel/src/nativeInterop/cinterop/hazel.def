@@ -59,15 +59,6 @@ static inline __m128 vec4_mod(__m128 a, __m128 b)
 }
 
 
-// obsolete in master (posix platform lib there defines _DARWIN_C_SOURCE, which enables this function)
-#if defined(__APPLE__)
-#include <pthread.h>
-static inline int pthread_threadid(pthread_t thread, uint64_t* id)
-{
-	return pthread_threadid_np(thread, id);
-}
-#endif
-
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_FAILURE_STRINGS
 #include <stb_image.h>

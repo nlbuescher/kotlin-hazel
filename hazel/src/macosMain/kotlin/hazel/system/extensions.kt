@@ -2,7 +2,6 @@
 
 package hazel.system
 
-import hazel.cinterop.*
 import kotlinx.cinterop.*
 import platform.posix.*
 
@@ -12,6 +11,6 @@ actual inline fun breakpoint() {
 
 actual inline fun getThreadId(): ULong = memScoped {
 	val ret = alloc<ULongVar>()
-	pthread_threadid(null, ret.ptr)
+	pthread_threadid_np(null, ret.ptr)
 	return ret.value
 }
