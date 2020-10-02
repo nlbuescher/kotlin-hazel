@@ -2,6 +2,7 @@ package = hazel.cinterop
 compilerOpts = -Isrc/nativeInterop/include
 ---
 #include <stddef.h> // for size_t and uint64_t
+#include <malloc.h>
 
 static inline size_t sizeOf(void* a)
 {
