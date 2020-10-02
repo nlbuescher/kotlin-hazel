@@ -31,7 +31,9 @@ kotlin {
 			}
 
 			named("main") {
-				cinterops.create("hazel")
+				cinterops.create("hazel") {
+					includeDirs("src/nativeInterop/include")
+				}
 			}
 		}
 	}

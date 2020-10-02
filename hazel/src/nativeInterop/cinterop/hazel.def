@@ -1,8 +1,11 @@
 package = hazel.cinterop
-compilerOpts = -Isrc/nativeInterop/include
 ---
 #include <stddef.h> // for size_t and uint64_t
+
+// size of memory block
+#if !defined(__APPLE__)
 #include <malloc.h>
+#endif
 
 static inline size_t sizeOf(void* a)
 {
@@ -15,6 +18,7 @@ static inline size_t sizeOf(void* a)
 #endif
 }
 
+// intinsics
 
 #include <smmintrin.h>
 static inline __m128 vec4_add(__m128 a, __m128 b){return _mm_add_ps(a, b);}
@@ -58,6 +62,7 @@ static inline __m128 vec4_mod(__m128 a, __m128 b)
     return sub0;
 }
 
+// stb_image
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_FAILURE_STRINGS
