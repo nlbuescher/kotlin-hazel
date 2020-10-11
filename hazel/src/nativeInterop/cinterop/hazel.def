@@ -61,9 +61,3 @@ static inline __m128 vec4_mod(__m128 a, __m128 b)
     __m128 const sub0 = vec4_sub(a, mul0);
     return sub0;
 }
-
-// stb_image
-
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_NO_FAILURE_STRINGS
-#include <stb_image.h>

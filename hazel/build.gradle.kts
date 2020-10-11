@@ -31,9 +31,7 @@ kotlin {
 			}
 
 			named("main") {
-				cinterops.create("hazel") {
-					includeDirs("src/nativeInterop/include")
-				}
+				cinterops.create("hazel")
 			}
 		}
 	}
@@ -54,6 +52,8 @@ kotlin {
 				resources.srcDir("src/nativeMain/resources")
 
 				dependencies {
+					implementation(project(":stb"))
+
 					listOf("", "-glfw", "-opengl").forEach {
 						implementation("com.kotlin-imgui:imgui$it:$imGuiVersion")
 					}
