@@ -7,7 +7,7 @@ import kotlinx.cinterop.internal.*
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object Renderer2D {
-	private val data = Renderer2DData()
+	private val data = Data()
 	val stats: Stats get() = data.stats
 
 	fun init() {
@@ -15,7 +15,7 @@ object Renderer2D {
 			with(data) {
 				quadVertexArray = VertexArray()
 
-				quadVertexBuffer = VertexBuffer(Renderer2DData.maxVertices * sizeOf<QuadVertex>().toInt())
+				quadVertexBuffer = VertexBuffer(Data.maxVertices * sizeOf<QuadVertex>().toInt())
 				quadVertexBuffer.layout = BufferLayout(
 					BufferElement(ShaderDataType.Float3, "a_Position"),
 					BufferElement(ShaderDataType.Float4, "a_Color"),
@@ -25,10 +25,10 @@ object Renderer2D {
 				)
 				quadVertexArray.addVertexBuffer(quadVertexBuffer)
 
-				val quadIndices = UIntArray(Renderer2DData.maxIndices)
+				val quadIndices = UIntArray(Data.maxIndices)
 				var i = 0
 				var offset = 0u
-				while (i < Renderer2DData.maxIndices) {
+				while (i < Data.maxIndices) {
 					quadIndices[i + 0] = offset + 0u
 					quadIndices[i + 1] = offset + 1u
 					quadIndices[i + 2] = offset + 2u
@@ -47,7 +47,7 @@ object Renderer2D {
 
 				textureShader = Shader("assets/shaders/texture.glsl")
 				textureShader.bind()
-				textureShader["u_Textures"] = IntArray(Renderer2DData.maxTextures) { it }
+				textureShader["u_Textures"] = IntArray(Data.maxTextures) { it }
 
 				textures[0] = whiteTexture
 			}
@@ -109,80 +109,14 @@ object Renderer2D {
 		}
 	}
 
-	private fun bufferQuad(
-		position: Vec3,
-		rotation: Float = 0f,
-		size: Vec2,
-		tintColor: Vec4,
-		texture: Texture2D? = null, // whiteTexture
-		tilingFactor: Float = 1f
-	) {
-		val textureCoordinates = arrayOf(Vec2(0f, 0f), Vec2(1f, 0f), Vec2(1f, 1f), Vec2(0f, 1f))
-
-		if (data.indexCount >= Renderer2DData.maxIndices) {
-			flushAndReset()
-		}
-
-		val textureIndex: Float
-		if (texture == null) {
-			textureIndex = 0f
-		} else {
-			data.textures.indexOf(texture).let { index ->
-				if (index >= 0) {
-					textureIndex = index.toFloat()
-				} else {
-					if (data.currentTexture >= Renderer2DData.maxTextures) {
-						flushAndReset()
-					}
-					data.textures[data.currentTexture] = texture
-					textureIndex = data.currentTexture.toFloat()
-					data.currentTexture += 1
-				}
-			}
-		}
-
-		val transform = Mat4()
-			.translate(position)
-			.let {
-				// only rotate if the quad is actually rotated
-				if (rotation == 0f) it
-				else it.rotate(rotation, Vec3(0f, 0f, 1f))
-			}
-			.scale(Vec3(size.x, size.y, 1f))
-
-		for (i in 0 until 4) {
-			data.quadVertices[data.currentVertex].let { vertex ->
-				val pos = transform * data.quadVertexPositions[i]
-				vertex.position.run { x = pos.x; y = pos.y; z = pos.z }
-				vertex.color.run { x = tintColor.x; y = tintColor.y; z = tintColor.z; w = tintColor.w }
-				vertex.textureCoordinate.run { textureCoordinates[i].let { x = it.x; y = it.y } }
-				vertex.textureIndex = textureIndex
-				vertex.tilingFactor = tilingFactor
-			}
-			data.currentVertex += 1
-		}
-		data.indexCount += 6
-
-		data.stats.quadCount += 1
-	}
-
 	fun drawQuad(position: Vec2, size: Vec2, color: Vec4) {
 		drawQuad(Vec3(position.x, position.y, 0f), size, color)
 	}
 
 	fun drawQuad(position: Vec3, size: Vec2, color: Vec4) {
 		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Vec4)") {
-			bufferQuad(position, 0f, size, color)
-		}
-	}
-
-	fun drawQuad(position: Vec2, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4(1f)) {
-		drawQuad(Vec3(position.x, position.y, 0f), size, texture, tilingFactor, tintColor)
-	}
-
-	fun drawQuad(position: Vec3, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4(1f)) {
-		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Texture2D, Float, Vec4)") {
-			bufferQuad(position, 0f, size, tintColor, texture, tilingFactor)
+			val transform = Mat4().translate(position).scale(size.toVec3())
+			drawQuad(transform, color)
 		}
 	}
 
@@ -192,7 +126,44 @@ object Renderer2D {
 
 	fun drawRotatedQuad(position: Vec3, size: Vec2, rotation: Float, color: Vec4) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Vec4)") {
-			bufferQuad(position, rotation, size, color)
+			val transform = Mat4().translate(position).rotate(rotation, Vec3(0f, 0f, 1f)).scale(size.toVec3())
+			drawQuad(transform, color)
+		}
+	}
+
+	fun drawQuad(transform: Mat4, color: Vec4) {
+		Hazel.profile("Renderer2D.drawQuad(Mat4, Vec4)") {
+			val textureCoordinates = arrayOf(Vec2(0f, 0f), Vec2(1f, 0f), Vec2(1f, 1f), Vec2(0f, 1f))
+
+			if (data.indexCount >= Data.maxIndices) {
+				flushAndReset()
+			}
+
+			for (i in 0 until 4) {
+				data.quadVertices[data.currentVertex].let { vertex ->
+					val pos = transform * data.quadVertexPositions[i]
+					vertex.position.run { x = pos.x; y = pos.y; z = pos.z }
+					vertex.color.run { x = color.x; y = color.y; z = color.z; w = color.w }
+					vertex.textureCoordinate.run { textureCoordinates[i].let { x = it.x; y = it.y } }
+					vertex.textureIndex = 0f
+					vertex.tilingFactor = 1f
+				}
+				data.currentVertex += 1
+			}
+
+			data.indexCount += 6
+			data.stats.quadCount += 1
+		}
+	}
+
+	fun drawQuad(position: Vec2, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4(1f)) {
+		drawQuad(Vec3(position.x, position.y, 0f), size, texture, tilingFactor, tintColor)
+	}
+
+	fun drawQuad(position: Vec3, size: Vec2, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4(1f)) {
+		Hazel.profile("Renderer2D.drawQuad(Vec3, Vec2, Texture2D, Float, Vec4)") {
+			val transform = Mat4().translate(position).scale(size.toVec3())
+			drawQuad(transform, texture, tilingFactor, tintColor)
 		}
 	}
 
@@ -216,7 +187,47 @@ object Renderer2D {
 		tintColor: Vec4 = Vec4(1f)
 	) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Texture2D, Float, Vec4)") {
-			bufferQuad(position, rotation, size, tintColor, texture, tilingFactor)
+			val transform = Mat4().translate(position).rotate(rotation, Vec3(0f, 0f, 1f)).scale(size.toVec3())
+			drawQuad(transform, texture, tilingFactor, tintColor)
+		}
+	}
+
+	fun drawQuad(transform: Mat4, texture: Texture2D, tilingFactor: Float = 1f, tintColor: Vec4 = Vec4(1f)) {
+		Hazel.profile("Renderer2D.drawQuad(Mat4, Texture2D, Float, Vec4") {
+			val textureCoordinates = arrayOf(Vec2(0f, 0f), Vec2(1f, 0f), Vec2(1f, 1f), Vec2(0f, 1f))
+
+			if (data.indexCount >= Data.maxIndices) {
+				flushAndReset()
+			}
+
+			val textureIndex: Float
+			data.textures.indexOf(texture).let { index ->
+				if (index >= 0) {
+					textureIndex = index.toFloat()
+				} else {
+					if (data.currentTexture >= Data.maxTextures) {
+						flushAndReset()
+					}
+					data.textures[data.currentTexture] = texture
+					textureIndex = data.currentTexture.toFloat()
+					data.currentTexture += 1
+				}
+			}
+
+			for (i in 0 until 4) {
+				data.quadVertices[data.currentVertex].let { vertex ->
+					val pos = transform * data.quadVertexPositions[i]
+					vertex.position.run { x = pos.x; y = pos.y; z = pos.z }
+					vertex.color.run { x = tintColor.x; y = tintColor.y; z = tintColor.z; w = tintColor.w }
+					vertex.textureCoordinate.run { textureCoordinates[i].let { x = it.x; y = it.y } }
+					vertex.textureIndex = textureIndex
+					vertex.tilingFactor = tilingFactor
+				}
+				data.currentVertex += 1
+			}
+
+			data.indexCount += 6
+			data.stats.quadCount += 1
 		}
 	}
 
@@ -325,7 +336,7 @@ object Renderer2D {
 			}
 	}
 
-	private class Renderer2DData : Disposable {
+	private class Data : Disposable {
 		companion object {
 			const val maxQuads: Int = 20_000
 			const val maxVertices: Int = maxQuads * 4

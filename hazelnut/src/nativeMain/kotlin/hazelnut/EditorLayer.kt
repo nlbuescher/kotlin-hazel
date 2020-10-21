@@ -8,13 +8,14 @@ import com.imgui.ImGuiDockNodeFlags
 import com.imgui.ImGuiStyleVar
 import com.imgui.ImGuiWindowFlags
 import com.imgui.ImTextureID
-import hazel.*
 import hazel.core.*
+import hazel.ecs.*
 import hazel.events.*
-import hazel.math.*
+import hazel.imgui.*
 import hazel.math.Vec2
 import hazel.math.Vec4
 import hazel.renderer.*
+import hazel.scene.*
 import kotlinx.cinterop.*
 
 class EditorLayer : Layer("Editor") {
@@ -22,6 +23,9 @@ class EditorLayer : Layer("Editor") {
 
 	private lateinit var frameBuffer: FrameBuffer
 	private lateinit var checkerBoardTexture: Texture2D
+
+	private lateinit var activeScene: Scene
+	private var squareEntity: EntityId = EntityId(0u)
 
 	private var isViewportFocused: Boolean = false
 	private var isViewportHovered: Boolean = false
@@ -34,15 +38,20 @@ class EditorLayer : Layer("Editor") {
 
 			val spec = FrameBuffer.Specification(1280, 720)
 			frameBuffer = FrameBuffer(spec)
+
+			activeScene = Scene()
+
+			val square = activeScene.createEntity()
+			activeScene.registry.add(square, TransformComponent())
+			activeScene.registry.add(square, SpriteRendererComponent(Vec4(0f, 1f, 0f, 1f)))
+
+			squareEntity = square
 		}
 	}
 
 	override fun onDetach() {
 		Hazel.profile("EditorLayer.onDetach()") {}
 	}
-
-	private var rotation = 0f
-	private val squareColor = floatArrayOf(0.2f, 0.3f, 0.8f, 1f)
 
 	override fun onUpdate(timeStep: TimeStep) {
 		Hazel.profile("EditorLayer.onUpdate(TimeStep)") {
@@ -53,34 +62,18 @@ class EditorLayer : Layer("Editor") {
 
 			// render
 			Renderer2D.resetStats()
-			Hazel.profile("Renderer Prep") {
-				frameBuffer.bind()
-				RenderCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1f))
-				RenderCommand.clear()
-			}
+			frameBuffer.bind()
+			RenderCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1f))
+			RenderCommand.clear()
 
-			rotation += timeStep.inSeconds * 50f.degrees
-			Hazel.profile("Renderer Draw") {
-				with(Renderer2D) {
-					beginScene(cameraController.camera)
+			Renderer2D.beginScene(cameraController.camera)
 
-					drawRotatedQuad(Vec2(1f, 0f), Vec2(0.8f, 0.8f), (-30f).degrees, Vec4(0.8f, 0.2f, 0.3f, 1f))
-					drawQuad(Vec2(-1f, 0f), Vec2(0.8f, 0.8f), Vec4(0.8f, 0.2f, 0.3f, 1f))
-					drawQuad(Vec2(0.5f, -0.5f), Vec2(0.5f, 0.75f), squareColor.let { Vec4(it[0], it[1], it[2], it[3]) })
-					drawQuad(Vec3(0f, 0f, -0.1f), Vec2(20f, 20f), checkerBoardTexture, 10f)
-					drawRotatedQuad(Vec3(-2f, 0f, 0.1f), Vec2(1f, 1f), rotation, checkerBoardTexture, 20f)
+			// update scene
+			activeScene.onUpdate(timeStep)
 
-					for (y in -4.75f..4.75f step 0.5f) {
-						for (x in -4.75f..4.75f step 0.5f) {
-							val color = Vec4((x + 5) / 10, 0.4f, (y + 5) / 10, 0.7f)
-							drawQuad(Vec2(x, y), Vec2(0.45f, 0.45f), color)
-						}
-					}
+			Renderer2D.endScene()
 
-					endScene()
-				}
-				frameBuffer.unbind()
-			}
+			frameBuffer.unbind()
 		}
 	}
 
@@ -140,6 +133,7 @@ class EditorLayer : Layer("Editor") {
 					text("Vertices  : $vertexCount")
 					text("Indices   : $indexCount")
 				}
+				val squareColor = activeScene.registry.get(SpriteRendererComponent::class, squareEntity).color
 				colorEdit4("Square Color", squareColor)
 				end() // Settings
 
