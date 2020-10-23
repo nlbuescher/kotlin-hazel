@@ -9,7 +9,6 @@ import com.imgui.ImGuiStyleVar
 import com.imgui.ImGuiWindowFlags
 import com.imgui.ImTextureID
 import hazel.core.*
-import hazel.ecs.*
 import hazel.events.*
 import hazel.imgui.*
 import hazel.math.Vec2
@@ -25,7 +24,7 @@ class EditorLayer : Layer("Editor") {
 	private lateinit var checkerBoardTexture: Texture2D
 
 	private lateinit var activeScene: Scene
-	private var squareEntity: EntityId = EntityId(0u)
+	private lateinit var squareEntity: Scene.Entity
 
 	private var isViewportFocused: Boolean = false
 	private var isViewportHovered: Boolean = false
@@ -41,9 +40,8 @@ class EditorLayer : Layer("Editor") {
 
 			activeScene = Scene()
 
-			val square = activeScene.createEntity()
-			activeScene.registry.add(square, TransformComponent())
-			activeScene.registry.add(square, SpriteRendererComponent(Vec4(0f, 1f, 0f, 1f)))
+			val square = activeScene.createEntity("Square")
+			square.addComponent(SpriteRendererComponent(Vec4(0f, 1f, 0f, 1f)))
 
 			squareEntity = square
 		}
@@ -133,8 +131,13 @@ class EditorLayer : Layer("Editor") {
 					text("Vertices  : $vertexCount")
 					text("Indices   : $indexCount")
 				}
-				val squareColor = activeScene.registry.get(SpriteRendererComponent::class, squareEntity).color
+
+				separator()
+				text(squareEntity.getComponent<TagComponent>().tag)
+
+				val squareColor = squareEntity.getComponent<SpriteRendererComponent>().color
 				colorEdit4("Square Color", squareColor)
+				separator()
 				end() // Settings
 
 				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))

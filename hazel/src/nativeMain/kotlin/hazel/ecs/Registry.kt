@@ -3,7 +3,9 @@ package hazel.ecs
 import hazel.core.*
 import kotlin.reflect.*
 
-class Registry {
+// TODO make the API more kotlinic
+//  - have null variant of get functions
+internal class Registry {
 	private val entities = mutableListOf<EntityId>()
 	private val pools = mutableListOf<Pool<*>?>()
 	private val groups = mutableListOf<GroupData>()
@@ -54,18 +56,25 @@ class Registry {
 
 	fun create(): EntityId = if (destroyed == null) generateIdentifier() else recycleIdentifier()
 
-	inline fun <reified T : Any> add(entity: EntityId, component: T) = add(entity, component, T::class)
-
-	fun <T : Any> add(entity: EntityId, component: T, type: KClass<T>) {
+	fun <T : Any> add(type: KClass<T>, entity: EntityId, component: T) {
 		require(valid(entity))
 		assure(type).add(this, entity, component)
+	}
+
+	fun <T : Any> remove(type: KClass<T>, entity: EntityId) {
+		require(valid(entity))
+		assure(type).remove(this, entity)
+	}
+
+	fun <T : Any> has(type: KClass<T>, entity: EntityId): Boolean {
+		require(valid(entity))
+		return entity in assure(type)
 	}
 
 	fun <T : Any> get(type: KClass<T>, entity: EntityId): T {
 		require(valid(entity))
 		return assure(type)[entity]
 	}
-
 
 	fun view(get: List<KClass<*>>, exclude: List<KClass<*>> = emptyList()): View {
 		require(get.isNotEmpty()) { "Exclusion-only views are not supported" }

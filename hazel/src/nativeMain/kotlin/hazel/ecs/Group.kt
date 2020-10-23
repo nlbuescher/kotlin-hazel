@@ -2,7 +2,7 @@ package hazel.ecs
 
 import kotlin.reflect.*
 
-class Group(
+internal class Group(
 	private val get: List<KClass<*>>,
 	private val exclude: List<KClass<*>>,
 	private val handler: List<EntityId>,

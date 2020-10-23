@@ -1,6 +1,6 @@
 package hazel.ecs
 
-class View(components: List<Pool<*>>, excludes: List<Pool<*>>) {
+internal class View(components: List<Pool<*>>, excludes: List<Pool<*>>) {
 	private val pools: List<Pool<*>> = components
 	private val view: List<EntityId> = candidate()
 	private val filter: List<List<EntityId>> = excludes.map { it.entities }
