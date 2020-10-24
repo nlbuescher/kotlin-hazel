@@ -24,7 +24,7 @@ class EditorLayer : Layer("Editor") {
 	private lateinit var checkerBoardTexture: Texture2D
 
 	private lateinit var activeScene: Scene
-	private lateinit var squareEntity: Scene.Entity
+	private var squareEntity: Scene.Entity? = null
 
 	private var isViewportFocused: Boolean = false
 	private var isViewportHovered: Boolean = false
@@ -132,12 +132,15 @@ class EditorLayer : Layer("Editor") {
 					text("Indices   : $indexCount")
 				}
 
-				separator()
-				text(squareEntity.getComponent<TagComponent>().tag)
+				squareEntity?.let { squareEntity ->
+					separator()
+					val tag = squareEntity.getComponent<TagComponent>().tag
+					text(tag)
 
-				val squareColor = squareEntity.getComponent<SpriteRendererComponent>().color
-				colorEdit4("Square Color", squareColor)
-				separator()
+					val squareColor = squareEntity.getComponent<SpriteRendererComponent>().color
+					colorEdit4("Square Color", squareColor)
+					separator()
+				}
 				end() // Settings
 
 				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))

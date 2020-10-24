@@ -46,7 +46,5 @@ class Scene {
 
 		inline fun <reified T: Any> hasComponent() = hasComponent(T::class)
 		fun <T : Any> hasComponent(type: KClass<T>): Boolean = scene.registry.has(type, id)
-
-		fun isValid(): Boolean = id.value != 0u
 	}
 }
