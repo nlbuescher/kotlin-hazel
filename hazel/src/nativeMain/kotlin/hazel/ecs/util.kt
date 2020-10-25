@@ -4,7 +4,9 @@ import kotlin.reflect.*
 
 inline class EntityId(val value: UInt)
 
-data class TypeInfo(val id: UInt, val index: Int)
+inline class TypeId(val value: UInt)
+
+data class TypeInfo(val id: TypeId, val index: Int)
 
 private var typeIndexValue: Int = 0
 private val typeIndexMap = mutableMapOf<KClass<*>, Int>()
@@ -15,4 +17,4 @@ private inline val KClass<*>.typeIndex: Int
 		index
 	}
 
-val KClass<*>.typeInfo get() = TypeInfo(hashCode().toUInt(), typeIndex)
+val KClass<*>.typeInfo get() = TypeInfo(TypeId(hashCode().toUInt()), typeIndex)

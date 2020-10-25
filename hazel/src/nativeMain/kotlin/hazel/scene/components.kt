@@ -15,10 +15,8 @@ class SpriteRendererComponent(
 	val color: Vec4 = Vec4(1f),
 )
 
-class CameraComponent(
-	val camera: Camera,
-) {
+class CameraComponent {
+	val camera = SceneCamera()
 	var isPrimary: Boolean = true
-
-	constructor(projection: Mat4) : this(Camera(projection))
+	var hasFixedAspectRatio: Boolean = false
 }

@@ -3,15 +3,13 @@ package hazel.ecs
 import kotlin.reflect.*
 
 internal class Group(
-	private val get: List<KClass<*>>,
-	private val exclude: List<KClass<*>>,
 	private val handler: List<EntityId>,
-	private val pools: List<Pool<*>>
+	private val pools: List<Pool<*>>,
 ) : Iterable<EntityId> {
 	fun <T : Any> get(type: KClass<T>, entity: EntityId): T {
 		@Suppress("UNCHECKED_CAST")
 		val pool: Pool<T> =
-			pools.find { it.typeInfo == type.typeInfo } as? Pool<T>
+			pools.find { it.typeInfo.id == type.typeInfo.id } as? Pool<T>
 				?: error("no pool with type '$type' found")
 		return pool[entity]
 	}

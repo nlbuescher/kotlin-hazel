@@ -3,8 +3,6 @@ package hazel.ecs
 import hazel.core.*
 import kotlin.reflect.*
 
-// TODO make the API more kotlinic
-//  - have null variant of get functions
 internal class Registry {
 	private val entities = mutableListOf<EntityId>()
 	private val pools = mutableListOf<Pool<*>?>()
@@ -91,8 +89,8 @@ internal class Registry {
 
 		val groupData = groups.find { groupData ->
 			groupData.size == groupSize
-				&& get.all { groupData.get(it.typeInfo) }
-				&& exclude.all { groupData.exclude(it.typeInfo) }
+				&& get.all { groupData.get(it.typeInfo.id) }
+				&& exclude.all { groupData.exclude(it.typeInfo.id) }
 		}
 
 		if (groupData != null) {
@@ -101,8 +99,8 @@ internal class Registry {
 			val candidate = GroupData(
 				groupSize,
 				GroupHandler(get, exclude),
-				get = { type -> get.any { type == it.typeInfo } },
-				exclude = { type -> exclude.any { type == it.typeInfo } },
+				get = { typeId -> get.any { typeId == it.typeInfo.id } },
+				exclude = { typeId -> exclude.any { typeId == it.typeInfo.id } },
 			)
 
 			handler = candidate.group
@@ -135,7 +133,7 @@ internal class Registry {
 			}
 		}
 
-		return Group(get, exclude, handler.current, groupPools.toList())
+		return Group(handler.current, groupPools.toList())
 	}
 
 
@@ -165,8 +163,8 @@ internal class Registry {
 	private class GroupData(
 		var size: Int,
 		var group: GroupHandler,
-		var get: (TypeInfo) -> Boolean,
-		var exclude: (TypeInfo) -> Boolean,
+		var get: (TypeId) -> Boolean,
+		var exclude: (TypeId) -> Boolean,
 	)
 
 

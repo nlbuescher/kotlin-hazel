@@ -1,17 +1,9 @@
 package hazelnut
 
-import cimgui.internal.*
-import cimgui.internal.ImVec2
 import com.imgui.*
-import com.imgui.ImGuiConfigFlags
-import com.imgui.ImGuiDockNodeFlags
-import com.imgui.ImGuiStyleVar
-import com.imgui.ImGuiWindowFlags
-import com.imgui.ImTextureID
 import hazel.core.*
 import hazel.events.*
 import hazel.imgui.*
-import hazel.math.*
 import hazel.math.Vec2
 import hazel.math.Vec4
 import hazel.renderer.*
@@ -47,13 +39,14 @@ class EditorLayer : Layer("Editor") {
 
 			val square = activeScene.createEntity("Square")
 			square.addComponent(SpriteRendererComponent(Vec4(0f, 1f, 0f, 1f)))
+
 			squareEntity = square
 
 			cameraEntity = activeScene.createEntity("Camera")
-			cameraEntity.addComponent(CameraComponent(orthographicProjectionOf(-16f, 16f, -9f, 9f, -1f, 1f)))
+			cameraEntity.addComponent(CameraComponent())
 
 			secondCamera = activeScene.createEntity("Clip-Space Camera")
-			secondCamera.addComponent(CameraComponent(orthographicProjectionOf(-1f, 1f, -1f, 1f, -1f, 1f)))
+			secondCamera.addComponent(CameraComponent().apply { isPrimary = false })
 		}
 	}
 
@@ -63,6 +56,19 @@ class EditorLayer : Layer("Editor") {
 
 	override fun onUpdate(timeStep: TimeStep) {
 		Hazel.profile("EditorLayer.onUpdate(TimeStep)") {
+			// resize
+			run {
+				val spec = frameBuffer.specification
+				val viewportX = viewportSize.x.toInt()
+				val viewportY = viewportSize.y.toInt()
+				if (viewportX > 0f && viewportY > 0f && (spec.width != viewportX || spec.height != viewportY)) {
+					frameBuffer.resize(viewportX, viewportY)
+					cameraController.onResize(viewportX, viewportY)
+
+					activeScene.onViewportResize(viewportX, viewportY)
+				}
+			}
+
 			// update
 			if (isViewportFocused) {
 				cameraController.onUpdate(timeStep)
@@ -84,13 +90,6 @@ class EditorLayer : Layer("Editor") {
 	private var dockSpaceOpen: Boolean = true
 	private var isFullscreenPersistent: Boolean = true
 	private var dockSpaceFlags: Flag<ImGuiDockNodeFlags>? = null
-
-	@Suppress("unused")
-	private fun ImGui.getContentRegionAvail(): com.imgui.Vec2 = memScoped {
-		val result = alloc<ImVec2>()
-		igGetContentRegionAvail(result.ptr)
-		com.imgui.Vec2(result.x, result.y)
-	}
 
 	override fun onImGuiRender() {
 		Hazel.profile("EditorLayer.onImGuiRender()") {
@@ -155,6 +154,9 @@ class EditorLayer : Layer("Editor") {
 					secondCamera.getComponent<CameraComponent>().isPrimary = !showPrimaryCamera
 				}
 
+				val camera = secondCamera.getComponent<CameraComponent>().camera
+				dragFloat("Second Camera Orthographic Size", camera::orthographicSize)
+
 				end() // Settings
 
 				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))
@@ -165,11 +167,7 @@ class EditorLayer : Layer("Editor") {
 				Hazel.application.imGuiLayer.blockEvents = !isViewportHovered
 
 				val viewportPanelSize = getContentRegionAvail()
-				if (viewportSize.x != viewportPanelSize.x || viewportSize.y != viewportPanelSize.y) {
-					frameBuffer.resize(viewportPanelSize.x.toInt(), viewportPanelSize.y.toInt())
-					viewportSize = Vec2(viewportPanelSize.x, viewportPanelSize.y)
-					cameraController.onResize(viewportSize.x.toInt(), viewportSize.y.toInt())
-				}
+				viewportSize = Vec2(viewportPanelSize.x, viewportPanelSize.y)
 				val textureID = ImTextureID(frameBuffer.colorAttachmentRendererID.toLong().toCPointer()!!)
 				image(
 					textureID,

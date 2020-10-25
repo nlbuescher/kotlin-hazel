@@ -9,6 +9,9 @@ import kotlin.reflect.*
 class Scene {
 	private val registry = Registry()
 
+	private var viewportWidth: Int = 0
+	private var viewportHeight: Int = 0
+
 	fun createEntity(name: String? = null): Entity {
 		val entity = Entity(registry.create(), this)
 		entity.addComponent(TagComponent(name ?: "Entity"))
@@ -45,6 +48,21 @@ class Scene {
 			}
 
 			Renderer2D.endScene()
+		}
+	}
+
+	fun onViewportResize(width: Int, height: Int) {
+		viewportWidth = width
+		viewportHeight = height
+
+		// resize non-fixed aspect-ratio cameras
+		registry.view(listOf(CameraComponent::class)).let { view ->
+			view.forEach { entity ->
+				val cameraComponent = view.get(CameraComponent::class, entity)
+				if (!cameraComponent.hasFixedAspectRatio) {
+					cameraComponent.camera.setViewportSize(width, height)
+				}
+			}
 		}
 	}
 
