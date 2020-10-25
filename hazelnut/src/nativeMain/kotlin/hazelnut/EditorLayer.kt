@@ -11,6 +11,7 @@ import com.imgui.ImTextureID
 import hazel.core.*
 import hazel.events.*
 import hazel.imgui.*
+import hazel.math.*
 import hazel.math.Vec2
 import hazel.math.Vec4
 import hazel.renderer.*
@@ -25,6 +26,10 @@ class EditorLayer : Layer("Editor") {
 
 	private lateinit var activeScene: Scene
 	private var squareEntity: Scene.Entity? = null
+	private lateinit var cameraEntity: Scene.Entity
+	private lateinit var secondCamera: Scene.Entity
+
+	private var showPrimaryCamera: Boolean = true
 
 	private var isViewportFocused: Boolean = false
 	private var isViewportHovered: Boolean = false
@@ -42,8 +47,13 @@ class EditorLayer : Layer("Editor") {
 
 			val square = activeScene.createEntity("Square")
 			square.addComponent(SpriteRendererComponent(Vec4(0f, 1f, 0f, 1f)))
-
 			squareEntity = square
+
+			cameraEntity = activeScene.createEntity("Camera")
+			cameraEntity.addComponent(CameraComponent(orthographicProjectionOf(-16f, 16f, -9f, 9f, -1f, 1f)))
+
+			secondCamera = activeScene.createEntity("Clip-Space Camera")
+			secondCamera.addComponent(CameraComponent(orthographicProjectionOf(-1f, 1f, -1f, 1f, -1f, 1f)))
 		}
 	}
 
@@ -64,12 +74,8 @@ class EditorLayer : Layer("Editor") {
 			RenderCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1f))
 			RenderCommand.clear()
 
-			Renderer2D.beginScene(cameraController.camera)
-
 			// update scene
 			activeScene.onUpdate(timeStep)
-
-			Renderer2D.endScene()
 
 			frameBuffer.unbind()
 		}
@@ -141,6 +147,14 @@ class EditorLayer : Layer("Editor") {
 					colorEdit4("Square Color", squareColor)
 					separator()
 				}
+
+				dragFloat3("Camera Transform", cameraEntity.getComponent<TransformComponent>().transform[3])
+
+				if (checkbox("Show Primary Camera", ::showPrimaryCamera)) {
+					cameraEntity.getComponent<CameraComponent>().isPrimary = showPrimaryCamera
+					secondCamera.getComponent<CameraComponent>().isPrimary = !showPrimaryCamera
+				}
+
 				end() // Settings
 
 				pushStyleVar(ImGuiStyleVar.WindowPadding, com.imgui.Vec2(0f, 0f))

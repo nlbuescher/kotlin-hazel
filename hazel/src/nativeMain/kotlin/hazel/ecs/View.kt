@@ -1,6 +1,6 @@
 package hazel.ecs
 
-internal class View(components: List<Pool<*>>, excludes: List<Pool<*>>) {
+internal class View(components: List<Pool<*>>, excludes: List<Pool<*>>) : Iterable<EntityId> {
 	private val pools: List<Pool<*>> = components
 	private val view: List<EntityId> = candidate()
 	private val filter: List<List<EntityId>> = excludes.map { it.entities }
@@ -17,7 +17,7 @@ internal class View(components: List<Pool<*>>, excludes: List<Pool<*>>) {
 		}
 	}
 
-	operator fun iterator(): Iterator<EntityId> = ViewIterator(unchecked(view))
+	override operator fun iterator(): Iterator<EntityId> = ViewIterator(unchecked(view))
 
 
 	private inner class ViewIterator(private val unchecked: List<List<EntityId>>) : Iterator<EntityId> {

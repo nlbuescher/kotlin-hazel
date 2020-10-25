@@ -7,7 +7,7 @@ internal class Group(
 	private val exclude: List<KClass<*>>,
 	private val handler: List<EntityId>,
 	private val pools: List<Pool<*>>
-) {
+) : Iterable<EntityId> {
 	fun <T : Any> get(type: KClass<T>, entity: EntityId): T {
 		@Suppress("UNCHECKED_CAST")
 		val pool: Pool<T> =
@@ -16,7 +16,7 @@ internal class Group(
 		return pool[entity]
 	}
 
-	operator fun iterator(): Iterator<EntityId> = object : Iterator<EntityId> {
+	override operator fun iterator(): Iterator<EntityId> = object : Iterator<EntityId> {
 		private var index: Int = 0
 		override fun hasNext(): Boolean = index < handler.size
 		override fun next(): EntityId {

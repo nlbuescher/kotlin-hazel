@@ -65,6 +65,21 @@ object Renderer2D {
 		data.stats.quadCount = 0
 	}
 
+	fun beginScene(camera: Camera, transform: Mat4) {
+		Hazel.profile("Renderer2D.beginScene(OrthographicCamera)") {
+			with(data) {
+				val viewProjection = camera.projection * transform.inverse
+
+				textureShader.bind()
+				textureShader["u_ViewProjection"] = viewProjection
+
+				indexCount = 0
+				currentVertex = 0
+				currentTexture = 1
+			}
+		}
+	}
+
 	fun beginScene(camera: OrthographicCamera) {
 		Hazel.profile("Renderer2D.beginScene(OrthographicCamera)") {
 			with(data) {
@@ -173,7 +188,7 @@ object Renderer2D {
 		rotation: Float,
 		texture: Texture2D,
 		tilingFactor: Float = 1f,
-		tintColor: Vec4 = Vec4(1f)
+		tintColor: Vec4 = Vec4(1f),
 	) {
 		drawRotatedQuad(Vec3(position.x, position.y, 0f), size, rotation, texture, tilingFactor, tintColor)
 	}
@@ -184,7 +199,7 @@ object Renderer2D {
 		rotation: Float,
 		texture: Texture2D,
 		tilingFactor: Float = 1f,
-		tintColor: Vec4 = Vec4(1f)
+		tintColor: Vec4 = Vec4(1f),
 	) {
 		Hazel.profile("Renderer2D.drawRotatedQuad(Vec3, Vec2, Float, Texture2D, Float, Vec4)") {
 			val transform = Mat4().translate(position).rotate(rotation, Vec3(0f, 0f, 1f)).scale(size.toVec3())
