@@ -8,6 +8,7 @@ import hazel.math.Vec2
 import hazel.math.Vec4
 import hazel.renderer.*
 import hazel.scene.*
+import hazelnut.panels.*
 import kotlinx.cinterop.*
 import kotlin.random.*
 
@@ -21,6 +22,7 @@ class EditorLayer : Layer("Editor") {
 	private var squareEntity: Scene.Entity? = null
 	private lateinit var cameraEntity: Scene.Entity
 	private lateinit var secondCamera: Scene.Entity
+	private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
 
 	private var showPrimaryCamera: Boolean = true
 
@@ -72,6 +74,8 @@ class EditorLayer : Layer("Editor") {
 
 			cameraEntity.addComponent(NativeScriptComponent(::CameraController))
 			secondCamera.addComponent(NativeScriptComponent(::CameraController))
+
+			sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
 		}
 	}
 
@@ -152,6 +156,8 @@ class EditorLayer : Layer("Editor") {
 					}
 					endMenuBar()
 				}
+
+				sceneHierarchyPanel.onImGuiRender()
 
 				begin("Settings")
 				with(Renderer2D.stats) {

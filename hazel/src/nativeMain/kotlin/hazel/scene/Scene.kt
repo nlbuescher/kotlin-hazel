@@ -6,7 +6,7 @@ import hazel.math.*
 import hazel.renderer.*
 import kotlin.reflect.*
 
-class Scene {
+class Scene : Iterable<Scene.Entity> {
 	private val registry = Registry()
 
 	private var viewportWidth: Int = 0
@@ -81,6 +81,13 @@ class Scene {
 	}
 
 
+	override operator fun iterator(): Iterator<Entity> = object : Iterator<Entity> {
+		private val registryIterator = registry.iterator()
+		override fun hasNext(): Boolean = registryIterator.hasNext()
+		override fun next() = Entity(registryIterator.next(), this@Scene)
+	}
+
+
 	class Entity(private val id: EntityId, private val scene: Scene) {
 		inline fun <reified T : Any> addComponent(component: T) = addComponent(component, T::class)
 		fun <T : Any> addComponent(component: T, type: KClass<T>) {
@@ -102,6 +109,18 @@ class Scene {
 
 		inline fun <reified T : Any> hasComponent() = hasComponent(T::class)
 		fun <T : Any> hasComponent(type: KClass<T>): Boolean = scene.registry.has(type, id)
+
+
+		override fun hashCode(): Int = id.value.toInt()
+
+		override fun equals(other: Any?): Boolean {
+			if (this === other) return true
+			if (other !is Entity) return false
+
+			return id == other.id && scene == other.scene
+		}
+
+		override fun toString(): String = "${id.value}"
 	}
 
 	abstract class ScriptableEntity {

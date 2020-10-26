@@ -3,11 +3,11 @@ package hazel.ecs
 import hazel.core.*
 import kotlin.reflect.*
 
-internal class Registry {
+internal class Registry : Iterable<EntityId> {
 	private val entities = mutableListOf<EntityId>()
 	private val pools = mutableListOf<Pool<*>?>()
 	private val groups = mutableListOf<GroupData>()
-	private var destroyed: EntityId? = null
+	private var destroyed = mutableListOf<EntityId>()
 
 
 	private fun <T : Any> assure(type: KClass<T>): Pool<T> {
@@ -37,10 +37,9 @@ internal class Registry {
 	}
 
 	private fun recycleIdentifier(): EntityId {
-		Hazel.coreAssert(destroyed != null)
-		val current = destroyed!!.value
+		Hazel.coreAssert(destroyed.isNotEmpty())
+		val current = destroyed.removeFirst().value
 		val version = entities[current.toInt()].value and (VERSION_MASK shl ENTITY_SHIFT)
-		destroyed = EntityId(entities[current.toInt()].value and ENTITY_MASK)
 		return EntityId(current or version).also {
 			entities[current.toInt()] = it
 		}
@@ -52,7 +51,7 @@ internal class Registry {
 		return pos < entities.size && entities[pos] == entity
 	}
 
-	fun create(): EntityId = if (destroyed == null) generateIdentifier() else recycleIdentifier()
+	fun create(): EntityId = if (destroyed.isEmpty()) generateIdentifier() else recycleIdentifier()
 
 	fun <T : Any> add(type: KClass<T>, entity: EntityId, component: T) {
 		require(valid(entity))
@@ -135,6 +134,9 @@ internal class Registry {
 
 		return Group(handler.current, groupPools.toList())
 	}
+
+
+	override operator fun iterator(): Iterator<EntityId> = entities.iterator()
 
 
 	private class GroupHandler(
