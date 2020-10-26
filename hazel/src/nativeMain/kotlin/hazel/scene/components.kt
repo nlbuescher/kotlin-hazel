@@ -1,6 +1,5 @@
 package hazel.scene
 
-import hazel.core.*
 import hazel.math.*
 
 class TagComponent(
@@ -22,18 +21,7 @@ class CameraComponent {
 }
 
 class NativeScriptComponent(
-	private val initializer: () -> Scene.ScriptableEntity
+	val instantiateScript: () -> Scene.ScriptableEntity,
 ) {
-	private var _instance: Scene.ScriptableEntity? = null
-	val instance: Scene.ScriptableEntity get() = _instance ?: error("must call init first")
-
-	val isInitialized: Boolean get() = _instance != null
-
-	fun initialize() {
-		_instance = initializer()
-	}
-
-	fun dispose() {
-		_instance = null
-	}
+	var instance: Scene.ScriptableEntity? = null
 }

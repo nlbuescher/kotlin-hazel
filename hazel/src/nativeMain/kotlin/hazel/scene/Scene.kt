@@ -21,18 +21,16 @@ class Scene {
 
 	fun onUpdate(timeStep: TimeStep) {
 		// update scripts
-		run {
-			registry.view(listOf(NativeScriptComponent::class)).let { view ->
-				view.forEach { entity ->
-					val nsc = view.get(NativeScriptComponent::class, entity)
-					if (!nsc.isInitialized) {
-						nsc.initialize()
-						nsc.instance.entity = Entity(entity, this)
-						nsc.instance.onCreate()
-					}
-
-					nsc.instance.onUpdate(timeStep)
+		registry.view(listOf(NativeScriptComponent::class)).let { view ->
+			view.forEach { entity ->
+				val nsc = view.get(NativeScriptComponent::class, entity)
+				if (nsc.instance == null) {
+					nsc.instance = nsc.instantiateScript()
+					nsc.instance!!.entity = Entity(entity, this)
+					nsc.instance!!.onCreate()
 				}
+
+				nsc.instance!!.onUpdate(timeStep)
 			}
 		}
 

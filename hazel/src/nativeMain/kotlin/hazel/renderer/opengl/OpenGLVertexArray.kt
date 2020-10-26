@@ -90,7 +90,7 @@ internal class OpenGLVertexArray : VertexArray {
 								element.type.toOpenGLBaseType(),
 								element.isNormalized,
 								vertexBuffer.layout.stride,
-								(sizeOf<FloatVar>() * count * i).toInt()
+								(element.offset + sizeOf<FloatVar>() * count * i).toInt()
 							)
 							glVertexAttribDivisor(index.toUInt(), 1u)
 						}

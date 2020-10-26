@@ -9,6 +9,7 @@ import hazel.math.Vec4
 import hazel.renderer.*
 import hazel.scene.*
 import kotlinx.cinterop.*
+import kotlin.random.*
 
 class EditorLayer : Layer("Editor") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
@@ -50,7 +51,8 @@ class EditorLayer : Layer("Editor") {
 
 			class CameraController : Scene.ScriptableEntity() {
 				override fun onCreate() {
-					println("CameraController::onCreate!")
+					val transform = getComponent<TransformComponent>().transform
+					transform[3][0] = Random.nextFloat() * 10f - 5f
 				}
 
 				override fun onUpdate(timeStep: TimeStep) {
@@ -69,6 +71,7 @@ class EditorLayer : Layer("Editor") {
 			}
 
 			cameraEntity.addComponent(NativeScriptComponent(::CameraController))
+			secondCamera.addComponent(NativeScriptComponent(::CameraController))
 		}
 	}
 
