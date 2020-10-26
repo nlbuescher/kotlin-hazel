@@ -20,6 +20,22 @@ class Scene {
 	}
 
 	fun onUpdate(timeStep: TimeStep) {
+		// update scripts
+		run {
+			registry.view(listOf(NativeScriptComponent::class)).let { view ->
+				view.forEach { entity ->
+					val nsc = view.get(NativeScriptComponent::class, entity)
+					if (!nsc.isInitialized) {
+						nsc.initialize()
+						nsc.instance.entity = Entity(entity, this)
+						nsc.instance.onCreate()
+					}
+
+					nsc.instance.onUpdate(timeStep)
+				}
+			}
+		}
+
 		// render 2D
 		var mainCamera: Camera? = null
 		var cameraTransform: Mat4? = null
@@ -88,5 +104,16 @@ class Scene {
 
 		inline fun <reified T : Any> hasComponent() = hasComponent(T::class)
 		fun <T : Any> hasComponent(type: KClass<T>): Boolean = scene.registry.has(type, id)
+	}
+
+	abstract class ScriptableEntity {
+		internal var entity: Entity? = null
+
+		inline fun <reified T : Any> getComponent() = getComponent(T::class)
+		fun <T : Any> getComponent(type: KClass<T>): T = entity!!.getComponent(type)
+
+		open fun onCreate() {}
+		open fun onUpdate(timeStep: TimeStep) {}
+		open fun onDestroy() {}
 	}
 }

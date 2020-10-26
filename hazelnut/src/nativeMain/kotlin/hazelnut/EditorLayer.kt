@@ -47,6 +47,28 @@ class EditorLayer : Layer("Editor") {
 
 			secondCamera = activeScene.createEntity("Clip-Space Camera")
 			secondCamera.addComponent(CameraComponent().apply { isPrimary = false })
+
+			class CameraController : Scene.ScriptableEntity() {
+				override fun onCreate() {
+					println("CameraController::onCreate!")
+				}
+
+				override fun onUpdate(timeStep: TimeStep) {
+					val transform = getComponent<TransformComponent>().transform
+					val speed = 5f
+
+					if (Input.isKeyPressed(Key.A))
+						transform[3][0] -= speed * timeStep.inSeconds
+					if (Input.isKeyPressed(Key.D))
+						transform[3][0] += speed * timeStep.inSeconds
+					if (Input.isKeyPressed(Key.W))
+						transform[3][1] += speed * timeStep.inSeconds
+					if (Input.isKeyPressed(Key.S))
+						transform[3][1] -= speed * timeStep.inSeconds
+				}
+			}
+
+			cameraEntity.addComponent(NativeScriptComponent(::CameraController))
 		}
 	}
 
