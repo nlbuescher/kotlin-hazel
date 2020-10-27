@@ -3,7 +3,7 @@ package hazel.scene
 import hazel.math.*
 
 class TagComponent(
-	val tag: String,
+	var tag: String,
 )
 
 class TransformComponent(

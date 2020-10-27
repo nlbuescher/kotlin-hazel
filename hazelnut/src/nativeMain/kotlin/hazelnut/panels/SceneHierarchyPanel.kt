@@ -1,7 +1,9 @@
 package hazelnut.panels
 
 import com.imgui.*
+import hazel.imgui.*
 import hazel.scene.*
+import kotlin.math.*
 
 class SceneHierarchyPanel(var context: Scene) {
 	private var selectionContext: Scene.Entity? = null
@@ -9,8 +11,23 @@ class SceneHierarchyPanel(var context: Scene) {
 	fun onImGuiRender() {
 		with(ImGui) {
 			begin("Scene Hierarchy")
+
 			context.forEach(::drawEntityNode)
+
+			if (isMouseDown(ImGuiMouseButton.Left) && isWindowHovered()) {
+				selectionContext = null
+			}
+
 			end() // Scene Hierarchy
+
+
+			begin("Properties")
+
+			selectionContext?.let {
+				drawComponents(it)
+			}
+
+			end()
 		}
 	}
 
@@ -30,6 +47,31 @@ class SceneHierarchyPanel(var context: Scene) {
 
 			if (isOpen) {
 				treePop()
+			}
+		}
+	}
+
+	private fun drawComponents(entity: Scene.Entity) {
+		with(ImGui) {
+			if (entity.hasComponent<TagComponent>()) {
+				val tag = entity.getComponent<TagComponent>()
+
+				val buffer = ByteArray(256)
+				tag.tag.encodeToByteArray().apply {
+					copyInto(buffer, endIndex = min(size, buffer.size))
+				}
+				if (inputText("Tag", buffer)) {
+					tag.tag = buffer.decodeToString()
+				}
+			}
+
+			if (entity.hasComponent<TransformComponent>()) {
+				if (treeNodeEx("TransformComponent", ImGuiTreeNodeFlags.DefaultOpen, "Transform")) {
+					val transform = entity.getComponent<TransformComponent>().transform
+					dragFloat3("Position", transform[3], 0.1f)
+
+					treePop()
+				}
 			}
 		}
 	}
