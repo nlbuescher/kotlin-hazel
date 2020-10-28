@@ -40,15 +40,18 @@ class EditorLayer : Layer("Editor") {
 
 			activeScene = Scene()
 
-			val square = activeScene.createEntity("Square")
+			val square = activeScene.createEntity("Green Square")
 			square.addComponent(SpriteRendererComponent(Vec4(0f, 1f, 0f, 1f)))
+
+			val redSquare = activeScene.createEntity("Red Square")
+			redSquare.addComponent(SpriteRendererComponent(Vec4(1f, 0f, 0f, 1f)))
 
 			squareEntity = square
 
-			cameraEntity = activeScene.createEntity("Camera")
+			cameraEntity = activeScene.createEntity("Camera A")
 			cameraEntity.addComponent(CameraComponent())
 
-			secondCamera = activeScene.createEntity("Clip-Space Camera")
+			secondCamera = activeScene.createEntity("Camera B")
 			secondCamera.addComponent(CameraComponent().apply { isPrimary = false })
 
 			class CameraController : Scene.ScriptableEntity() {
