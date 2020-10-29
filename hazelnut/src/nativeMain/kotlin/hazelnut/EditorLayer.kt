@@ -162,7 +162,7 @@ class EditorLayer : Layer("Editor") {
 
 				sceneHierarchyPanel.onImGuiRender()
 
-				begin("Settings")
+				begin("Stats")
 				with(Renderer2D.stats) {
 					text("Renderer2D Stats")
 					text("Draw calls: $drawCalls")
@@ -170,26 +170,6 @@ class EditorLayer : Layer("Editor") {
 					text("Vertices  : $vertexCount")
 					text("Indices   : $indexCount")
 				}
-
-				squareEntity?.let { squareEntity ->
-					separator()
-					val tag = squareEntity.getComponent<TagComponent>().tag
-					text(tag)
-
-					val squareColor = squareEntity.getComponent<SpriteRendererComponent>().color
-					colorEdit4("Square Color", squareColor)
-					separator()
-				}
-
-				dragFloat3("Camera Transform", cameraEntity.getComponent<TransformComponent>().transform[3])
-
-				if (checkbox("Show Primary Camera", ::showPrimaryCamera)) {
-					cameraEntity.getComponent<CameraComponent>().isPrimary = showPrimaryCamera
-					secondCamera.getComponent<CameraComponent>().isPrimary = !showPrimaryCamera
-				}
-
-				val camera = secondCamera.getComponent<CameraComponent>().camera
-				dragFloat("Second Camera Orthographic Size", camera::orthographicSize)
 
 				end() // Settings
 

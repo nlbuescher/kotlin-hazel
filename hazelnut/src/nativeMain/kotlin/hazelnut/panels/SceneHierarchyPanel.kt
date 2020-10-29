@@ -118,6 +118,15 @@ class SceneHierarchyPanel(var context: Scene) {
 					treePop()
 				}
 			}
+
+			if (entity.hasComponent<SpriteRendererComponent>()) {
+				if (treeNodeEx("SpriteRendererComponent", ImGuiTreeNodeFlags.DefaultOpen, "Transform")) {
+					val color = entity.getComponent<SpriteRendererComponent>().color
+					colorEdit4("Color", color)
+
+					treePop()
+				}
+			}
 		}
 	}
 }
