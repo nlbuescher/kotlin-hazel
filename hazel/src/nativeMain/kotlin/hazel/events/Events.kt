@@ -17,7 +17,7 @@ sealed class Event {
 	fun <T : Event> dispatch(klass: KClass<T>, function: (T) -> Boolean): Boolean {
 		if (klass.isInstance(this)) {
 			@Suppress("UNCHECKED_CAST")
-			isHandled = function(this as T)
+			isHandled = isHandled || function(this as T)
 			return true
 		}
 		return false

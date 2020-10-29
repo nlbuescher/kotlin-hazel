@@ -73,9 +73,7 @@ object Renderer2D {
 				textureShader.bind()
 				textureShader["u_ViewProjection"] = viewProjection
 
-				indexCount = 0
-				currentVertex = 0
-				currentTexture = 1
+				startBatch()
 			}
 		}
 	}
@@ -86,42 +84,44 @@ object Renderer2D {
 				textureShader.bind()
 				textureShader["u_ViewProjection"] = camera.viewProjectionMatrix
 
-				indexCount = 0
-				currentVertex = 0
-				currentTexture = 1
+				startBatch()
 			}
 		}
 	}
 
 	fun endScene() {
 		Hazel.profile("Renderer2D.endScene()") {
-			with(data) {
-				val byteCount = currentVertex * sizeOf<QuadVertex>().toInt()
-				quadVertexBuffer.setData(quadVertexData, byteCount)
-				flush()
-			}
+			flush()
 		}
 	}
 
-	private fun flushAndReset() {
-		endScene()
-
-		data.indexCount = 0
-		data.currentVertex = 0
-		data.currentTexture = 1
+	private fun startBatch() = with(data) {
+		indexCount = 0
+		currentVertex = 0
+		currentTexture = 1
 	}
 
 	fun flush() {
 		Hazel.profile("Renderer2D.flush()") {
-			if (data.indexCount == 0) return // nothing to draw
+			with(data) {
+				if (indexCount == 0) return // nothing to draw
 
-			// bind textures
-			for (slot in 0..data.currentTexture) {
-				data.textures[slot]?.bind(slot)
+				val byteCount = currentVertex * sizeOf<QuadVertex>().toInt()
+				quadVertexBuffer.setData(quadVertexData, byteCount)
+
+				// bind textures
+				for (slot in 0..currentTexture) {
+					textures[slot]?.bind(slot)
+				}
+				RenderCommand.drawIndexed(quadVertexArray, indexCount)
+				stats.drawCalls += 1
 			}
-			RenderCommand.drawIndexed(data.quadVertexArray, data.indexCount)
-			data.stats.drawCalls += 1
 		}
+	}
+
+	private fun nextBatch() {
+		flush()
+		startBatch()
 	}
 
 	fun drawQuad(position: Vec2, size: Vec2, color: Vec4) {
@@ -151,7 +151,7 @@ object Renderer2D {
 			val textureCoordinates = arrayOf(Vec2(0f, 0f), Vec2(1f, 0f), Vec2(1f, 1f), Vec2(0f, 1f))
 
 			if (data.indexCount >= Data.maxIndices) {
-				flushAndReset()
+				nextBatch()
 			}
 
 			for (i in 0 until 4) {
@@ -212,7 +212,7 @@ object Renderer2D {
 			val textureCoordinates = arrayOf(Vec2(0f, 0f), Vec2(1f, 0f), Vec2(1f, 1f), Vec2(0f, 1f))
 
 			if (data.indexCount >= Data.maxIndices) {
-				flushAndReset()
+				nextBatch()
 			}
 
 			val textureIndex: Float
@@ -221,7 +221,7 @@ object Renderer2D {
 					textureIndex = index.toFloat()
 				} else {
 					if (data.currentTexture >= Data.maxTextures) {
-						flushAndReset()
+						nextBatch()
 					}
 					data.textures[data.currentTexture] = texture
 					textureIndex = data.currentTexture.toFloat()

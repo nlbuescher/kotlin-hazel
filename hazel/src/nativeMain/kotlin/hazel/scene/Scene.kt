@@ -36,7 +36,7 @@ class Scene : Iterable<Scene.Entity> {
 
 		// render 2D
 		var mainCamera: Camera? = null
-		var cameraTransform: Mat4? = null
+		var cameraTransform = Mat4()
 		registry.group(listOf(TransformComponent::class, CameraComponent::class)).let { group ->
 			for (entity in group) {
 				val transform = group.get(TransformComponent::class, entity)
@@ -50,8 +50,8 @@ class Scene : Iterable<Scene.Entity> {
 			}
 		}
 
-		if (mainCamera != null) {
-			Renderer2D.beginScene(mainCamera!!, cameraTransform!!)
+		mainCamera?.let { camera ->
+			Renderer2D.beginScene(camera, cameraTransform)
 
 			registry.group(listOf(TransformComponent::class, SpriteRendererComponent::class)).let { group ->
 				group.forEach { entity ->

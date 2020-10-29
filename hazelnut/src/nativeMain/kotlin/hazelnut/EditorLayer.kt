@@ -56,22 +56,22 @@ class EditorLayer : Layer("Editor") {
 
 			class CameraController : Scene.ScriptableEntity() {
 				override fun onCreate() {
-					val transform = getComponent<TransformComponent>().transform
-					transform[3][0] = Random.nextFloat() * 10f - 5f
+					val translation = getComponent<TransformComponent>().translation
+					translation.x = Random.nextFloat() * 10f - 5f
 				}
 
 				override fun onUpdate(timeStep: TimeStep) {
-					val transform = getComponent<TransformComponent>().transform
+					val translation = getComponent<TransformComponent>().translation
 					val speed = 5f
 
 					if (Input.isKeyPressed(Key.A))
-						transform[3][0] -= speed * timeStep.inSeconds
+						translation.x -= speed * timeStep.inSeconds
 					if (Input.isKeyPressed(Key.D))
-						transform[3][0] += speed * timeStep.inSeconds
+						translation.x += speed * timeStep.inSeconds
 					if (Input.isKeyPressed(Key.W))
-						transform[3][1] += speed * timeStep.inSeconds
+						translation.y += speed * timeStep.inSeconds
 					if (Input.isKeyPressed(Key.S))
-						transform[3][1] -= speed * timeStep.inSeconds
+						translation.y -= speed * timeStep.inSeconds
 				}
 			}
 

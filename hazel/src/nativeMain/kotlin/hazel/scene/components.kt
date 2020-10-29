@@ -7,8 +7,18 @@ class TagComponent(
 )
 
 class TransformComponent(
-	val transform: Mat4 = Mat4(),
-)
+	val translation: Vec3 = Vec3(),
+	val rotation: Vec3 = Vec3(),
+	val scale: Vec3 = Vec3(1f),
+) {
+	val transform: Mat4
+		get() = Mat4()
+			.translate(translation)
+			.rotate(rotation.x, Vec3(1f, 0f, 0f))
+			.rotate(rotation.y, Vec3(0f, 1f, 0f))
+			.rotate(rotation.z, Vec3(0f, 0f, 1f))
+			.scale(scale)
+}
 
 class SpriteRendererComponent(
 	val color: Vec4 = Vec4(1f),

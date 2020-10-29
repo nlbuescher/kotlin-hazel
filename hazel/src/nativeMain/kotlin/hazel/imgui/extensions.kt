@@ -17,7 +17,7 @@ fun ImGui.colorEdit4(label: String, color: Vec4) {
 
 fun ImGui.dragFloat3(
 	label: String,
-	floats: Vec4,
+	floats: Vec3,
 	vSpeed: Float = 1f,
 	vMin: Float = 0f,
 	vMax: Float = 0f,
