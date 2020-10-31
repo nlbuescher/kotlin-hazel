@@ -2,7 +2,7 @@ package hazel.ecs
 
 internal class Pool<T : Any>(val typeInfo: TypeInfo) {
 	private val _entities = mutableListOf<EntityId>()
-	val entities get() = _entities
+	val entities: List<EntityId> get() = _entities
 
 	private val components = mutableListOf<T>()
 

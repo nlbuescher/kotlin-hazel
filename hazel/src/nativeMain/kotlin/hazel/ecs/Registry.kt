@@ -4,11 +4,10 @@ import hazel.core.*
 import kotlin.reflect.*
 
 internal class Registry : Iterable<EntityId> {
-	private val entities = mutableListOf<EntityId>()
+	internal val entities = mutableListOf<EntityId>()
 	private val pools = mutableListOf<Pool<*>?>()
 	private val groups = mutableListOf<GroupData>()
-	private var destroyed = mutableListOf<EntityId>()
-
+	private var destroyed = EntityId.Null
 
 	private fun <T : Any> assure(type: KClass<T>): Pool<T> {
 		val typeInfo = type.typeInfo
@@ -37,9 +36,10 @@ internal class Registry : Iterable<EntityId> {
 	}
 
 	private fun recycleIdentifier(): EntityId {
-		Hazel.coreAssert(destroyed.isNotEmpty())
-		val current = destroyed.removeFirst().value
+		Hazel.coreAssert(destroyed != EntityId.Null)
+		val current = destroyed.value
 		val version = entities[current.toInt()].value and (VERSION_MASK shl ENTITY_SHIFT)
+		destroyed = EntityId(entities[current.toInt()].value and ENTITY_MASK)
 		return EntityId(current or version).also {
 			entities[current.toInt()] = it
 		}
@@ -51,7 +51,16 @@ internal class Registry : Iterable<EntityId> {
 		return pos < entities.size && entities[pos] == entity
 	}
 
-	fun create(): EntityId = if (destroyed.isEmpty()) generateIdentifier() else recycleIdentifier()
+	fun create(): EntityId = if (destroyed == EntityId.Null) generateIdentifier() else recycleIdentifier()
+
+	fun destroy(entity: EntityId) {
+		val version = (entity.value shr ENTITY_SHIFT) + 1u
+		removeAll(entity)
+		// Lengthens the implicit list of destroyed entities
+		val entt = entity.value and ENTITY_MASK
+		entities[entt.toInt()] = EntityId(destroyed.value or (version shl ENTITY_SHIFT))
+		destroyed = EntityId(entt)
+	}
 
 	fun <T : Any> add(type: KClass<T>, entity: EntityId, component: T) {
 		require(valid(entity))
@@ -61,6 +70,16 @@ internal class Registry : Iterable<EntityId> {
 	fun <T : Any> remove(type: KClass<T>, entity: EntityId) {
 		require(valid(entity))
 		assure(type).remove(this, entity)
+	}
+
+	fun removeAll(entity: EntityId) {
+		require(valid(entity))
+
+		pools.forEach { pool ->
+			if (pool != null && entity in pool) {
+				pool.remove(this, entity)
+			}
+		}
 	}
 
 	fun <T : Any> has(type: KClass<T>, entity: EntityId): Boolean {
@@ -136,7 +155,30 @@ internal class Registry : Iterable<EntityId> {
 	}
 
 
-	override operator fun iterator(): Iterator<EntityId> = entities.iterator()
+	override operator fun iterator(): Iterator<EntityId> = object : Iterator<EntityId> {
+		private var index: Int = entities.size - 1
+
+		init {
+			skipUntilValid()
+		}
+
+		private fun isValid(): Boolean {
+			return destroyed == EntityId.Null || (entities[index].value and ENTITY_MASK) == index.toUInt()
+		}
+
+		private fun skipUntilValid() {
+			while (index >= 0 && !isValid()) index -= 1
+		}
+
+		override fun hasNext(): Boolean {
+			skipUntilValid()
+			return index >= 0
+		}
+
+		override fun next(): EntityId {
+			return entities[index--]
+		}
+	}
 
 
 	private class GroupHandler(
@@ -168,11 +210,4 @@ internal class Registry : Iterable<EntityId> {
 		var get: (TypeId) -> Boolean,
 		var exclude: (TypeId) -> Boolean,
 	)
-
-
-	companion object {
-		private const val ENTITY_MASK = 0xFFFFFu
-		private const val VERSION_MASK = 0xFFFu
-		private const val ENTITY_SHIFT = 20
-	}
 }

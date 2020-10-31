@@ -38,7 +38,7 @@ internal class View(components: List<Pool<*>>, excludes: List<Pool<*>>) : Iterab
 		private var index: Int = 0
 
 		init {
-			while (index < view.size && !isValid()) index += 1
+			skipUntilValid()
 		}
 
 		private fun isValid(): Boolean {
@@ -46,10 +46,14 @@ internal class View(components: List<Pool<*>>, excludes: List<Pool<*>>) : Iterab
 				&& (filter.isEmpty() || filter.none { view[index] in it })
 		}
 
+		private fun skipUntilValid() {
+			while (index < view.size && !isValid()) index += 1
+		}
+
 		override fun hasNext(): Boolean = index < view.size && isValid()
 
 		override fun next(): EntityId {
-			while (index < view.size && !isValid()) index += 1
+			skipUntilValid()
 			return view[index++]
 		}
 	}

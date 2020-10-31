@@ -62,6 +62,11 @@ kotlin {
 					}
 				}
 			}
+
+			named("${name}Test") {
+				kotlin.srcDir("src/nativeTest/kotlin")
+				resources.srcDir("src/nativeTest/resources")
+			}
 		}
 	}
 }

@@ -4,8 +4,11 @@ import cimgui.internal.*
 import com.imgui.*
 import com.imgui.ImGuiCol
 import com.imgui.ImGuiMouseButton
+import com.imgui.ImGuiPopupFlags
 import com.imgui.ImGuiStyleVar
 import com.imgui.ImGuiTreeNodeFlags
+import com.imgui.Vec2
+import hazel.core.*
 import hazel.imgui.*
 import hazel.math.*
 import hazel.scene.*
@@ -18,10 +21,20 @@ class SceneHierarchyPanel(var context: Scene) {
 		with(ImGui) {
 			begin("Scene Hierarchy")
 
-			context.forEach(::drawEntityNode)
+			context.forEach {
+				drawEntityNode(it)
+			}
 
 			if (isMouseDown(ImGuiMouseButton.Left) && isWindowHovered()) {
 				selectionContext = null
+			}
+
+			// right click on blank space
+			if (beginPopupContextWindow(popupFlags = ImGuiPopupFlags.NoOpenOverItems)) {
+				if (menuItem("Create Empty Entity")) {
+					context.createEntity("Empty Entity")
+				}
+				endPopup()
 			}
 
 			end() // Scene Hierarchy
@@ -29,8 +42,26 @@ class SceneHierarchyPanel(var context: Scene) {
 
 			begin("Properties")
 
-			selectionContext?.let {
-				drawComponents(it)
+			selectionContext?.let { selected ->
+				drawComponents(selected)
+
+				if (button("Add Component")) {
+					openPopup("AddComponent")
+				}
+
+				if (beginPopup("AddComponent")) {
+					if (menuItem("Camera")) {
+						selected.addComponent(CameraComponent())
+						closeCurrentPopup()
+					}
+
+					if (menuItem("Sprite Renderer")) {
+						selected.addComponent(SpriteRendererComponent())
+						closeCurrentPopup()
+					}
+
+					endPopup()
+				}
 			}
 
 			end()
@@ -51,8 +82,23 @@ class SceneHierarchyPanel(var context: Scene) {
 				selectionContext = entity
 			}
 
+			var isDeleted = false
+			if (beginPopupContextItem()) {
+				if (menuItem("Delete Entity")) {
+					isDeleted = true
+				}
+				endPopup()
+			}
+
 			if (isOpen) {
 				treePop()
+			}
+
+			if (isDeleted) {
+				context.destroyEntity(entity)
+				if (selectionContext == entity) {
+					selectionContext = null
+				}
 			}
 		}
 	}
@@ -70,10 +116,10 @@ class SceneHierarchyPanel(var context: Scene) {
 			nextColumn()
 
 			igPushMultiItemsWidths(3, calcItemWidth())
-			pushStyleVar(ImGuiStyleVar.ItemSpacing, com.imgui.Vec2(0f, 0f))
+			pushStyleVar(ImGuiStyleVar.ItemSpacing, Vec2(0f, 0f))
 
 			val lineHeight = getFontSize() + getStyle().framePadding.y * 2f
-			val buttonSize = com.imgui.Vec2(lineHeight + 3f, lineHeight)
+			val buttonSize = Vec2(lineHeight + 3f, lineHeight)
 
 			pushStyleColor(ImGuiCol.Button, com.imgui.Vec4(0.8f, 0.1f, 0.15f, 1f))
 			pushStyleColor(ImGuiCol.ButtonHovered, com.imgui.Vec4(0.9f, 0.2f, 0.2f, 1f))
@@ -135,8 +181,10 @@ class SceneHierarchyPanel(var context: Scene) {
 				}
 			}
 
+			val treeNodeFlags = ImGuiTreeNodeFlags.DefaultOpen + ImGuiTreeNodeFlags.AllowItemOverlap
+
 			if (entity.hasComponent<TransformComponent>()) {
-				if (treeNodeEx("TransformComponent", ImGuiTreeNodeFlags.DefaultOpen, "Transform")) {
+				if (treeNodeEx("TransformComponent", treeNodeFlags, "Transform")) {
 					val component = entity.getComponent<TransformComponent>()
 					drawVec3Control("Translation", component.translation)
 					val rotation = with(component.rotation) { Vec3(x.radians, y.radians, z.radians) }
@@ -190,11 +238,31 @@ class SceneHierarchyPanel(var context: Scene) {
 			}
 
 			if (entity.hasComponent<SpriteRendererComponent>()) {
-				if (treeNodeEx("SpriteRendererComponent", ImGuiTreeNodeFlags.DefaultOpen, "Sprite Renderer")) {
+				pushStyleVar(ImGuiStyleVar.FramePadding, Vec2(4f, 4f))
+				val isOpen = treeNodeEx("SpriteRendererComponent", treeNodeFlags, "Sprite Renderer")
+				sameLine(getWindowWidth() - 25f)
+				if (button("+", Vec2(20f, 20f))) {
+					openPopup("ComponentSettings")
+				}
+				popStyleVar()
+
+				var isRemoved = false
+				if (beginPopup("ComponentSettings")) {
+					if (menuItem("Remove Component")) {
+						isRemoved = true
+					}
+					endPopup()
+				}
+
+				if (isOpen) {
 					val color = entity.getComponent<SpriteRendererComponent>().color
 					colorEdit4("Color", color)
 
 					treePop()
+				}
+
+				if (isRemoved) {
+					entity.removeComponent<SpriteRendererComponent>()
 				}
 			}
 		}

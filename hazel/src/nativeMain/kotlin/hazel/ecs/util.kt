@@ -2,7 +2,15 @@ package hazel.ecs
 
 import kotlin.reflect.*
 
-inline class EntityId(val value: UInt)
+internal const val ENTITY_MASK = 0xFFFFFu
+internal const val VERSION_MASK = 0xFFFu
+internal const val ENTITY_SHIFT = 20
+
+inline class EntityId(val value: UInt) {
+	companion object {
+		val Null = EntityId(ENTITY_MASK)
+	}
+}
 
 inline class TypeId(val value: UInt)
 

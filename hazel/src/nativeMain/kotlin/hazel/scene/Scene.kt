@@ -19,6 +19,10 @@ class Scene : Iterable<Scene.Entity> {
 		return entity
 	}
 
+	fun destroyEntity(entity: Entity) {
+		registry.destroy(entity.id)
+	}
+
 	fun onUpdate(timeStep: TimeStep) {
 		// update scripts
 		registry.view(listOf(NativeScriptComponent::class)).let { view ->
@@ -81,6 +85,22 @@ class Scene : Iterable<Scene.Entity> {
 	}
 
 
+	private fun <T : Any> onComponentAdded(entity: Entity, component: T) {
+		when (component) {
+			is TagComponent,
+			is TransformComponent,
+			is SpriteRendererComponent,
+			is NativeScriptComponent -> {
+				// nop
+			}
+			is CameraComponent -> {
+				component.camera.setViewportSize(viewportWidth, viewportHeight)
+			}
+			else -> error("Unknown component type: '${component::class}'")
+		}
+	}
+
+
 	override operator fun iterator(): Iterator<Entity> = object : Iterator<Entity> {
 		private val registryIterator = registry.iterator()
 		override fun hasNext(): Boolean = registryIterator.hasNext()
@@ -88,11 +108,14 @@ class Scene : Iterable<Scene.Entity> {
 	}
 
 
-	class Entity(private val id: EntityId, private val scene: Scene) {
+	class Entity(internal val id: EntityId, private val scene: Scene) {
+		val isValid: Boolean get() = scene.registry.valid(id)
+
 		inline fun <reified T : Any> addComponent(component: T) = addComponent(component, T::class)
 		fun <T : Any> addComponent(component: T, type: KClass<T>) {
 			Hazel.coreAssert(!hasComponent(type), "Entity already has component of type '$type'!")
 			scene.registry.add(type, id, component)
+			scene.onComponentAdded(this, component)
 		}
 
 		inline fun <reified T : Any> getComponent() = getComponent(T::class)

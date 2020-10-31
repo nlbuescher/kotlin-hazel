@@ -19,12 +19,9 @@ class EditorLayer : Layer("Editor") {
 	private lateinit var checkerBoardTexture: Texture2D
 
 	private lateinit var activeScene: Scene
-	private var squareEntity: Scene.Entity? = null
 	private lateinit var cameraEntity: Scene.Entity
 	private lateinit var secondCamera: Scene.Entity
 	private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
-
-	private var showPrimaryCamera: Boolean = true
 
 	private var isViewportFocused: Boolean = false
 	private var isViewportHovered: Boolean = false
@@ -45,8 +42,6 @@ class EditorLayer : Layer("Editor") {
 
 			val redSquare = activeScene.createEntity("Red Square")
 			redSquare.addComponent(SpriteRendererComponent(Vec4(1f, 0f, 0f, 1f)))
-
-			squareEntity = square
 
 			cameraEntity = activeScene.createEntity("Camera A")
 			cameraEntity.addComponent(CameraComponent())
