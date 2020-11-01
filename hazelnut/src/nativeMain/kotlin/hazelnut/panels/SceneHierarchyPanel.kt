@@ -8,7 +8,6 @@ import com.imgui.ImGuiPopupFlags
 import com.imgui.ImGuiStyleVar
 import com.imgui.ImGuiTreeNodeFlags
 import com.imgui.Vec2
-import hazel.core.*
 import hazel.imgui.*
 import hazel.math.*
 import hazel.scene.*
@@ -30,7 +29,7 @@ class SceneHierarchyPanel(var context: Scene) {
 			}
 
 			// right click on blank space
-			if (beginPopupContextWindow(popupFlags = ImGuiPopupFlags.NoOpenOverItems)) {
+			if (beginPopupContextWindow(popupFlags = ImGuiPopupFlags.MouseButtonRight + ImGuiPopupFlags.NoOpenOverItems)) {
 				if (menuItem("Create Empty Entity")) {
 					context.createEntity("Empty Entity")
 				}
@@ -190,7 +189,7 @@ class SceneHierarchyPanel(var context: Scene) {
 					val rotation = with(component.rotation) { Vec3(x.radians, y.radians, z.radians) }
 					drawVec3Control("Rotation", rotation)
 					with(component.rotation) { x = rotation.x.degrees; y = rotation.y.degrees; z = rotation.z.degrees }
-					drawVec3Control("Scale", component.scale)
+					drawVec3Control("Scale", component.scale, 1f)
 
 					treePop()
 				}
