@@ -143,10 +143,16 @@ class EditorLayer : Layer("Editor") {
 				if (isFullScreen) popStyleVar(2)
 
 				val io = getIO()
+				val style = getStyle()
+				val minWindowSize = style.windowMinSize.x
+				style.ptr.pointed.WindowMinSize.x = 370f
 				if (ImGuiConfigFlags.DockingEnable in io.configFlags) {
 					val dockSpaceID = getID("DockSpace")
 					dockSpace(dockSpaceID, com.imgui.Vec2(0f, 0f), dockSpaceFlags)
 				}
+
+				style.ptr.pointed.WindowMinSize.x = minWindowSize
+
 				if (beginMenuBar()) {
 					if (beginMenu("File")) {
 						if (menuItem("Exit")) Hazel.application.close()

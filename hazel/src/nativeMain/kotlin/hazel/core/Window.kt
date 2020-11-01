@@ -108,7 +108,7 @@ class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : 
 	companion object {
 		private var windowCount: Int = 0
 
-		operator fun invoke(title: String, width: Int = 1280, height: Int = 720): Window {
+		operator fun invoke(title: String, width: Int = 1600, height: Int = 900): Window {
 			return Hazel.profile("Window(Int, Int, String): Window") {
 				Hazel.coreInfo("Creating window $title ($width, $height)")
 

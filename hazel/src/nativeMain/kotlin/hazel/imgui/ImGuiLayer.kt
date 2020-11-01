@@ -7,6 +7,7 @@ import cimgui.internal.ImGuiStyle
 import cimgui.internal.ImVec2
 import cimgui.internal.ImVec4
 import com.imgui.*
+import com.imgui.ImFontConfig
 import com.imgui.ImGuiCol
 import com.imgui.ImGuiConfigFlags
 import com.imgui.impl.*
@@ -43,6 +44,11 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 			//io.configFlags = io.configFlags or ImGuiConfigFlags.ViewportsNoTaskBarIcon
 			//io.configFlags = io.configFlags or ImGuiConfigFlags.ViewportsNoMerge
 
+			ImFontConfig()
+			io.fonts?.addFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", 18f)
+			val font = io.fonts?.addFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", 18f)
+			io.ptr.pointed.FontDefault = font?.ptr
+
 			// setup Dear ImGui style
 			ImGui.styleColorsDark()
 			//ImGui.styleColorsClassic()
@@ -53,6 +59,8 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 				style.WindowRounding = 0f
 				style.Colors[ImGuiCol.WindowBg.value].w = 1f
 			}
+
+			setDarkThemeColors()
 
 			// setup Platform / Renderer Bindings
 			glfw = ImGuiGlfw(Hazel.application.window.nativeWindow, true)
@@ -101,5 +109,37 @@ open class ImGuiLayer : Overlay("ImGuiLayer") {
 				Glfw.currentContext = backupCurrentContext
 			}
 		}
+	}
+
+	fun setDarkThemeColors() {
+		val colors = ImGui.getStyle().ptr.pointed.Colors
+		colors[ImGuiCol.WindowBg.value].run { x = 0.1f; y = 0.105f; z = 0.11f; w = 1.0f }
+
+		// Headers
+		colors[ImGuiCol.Header.value].run { x = 0.2f; y = 0.205f; z = 0.21f; w = 1.0f }
+		colors[ImGuiCol.HeaderHovered.value].run { x = 0.3f; y = 0.305f; z = 0.31f; w = 1.0f }
+		colors[ImGuiCol.HeaderActive.value].run { x = 0.15f; y = 0.1505f; z = 0.151f; w = 1.0f }
+
+		// Buttons
+		colors[ImGuiCol.Button.value].run { x = 0.2f; y = 0.205f; z = 0.21f; w = 1.0f }
+		colors[ImGuiCol.ButtonHovered.value].run { x = 0.3f; y = 0.305f; z = 0.31f; w = 1.0f }
+		colors[ImGuiCol.ButtonActive.value].run { x = 0.15f; y = 0.1505f; z = 0.151f; w = 1.0f }
+
+		// Frame Background
+		colors[ImGuiCol.FrameBg.value].run { x = 0.2f; y = 0.205f; z = 0.21f; w = 1.0f }
+		colors[ImGuiCol.FrameBgHovered.value].run { x = 0.3f; y = 0.305f; z = 0.31f; w = 1.0f }
+		colors[ImGuiCol.FrameBgActive.value].run { x = 0.15f; y = 0.1505f; z = 0.151f; w = 1.0f }
+
+		// Tabs
+		colors[ImGuiCol.Tab.value].run { x = 0.15f; y = 0.1505f; z = 0.151f; w = 1.0f }
+		colors[ImGuiCol.TabHovered.value].run { x = 0.38f; y = 0.3805f; z = 0.381f; w = 1.0f }
+		colors[ImGuiCol.TabActive.value].run { x = 0.28f; y = 0.2805f; z = 0.281f; w = 1.0f }
+		colors[ImGuiCol.TabUnfocused.value].run { x = 0.15f; y = 0.1505f; z = 0.151f; w = 1.0f }
+		colors[ImGuiCol.TabUnfocusedActive.value].run { x = 0.2f; y = 0.205f; z = 0.21f; w = 1.0f }
+
+		// Titles
+		colors[ImGuiCol.TitleBg.value].run { x = 0.15f; y = 0.1505f; z = 0.151f; w = 1.0f }
+		colors[ImGuiCol.TitleBgActive.value].run { x = 0.15f; y = 0.1505f; z = 0.151f; w = 1.0f }
+		colors[ImGuiCol.TitleBgCollapsed.value].run { x = 0.15f; y = 0.1505f; z = 0.151f; w = 1.0f }
 	}
 }
