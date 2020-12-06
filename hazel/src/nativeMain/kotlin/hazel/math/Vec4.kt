@@ -3,9 +3,11 @@
 package hazel.math
 
 import hazel.cinterop.*
+import hazel.scene.*
+import kotlinx.serialization.Serializable
 import kotlin.math.*
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Serializable(with = Vec4Serializer::class)
 class Vec4(
 	var x: Float,
 	var y: Float,

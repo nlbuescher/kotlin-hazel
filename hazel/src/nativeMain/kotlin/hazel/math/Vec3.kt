@@ -2,9 +2,11 @@
 
 package hazel.math
 
+import hazel.scene.*
+import kotlinx.serialization.Serializable
 import kotlin.math.*
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Serializable(with = Vec3Serializer::class)
 class Vec3(var x: Float, var y: Float, var z: Float) {
 	constructor(scalar: Float = 0f) : this(scalar, scalar, scalar)
 

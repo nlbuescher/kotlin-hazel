@@ -2,10 +2,10 @@ package hazel.renderer.opengl
 
 import com.kgl.opengl.*
 import hazel.core.*
-import hazel.core.profile
 import hazel.math.*
 import hazel.opengl.*
 import hazel.renderer.*
+import hazel.system.*
 import kotlinx.cinterop.*
 import platform.posix.*
 import kotlin.collections.component1
@@ -22,7 +22,7 @@ class OpenGLShader : Shader {
 		val profiler = Hazel.Profiler("OpenGLShader(String): OpenGLShader")
 		profiler.start()
 
-		val source = readFile(filepath) ?: ""
+		val source = File(filepath).readText()
 		val shaderSourcesMap = preProcess(source)
 		compile(shaderSourcesMap)
 
@@ -136,21 +136,6 @@ class OpenGLShader : Shader {
 		glUniform(location, false, matrix)
 	}
 
-	private fun readFile(filepath: String): String? {
-		return Hazel.profile("OpenGLShader.readFile(String): String?") {
-			fopen(filepath, "r")?.let { file ->
-				fseek(file, 0, SEEK_END)
-				val size = ftell(file).toInt()
-				fseek(file, 0, SEEK_SET)
-				ByteArray(size).apply {
-					fread(refTo(0), 1.convert(), size.convert(), file)
-				}.toKString()
-			} ?: run {
-				Hazel.coreError("Could not open file `$filepath`")
-				null
-			}
-		}
-	}
 
 	private fun preProcess(source: String): Map<UInt, String> {
 		return Hazel.profile("OpenGLShader.preProcess(String): Map<UInt, String>") {

@@ -18,7 +18,7 @@ import kotlin.math.*
 import kotlin.reflect.*
 
 class SceneHierarchyPanel(var context: Scene) {
-	private var selectionContext: Scene.Entity? = null
+	private var selectionContext: Entity? = null
 
 	fun onImGuiRender() {
 		with(ImGui) {
@@ -53,7 +53,7 @@ class SceneHierarchyPanel(var context: Scene) {
 		}
 	}
 
-	private fun drawEntityNode(entity: Scene.Entity) {
+	private fun drawEntityNode(entity: Entity) {
 		with(ImGui) {
 			val tag = entity.getComponent<TagComponent>().tag
 
@@ -166,7 +166,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
 	private inline fun <reified T : Any> drawComponent(
 		name: String,
-		entity: Scene.Entity,
+		entity: Entity,
 		noinline block: (T) -> Unit
 	) {
 		drawComponent(T::class, name, entity, block)
@@ -175,7 +175,7 @@ class SceneHierarchyPanel(var context: Scene) {
 	private fun <T : Any> drawComponent(
 		type: KClass<T>,
 		name: String,
-		entity: Scene.Entity,
+		entity: Entity,
 		block: (T) -> Unit
 	) {
 		val treeNodeFlags: Flag<ImGuiTreeNodeFlags> =
@@ -218,7 +218,7 @@ class SceneHierarchyPanel(var context: Scene) {
 		}
 	}
 
-	private fun drawComponents(entity: Scene.Entity) {
+	private fun drawComponents(entity: Entity) {
 		with(ImGui) {
 			if (entity.hasComponent<TagComponent>()) {
 				val tag = entity.getComponent<TagComponent>()

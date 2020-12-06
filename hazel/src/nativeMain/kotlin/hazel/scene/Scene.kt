@@ -4,10 +4,12 @@ import hazel.core.*
 import hazel.ecs.*
 import hazel.math.*
 import hazel.renderer.*
+import kotlinx.serialization.*
 import kotlin.reflect.*
 
-class Scene : Iterable<Scene.Entity> {
-	private val registry = Registry()
+@Serializable(with = SceneSerializer::class)
+class Scene : Iterable<Entity> {
+	internal val registry = Registry()
 
 	private var viewportWidth: Int = 0
 	private var viewportHeight: Int = 0
@@ -85,7 +87,7 @@ class Scene : Iterable<Scene.Entity> {
 	}
 
 
-	private fun <T : Any> onComponentAdded(entity: Entity, component: T) {
+	internal fun <T : Any> onComponentAdded(entity: Entity, component: T) {
 		when (component) {
 			is TagComponent,
 			is TransformComponent,
@@ -105,55 +107,5 @@ class Scene : Iterable<Scene.Entity> {
 		private val registryIterator = registry.iterator()
 		override fun hasNext(): Boolean = registryIterator.hasNext()
 		override fun next() = Entity(registryIterator.next(), this@Scene)
-	}
-
-
-	class Entity(internal val id: EntityId, private val scene: Scene) {
-		val isValid: Boolean get() = scene.registry.valid(id)
-
-		inline fun <reified T : Any> addComponent(component: T) = addComponent(component, T::class)
-		fun <T : Any> addComponent(component: T, type: KClass<T>) {
-			Hazel.coreAssert(!hasComponent(type), "Entity already has component of type '$type'!")
-			scene.registry.add(type, id, component)
-			scene.onComponentAdded(this, component)
-		}
-
-		inline fun <reified T : Any> getComponent() = getComponent(T::class)
-		fun <T : Any> getComponent(type: KClass<T>): T {
-			Hazel.coreAssert(hasComponent(type), "Entity does not have component of type '$type'!")
-			return scene.registry.get(type, id)
-		}
-
-		inline fun <reified T : Any> removeComponent() = removeComponent(T::class)
-		fun <T : Any> removeComponent(type: KClass<T>) {
-			Hazel.coreAssert(hasComponent(type), "Entity does not have component of type '$type'!")
-			return scene.registry.remove(type, id)
-		}
-
-		inline fun <reified T : Any> hasComponent() = hasComponent(T::class)
-		fun <T : Any> hasComponent(type: KClass<T>): Boolean = scene.registry.has(type, id)
-
-
-		override fun hashCode(): Int = id.value.toInt()
-
-		override fun equals(other: Any?): Boolean {
-			if (this === other) return true
-			if (other !is Entity) return false
-
-			return id == other.id && scene == other.scene
-		}
-
-		override fun toString(): String = "${id.value}"
-	}
-
-	abstract class ScriptableEntity {
-		internal var entity: Entity? = null
-
-		inline fun <reified T : Any> getComponent() = getComponent(T::class)
-		fun <T : Any> getComponent(type: KClass<T>): T = entity!!.getComponent(type)
-
-		open fun onCreate() {}
-		open fun onUpdate(timeStep: TimeStep) {}
-		open fun onDestroy() {}
 	}
 }

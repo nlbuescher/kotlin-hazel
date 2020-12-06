@@ -2,18 +2,35 @@ package hazel.scene
 
 import hazel.math.*
 import hazel.renderer.*
+import kotlinx.serialization.*
 
+@Serializable
 class SceneCamera : Camera() {
+	@SerialName("ProjectionType")
 	private var _projectionType: ProjectionType = ProjectionType.Orthographic
 
+
+	@SerialName("PerspectiveFOV")
 	private var _perspectiveFov: Float = 45f.degrees
+
+	@SerialName("PerspectiveNear")
 	private var _perspectiveNear: Float = 0.01f
+
+	@SerialName("PerspectiveFar")
 	private var _perspectiveFar: Float = 1000f
 
+
+	@SerialName("OrthographicSize")
 	private var _orthographicSize: Float = 10f
+
+	@SerialName("OrthographicNear")
 	private var _orthographicNear: Float = -1f
+
+	@SerialName("OrthographicFar")
 	private var _orthographicFar: Float = 1f
 
+
+	@Transient
 	private var aspectRatio: Float = 0f
 
 	init {
@@ -90,7 +107,7 @@ class SceneCamera : Camera() {
 		}
 
 
-	private fun recalculateProjection() {
+	internal fun recalculateProjection() {
 		_projection = when (_projectionType) {
 			ProjectionType.Perspective -> {
 				perspectiveProjectionOf(
@@ -111,8 +128,12 @@ class SceneCamera : Camera() {
 	}
 
 
+	@Serializable
 	enum class ProjectionType {
+		@SerialName("0")
 		Perspective,
-		Orthographic
+
+		@SerialName("1")
+		Orthographic,
 	}
 }

@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.*
 
 plugins {
 	kotlin("multiplatform")
+	kotlin("plugin.serialization")
 }
 
 repositories {
@@ -53,6 +54,9 @@ kotlin {
 
 				dependencies {
 					implementation(project(":stb"))
+
+					implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.1")
+					implementation("net.mamoe.yamlkt:yamlkt:0.7.4")
 
 					listOf("", "-glfw", "-opengl").forEach {
 						implementation("com.kotlin-imgui:imgui$it:$imGuiVersion")

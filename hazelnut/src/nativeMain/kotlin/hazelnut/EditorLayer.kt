@@ -8,9 +8,11 @@ import hazel.math.Vec2
 import hazel.math.Vec4
 import hazel.renderer.*
 import hazel.scene.*
+import hazel.system.*
 import hazelnut.panels.*
 import kotlinx.cinterop.*
-import kotlin.random.*
+import kotlinx.serialization.*
+import net.mamoe.yamlkt.*
 
 class EditorLayer : Layer("Editor") {
 	private val cameraController = OrthographicCameraController(1280f / 720f, allowRotation = true)
@@ -19,8 +21,8 @@ class EditorLayer : Layer("Editor") {
 	private lateinit var checkerBoardTexture: Texture2D
 
 	private lateinit var activeScene: Scene
-	private lateinit var cameraEntity: Scene.Entity
-	private lateinit var secondCamera: Scene.Entity
+	private lateinit var cameraEntity: Entity
+	private lateinit var secondCamera: Entity
 	private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
 
 	private var isViewportFocused: Boolean = false
@@ -35,8 +37,9 @@ class EditorLayer : Layer("Editor") {
 			val spec = FrameBuffer.Specification(1280, 720)
 			frameBuffer = FrameBuffer(spec)
 
-			activeScene = Scene()
+			activeScene = Yaml().decodeFromString(File("assets/scenes/Example.hazel").readText()) //Scene()
 
+			/*
 			val square = activeScene.createEntity("Green Square")
 			square.addComponent(SpriteRendererComponent(Vec4(0f, 1f, 0f, 1f)))
 
@@ -72,8 +75,10 @@ class EditorLayer : Layer("Editor") {
 
 			cameraEntity.addComponent(NativeScriptComponent(::CameraController))
 			secondCamera.addComponent(NativeScriptComponent(::CameraController))
+			*/
 
 			sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
+			//File("assets/scenes/Example.hazel").writeText(Yaml().encodeToString(activeScene))
 		}
 	}
 
