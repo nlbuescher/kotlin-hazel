@@ -7,6 +7,5 @@ build
 # Project folder
 .idea
 
-imgui.ini
 hazelnut/*.json
 sandbox/*.json
