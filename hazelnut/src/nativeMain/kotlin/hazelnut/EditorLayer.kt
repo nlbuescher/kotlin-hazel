@@ -37,7 +37,7 @@ class EditorLayer : Layer("Editor") {
 			val spec = FrameBuffer.Specification(1280, 720)
 			frameBuffer = FrameBuffer(spec)
 
-			activeScene = Yaml().decodeFromString(File("assets/scenes/Example.hazel").readText()) //Scene()
+			activeScene = Scene()
 
 			/*
 			val square = activeScene.createEntity("Green Square")
@@ -78,7 +78,6 @@ class EditorLayer : Layer("Editor") {
 			*/
 
 			sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
-			//File("assets/scenes/Example.hazel").writeText(Yaml().encodeToString(activeScene))
 		}
 	}
 
@@ -160,7 +159,18 @@ class EditorLayer : Layer("Editor") {
 
 				if (beginMenuBar()) {
 					if (beginMenu("File")) {
+						if (menuItem("Serialize")) {
+							File("assets/scenes/Example.hazel").writeText(Yaml().encodeToString(activeScene))
+						}
+
+						if (menuItem("Deserialize")) {
+							activeScene = Yaml().decodeFromString(File("assets/scenes/Example.hazel").readText())
+							sceneHierarchyPanel.context = activeScene
+							activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
+						}
+
 						if (menuItem("Exit")) Hazel.application.close()
+
 						endMenu()
 					}
 					endMenuBar()
