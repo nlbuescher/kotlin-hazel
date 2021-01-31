@@ -13,6 +13,7 @@ import hazel.ecs.*
 import hazel.imgui.*
 import hazel.math.*
 import hazel.scene.*
+import io.ktor.utils.io.core.*
 import kotlinx.cinterop.*
 import kotlin.math.*
 import kotlin.reflect.*
@@ -224,11 +225,11 @@ class SceneHierarchyPanel(var context: Scene) {
 				val tag = entity.getComponent<TagComponent>()
 
 				val buffer = ByteArray(256)
-				tag.tag.encodeToByteArray().apply {
+				tag.tag.toByteArray().apply {
 					copyInto(buffer, endIndex = min(size, buffer.size))
 				}
 				if (inputText("##Tag", buffer)) {
-					tag.tag = buffer.decodeToString()
+					tag.tag = buffer.toKString()
 				}
 			}
 
