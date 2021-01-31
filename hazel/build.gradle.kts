@@ -53,15 +53,13 @@ kotlin {
 				resources.srcDir("src/nativeMain/resources")
 
 				dependencies {
-					implementation(project(":stb"))
-
 					implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.1")
 					implementation("net.mamoe.yamlkt:yamlkt:0.7.4")
 
 					listOf("", "-glfw", "-opengl").forEach {
 						implementation("com.kotlin-imgui:imgui$it:$imGuiVersion")
 					}
-					listOf("-glfw", "-glfw-static", "-opengl").forEach {
+					listOf("-glfw", "-glfw-static", "-opengl", "-stb").forEach {
 						implementation("com.kgl:kgl$it:$kglVersion")
 					}
 				}

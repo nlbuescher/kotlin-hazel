@@ -7,7 +7,7 @@ import hazel.opengl.*
 import hazel.renderer.*
 import kotlinx.cinterop.*
 import platform.posix.*
-import stb.*
+import cstb.*
 
 class OpenGLTexture2D : Texture2D {
 	override val rendererID: UInt

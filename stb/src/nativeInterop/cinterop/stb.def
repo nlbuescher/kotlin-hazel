@@ -1,3 +1,0 @@
-package = stb
-headers = stb_image.h
-compilerOpts = -DSTB_IMAGE_IMPLEMENTATION -DSTBI_NO_FAILURE_STRINGS
