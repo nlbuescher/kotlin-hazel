@@ -13,6 +13,7 @@ data class ProfileResult(
 
 data class InstrumentationSession(val name: String)
 
+@ThreadLocal
 object Instrumentor {
 	private var currentSession: InstrumentationSession? = null
 	private var profileCount: Int = 0

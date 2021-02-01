@@ -3,6 +3,7 @@ package hazel.renderer
 import hazel.core.*
 import hazel.math.*
 
+@ThreadLocal
 object Renderer {
 	private class SceneData {
 		var viewProjectionMatrix = Mat4()

@@ -16,6 +16,7 @@ interface RenderAPI {
 
 	fun drawIndexed(vertexArray: VertexArray, indexCount: Int = 0)
 
+	@ThreadLocal
 	companion object {
 		var api: API = API.OpenGL
 	}

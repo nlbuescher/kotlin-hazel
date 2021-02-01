@@ -36,6 +36,7 @@ object Vec4Serializer : KSerializer<Vec4> {
 }
 
 
+@ThreadLocal
 @OptIn(ExperimentalSerializationApi::class)
 object SceneSerializer : KSerializer<Scene> {
 	@Suppress("VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL")

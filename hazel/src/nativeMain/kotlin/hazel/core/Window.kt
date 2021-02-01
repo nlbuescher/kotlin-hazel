@@ -8,6 +8,37 @@ import com.kgl.glfw.Window as GlfwWindow
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : Disposable {
+	constructor(title: String, width: Int = 1600, height: Int = 900) : this(
+		Hazel.profile("Window(Int, Int, String): Window") {
+			Hazel.coreInfo("Creating window $title ($width, $height)")
+
+			if (windowCount == 0) {
+				Hazel.profile("Glfw.init()") {
+					Hazel.coreAssert(Glfw.init(), "Could not initialize GLFW!")
+					Glfw.setErrorCallback { error, message ->
+						Hazel.error("GLFW error ($error): $message")
+					}
+				}
+			}
+
+			Hazel.profile("Glfw create window") {
+				with(Glfw.windowHints) {
+					// enable the most recent version of OpenGL on macOS
+					// (most recent is the default on other platforms)
+					if (Platform.osFamily == OsFamily.MACOSX) {
+						contextVersionMajor = 3
+						contextVersionMinor = 2
+						openGLForwardCompat = true
+						openGLProfile = OpenGLProfile.Core
+					}
+				}
+				GlfwWindow(width, height, title)
+			}.also {
+				windowCount += 1
+			}
+		}
+	)
+
 	private val context: GraphicsContext
 
 	var isVSync: Boolean = false // dummy value should be overridden in init
@@ -105,38 +136,8 @@ class Window @PublishedApi internal constructor(val nativeWindow: GlfwWindow) : 
 	}
 
 
+	@ThreadLocal
 	companion object {
 		private var windowCount: Int = 0
-
-		operator fun invoke(title: String, width: Int = 1600, height: Int = 900): Window {
-			return Hazel.profile("Window(Int, Int, String): Window") {
-				Hazel.coreInfo("Creating window $title ($width, $height)")
-
-				if (windowCount == 0) {
-					Hazel.profile("Glfw.init()") {
-						Hazel.coreAssert(Glfw.init(), "Could not initialize GLFW!")
-						Glfw.setErrorCallback { error, message ->
-							Hazel.error("GLFW error ($error): $message")
-						}
-					}
-				}
-
-				val nativeWindow = Hazel.profile("Glfw create window") {
-					with(Glfw.windowHints) {
-						// enable the most recent version of OpenGL on macOS
-						// (most recent is the default on other platforms)
-						if (Platform.osFamily == OsFamily.MACOSX) {
-							contextVersionMajor = 3
-							contextVersionMinor = 2
-							openGLForwardCompat = true
-							openGLProfile = OpenGLProfile.Core
-						}
-					}
-					GlfwWindow(width, height, title)
-				}
-				windowCount += 1
-				Window(nativeWindow)
-			}
-		}
 	}
 }

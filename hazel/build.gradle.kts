@@ -24,16 +24,8 @@ kotlin {
 	}
 
 	targets.withType<KotlinNativeTarget> {
-		compilations {
-			all {
-				kotlinOptions {
-					freeCompilerArgs = listOf("-memory-model", "relaxed")
-				}
-			}
-
-			named("main") {
-				cinterops.create("hazel")
-			}
+		compilations.named("main") {
+			cinterops.create("hazel")
 		}
 	}
 

@@ -4,11 +4,14 @@ package hazel.core
 
 import hazel.debug.*
 import hazel.system.*
+import kotlin.native.ThreadLocal
 import kotlin.native.concurrent.*
 import kotlin.time.*
 
 @Suppress("MemberVisibilityCanBePrivate")
+@ThreadLocal
 object Hazel {
+	@ThreadLocal
 	object Config {
 		var enableProfiling: Boolean = Platform.isDebugBinary
 		var enableAsserts: Boolean = Platform.isDebugBinary

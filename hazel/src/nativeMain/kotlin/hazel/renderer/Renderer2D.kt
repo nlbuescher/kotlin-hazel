@@ -5,6 +5,7 @@ import hazel.math.*
 import kotlinx.cinterop.*
 import kotlinx.cinterop.internal.*
 
+@ThreadLocal
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object Renderer2D {
 	private val data = Data()
@@ -258,6 +259,7 @@ object Renderer2D {
 
 	@CStruct("struct { float p0; float p1; }")
 	class Float2(rawPtr: NativePtr) : CStructVar(rawPtr) {
+		@Suppress("DEPRECATION")
 		companion object : CStructVar.Type(8, 4)
 
 		var x: Float
@@ -275,6 +277,7 @@ object Renderer2D {
 
 	@CStruct("struct { float p0; float p1; float p2; }")
 	class Float3(rawPtr: NativePtr) : CStructVar(rawPtr) {
+		@Suppress("DEPRECATION")
 		companion object : CStructVar.Type(12, 4)
 
 		var x: Float
@@ -298,6 +301,7 @@ object Renderer2D {
 
 	@CStruct("struct { float p0; float p1; float p2; float p3; }")
 	class Float4(rawPtr: NativePtr) : CStructVar(rawPtr) {
+		@Suppress("DEPRECATION")
 		companion object : CStructVar.Type(16, 4)
 
 		var x: Float
@@ -327,6 +331,7 @@ object Renderer2D {
 
 	@CStruct("struct { struct { float p0; float p1; float p2; } p0; struct { float p0; float p1; float p2; float p3; } p1; struct { float p0; float p1; } p2; }")
 	class QuadVertex(rawPtr: NativePtr) : CStructVar(rawPtr) {
+		@Suppress("DEPRECATION")
 		companion object : CStructVar.Type(44, 4)
 
 		val position: Float3

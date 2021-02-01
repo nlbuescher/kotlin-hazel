@@ -2,6 +2,7 @@ package hazel.renderer
 
 import hazel.math.*
 
+@ThreadLocal
 object RenderCommand {
 	private var renderAPI: RenderAPI = RenderAPI()
 

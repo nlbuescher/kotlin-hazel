@@ -25,12 +25,6 @@ kotlin {
 				entryPoint = "main"
 			}
 		}
-
-		compilations.all {
-			kotlinOptions {
-				freeCompilerArgs = listOf("-memory-model", "relaxed")
-			}
-		}
 	}
 
 	sourceSets {
