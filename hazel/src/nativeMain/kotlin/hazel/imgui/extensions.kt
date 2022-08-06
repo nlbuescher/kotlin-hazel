@@ -3,7 +3,6 @@ package hazel.imgui
 import cimgui.internal.*
 import cimgui.internal.ImVec2
 import com.imgui.*
-import com.imgui.ImGuiSliderFlags
 import com.imgui.Vec2
 import hazel.math.*
 import hazel.math.Vec4
@@ -22,10 +21,10 @@ fun ImGui.dragFloat3(
 	vMin: Float = 0f,
 	vMax: Float = 0f,
 	format: String = "%.3f",
-	flags: Flag<ImGuiSliderFlags>? = null,
+	power: Float = 1f,
 ) {
 	val array = floats.toFloatArray()
-	dragFloat3(label, array, vSpeed, vMin, vMax, format, flags)
+	dragFloat3(label, array, vSpeed, vMin, vMax, format, power)
 	array.forEachIndexed { i, it -> floats[i] = it }
 }
 

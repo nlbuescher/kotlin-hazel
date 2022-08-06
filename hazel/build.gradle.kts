@@ -7,8 +7,8 @@ plugins {
 }
 
 repositories {
-	maven("https://dl.bintray.com/dominaezzz/kotlin-native")
-	jcenter()
+	mavenCentral()
+	mavenLocal()
 }
 
 val os: OperatingSystem = OperatingSystem.current()
@@ -46,7 +46,7 @@ kotlin {
 
 				dependencies {
 					implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.1")
-					implementation("net.mamoe.yamlkt:yamlkt:0.7.4")
+					implementation("net.mamoe.yamlkt:yamlkt:0.9.0")
 
 					listOf("", "-glfw", "-opengl").forEach {
 						implementation("com.kotlin-imgui:imgui$it:$imGuiVersion")

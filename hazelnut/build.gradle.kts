@@ -6,8 +6,8 @@ plugins {
 }
 
 repositories {
-	maven("https://dl.bintray.com/dominaezzz/kotlin-native")
-	jcenter()
+	mavenCentral()
+	mavenLocal()
 }
 
 val os: OperatingSystem = OperatingSystem.current()
